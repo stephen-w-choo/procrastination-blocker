@@ -11,14 +11,14 @@
     },
     "content_scripts": [
         {
-            "js": ["content.js"],
+            "js": ["build/content.js"],
             "matches": [
                 "<all_urls>"
             ]
         }
     ],
     "background": {
-        "service_worker": "background.js"
+        "service_worker": "build/background.js"
     },
     "permissions": [
         "storage",

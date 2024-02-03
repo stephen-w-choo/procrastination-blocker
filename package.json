@@ -1,0 +1,19 @@
+{
+  "name": "procrastination-blocker",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@types/chrome": "^0.0.260"
+  },
+  "scripts": {
+    "test": "jest",
+    "build": "tsc -p tsconfig-build.json && bun importFormatter.ts",
+    "format": "prettier --write \"**/*.ts\""
+  }
+}

@@ -1,6 +1,6 @@
 let procrastinationSiteList = ["www.facebook.com", "www.youtube.com", "www.instagram.com", "www.twitter.com"]
 
-function isSiteProcrastinationSite(url) {
+function isSiteProcrastinationSite(url: string) {
   return procrastinationSiteList.includes(url)
 }
 
