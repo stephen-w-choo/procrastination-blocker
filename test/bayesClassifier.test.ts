@@ -32,22 +32,3 @@ describe("Bayes Classifier", () => {
         expect(classifier.predict("Terrible experience")).toEqual("negative")
     })
 })
-
-
-// Example usage:
-const classifier = new NaiveBayesClassifier();
-const trainingData: TextData[] = [
-    { "text": "I love this product", "class": "positive" },
-    { "text": "Absolutely great experience", "class": "positive" },
-    { "text": "Happy with the results", "class": "positive" },
-    { "text": "This is amazing", "class": "positive" },
-    { "text": "Very satisfied", "class": "positive" },
-    { "text": "Not good at all", "class": "negative" },
-    { "text": "Really disappointed", "class": "negative" },
-    { "text": "Could be better", "class": "negative" },
-    { "text": "I am unhappy with this", "class": "negative" },
-    { "text": "A terrible experience", "class": "negative" }
-]
-
-classifier.train(trainingData);
-console.log(classifier.predict("I absolutely love this product"))
