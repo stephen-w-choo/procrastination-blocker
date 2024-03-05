@@ -1,13 +1,13 @@
 // eg procrastination or productive
-type TextClass = string
+export type TextClass = string
 
 // single lower case word token - keeping it simple
-type Token = string
+export type Token = string
 
 // the original text
-type TextSequence = string
+export type TextSequence = string
 
-interface TextData {
+export interface TextData {
     text: TextSequence;
     class: TextClass;
 }
@@ -31,16 +31,14 @@ export default class NaiveBayesClassifier {
         this.calculateProbabilities(data)
     }
 
-    public predict(text: TextSequence): TextClass {
-        // Implement prediction logic
+    public predict(text: TextSequence): Record<string, number> {
         // Tokenise then run naive Bayes
 
         const tokens = this.tokenise(text)
-        let highestProbability = 0
-        let mostProbableClass: TextClass = ""
+        let probabilityTable: Record<string, number> = {}
 
         // Bayes - P(a | b) = b * P(b | a) / a
-        // Treat each word as a possible trait, then calculate the probability 
+        // Treat each word as a possible trait, then calculate the probability of
         // the class given all traits are present
 
         Object.keys(this.classProbabilities).forEach((textClass) => {
@@ -51,15 +49,14 @@ export default class NaiveBayesClassifier {
             tokens.forEach((token) => {
                 probability *= this.tokenProbabilities[textClass][token]
             })
-
-            // If the probability is higher, set the new most probable class
-            if (probability > highestProbability) {
-                highestProbability = probability
-                mostProbableClass = textClass
-            }
+            
+            // Add to probability table
+            probabilityTable[textClass] = probability
         })
 
-        return mostProbableClass
+        this.normalise(probabilityTable)
+        
+        return probabilityTable
     }
 
     public tokenise(text: TextSequence): Token[] {
@@ -73,6 +70,15 @@ export default class NaiveBayesClassifier {
             .replace(/\s+/g, " ")
             .trim()
             .split(" ");
+    }
+
+    private normalise(probabilityTable: Record<string, number>) {
+        // Normalise probabilities, does it in place as Objects are passed by reference
+        const totalProbability = Object.values(probabilityTable).reduce((accum, curr) => accum + curr)
+        const normaliser = 1 / totalProbability
+        Object.keys(probabilityTable).forEach((textClass) => {
+            probabilityTable[textClass] *= normaliser
+        })
     }
 
     private setUpDataStructure(textDataItem: TextData): void {
@@ -104,12 +110,6 @@ export default class NaiveBayesClassifier {
     }
 
     private calculateProbabilities(data: TextData[]): void {
-        /* 
-        Assuming that the vocabulary, classProbabilities, and tokenProbabilities
-        have been set up as frequencies, this method should convert these
-        frequencies into probabilities.
-        */
-
         // Class probabilities
         const totalDocuments = data.length
         for (const textClass in this.classProbabilities) {

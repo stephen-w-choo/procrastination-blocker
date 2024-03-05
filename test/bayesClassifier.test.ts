@@ -18,17 +18,32 @@ describe("Bayes Classifier", () => {
 
     beforeEach(() => {
         classifier = new NaiveBayesClassifier()
+        classifier.train(trainingData)
     })
     
     test("Tokenise should return an array of tokens", () => {
+        // When
         const tokens = classifier.tokenise("This is a test")
+        
+        // Then
         expect(tokens).toEqual(["this", "is", "a", "test"])
     })
 
+    test("Classifier should return normalised probabilities that add to one", () => {
+        // Given
+        const EPSILON = 0.001
+
+        // When
+        const table = classifier.predict("I absolutely love this product")
+        const totalProbability = Object.values(table).reduce((accum, curr) => accum + curr)
+
+        // Then
+        expect(Math.abs(totalProbability - 1)).toBeLessThan(EPSILON)
+    })
+
     test("Classifier should predict correctly based on training data", () => {
-        classifier.train(trainingData)
-        expect(classifier.predict("I absolutely love this product")).toEqual("positive")
-        expect(classifier.predict("Unhappy")).toEqual("negative")
-        expect(classifier.predict("Terrible experience")).toEqual("negative")
+        expect(classifier.predict("I absolutely love this product")["positive"]).toBeGreaterThan(0.5)
+        expect(classifier.predict("Unhappy")["negative"]).toBeGreaterThan(0.5)
+        expect(classifier.predict("Terrible experience")["negative"]).toBeGreaterThan(0.5)
     })
 })
