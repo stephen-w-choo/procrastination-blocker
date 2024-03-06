@@ -1,6 +1,10 @@
 import { Token, TextClass, TextSequence } from "./models/TextData";
 import { TextData } from "./models/TextData";
 
+// Special nonexistent token for Laplace smoothing and to handle cases where the model
+// encounters words it hasn't seen before
+const NON_EXISTENT_TOKEN = "///nonexistent///"
+
 export default class NaiveBayesClassifier {
     // holds all the unique tokens in the training data
     private vocabulary: Set<Token> = new Set()
@@ -40,7 +44,11 @@ export default class NaiveBayesClassifier {
 
             // Multiply by the probability of each token given the class
             tokens.forEach((token) => {
-                probability *= this.tokenProbabilities[textClass][token]
+                if (token in this.tokenProbabilities[textClass]) {
+                    probability *= this.tokenProbabilities[textClass][token]
+                } else {
+                    probability *= this.tokenProbabilities[textClass][NON_EXISTENT_TOKEN]
+                }
             })
             
             // Add to probability table
@@ -111,20 +119,18 @@ export default class NaiveBayesClassifier {
 
         // Token probabilities with Laplace smoothing
         for (const textClass in this.tokenProbabilities) {
-            // Total tokens in a class + vocabulary size for Laplace smoothing
+            // Total tokens in a class + 1 for Laplace smoothing
+            // Plus 1 extra for the case where a token doesn't exist
             const totalTokensInClass = Object.values(this.tokenProbabilities[textClass])
-                .reduce((acc, val) => acc + val, 0) + this.vocabulary.size;
+                .reduce((acc, val) => acc + val, 0) + 1;
             
             for (const token in this.tokenProbabilities[textClass]) {
                 this.tokenProbabilities[textClass][token] = 
-                    (this.tokenProbabilities[textClass][token] + 1) / totalTokensInClass;
+                    (this.tokenProbabilities[textClass][token] + 1) / totalTokensInClass
             }
-            // If the token doesn't exist
-            this.vocabulary.forEach((token) => {
-                if (!this.tokenProbabilities[textClass][token]) {
-                    this.tokenProbabilities[textClass][token] = 1 / totalTokensInClass;
-                }
-            });
+
+            // Special non-existent token
+            this.tokenProbabilities[textClass][NON_EXISTENT_TOKEN] = 1 / totalTokensInClass
         }
     }
 }

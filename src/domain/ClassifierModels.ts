@@ -3,7 +3,7 @@ import { TextData } from "./models/TextData";
 import { SiteDataRepository } from "../data/SiteDataRepository";
 import { SiteData } from "../data/models/SiteData";
 
-class ClassifierModels {
+export class ClassifierModels {
     private siteDataRepository: SiteDataRepository
     titleModel: NaiveBayesClassifier
     domainModel: NaiveBayesClassifier
@@ -22,9 +22,13 @@ class ClassifierModels {
         /*
         Initialises/resyncs the model with the site data
         Computationally intensive, avoid calling unless necessary
-        TODO: Consider saving this to disk so that it can be retrieved without needing to retrain the model
-        each time the background process re-initialises. The model can be saved as JSON.
-        When retrieving the model, we can do a simple length check to verify that the models are synced with existing data
+
+        TODO: Consider saving this to disk (Chrome storage) so that it can be 
+        retrieved without needing to retrain the model each time the background 
+        process re-initialises. The model can be saved as JSON.
+
+        When retrieving the model from storage, we can do a simple length check 
+        to verify that the models are synced with existing data
         */
 
         let trainingDataSiteTitles: TextData[] = []

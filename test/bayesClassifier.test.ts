@@ -1,5 +1,6 @@
 import { describe, beforeEach, expect, test } from '@jest/globals'
-import NaiveBayesClassifier, { TextData } from '../src/bayesClassifier'
+import NaiveBayesClassifier from '../src/domain/bayesClassifier'
+import { TextData } from "../src/domain/models/TextData"
 
 describe("Bayes Classifier", () => {
     let classifier: NaiveBayesClassifier
