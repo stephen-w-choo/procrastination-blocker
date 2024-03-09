@@ -1,69 +1,98 @@
-import { SiteData, SerialisedSiteData, Category } from "./models/SiteData"
+import { Category, SerialisedSiteData, SiteData } from "./models/SiteData"
 
-function serialise(siteData: SiteData): SerialisedSiteData {
-    return JSON.stringify(siteData)
+export function serialise(siteData: SiteData): SerialisedSiteData {
+	return JSON.stringify(siteData)
+}
+
+export function serialiseListData(
+	deserialisedList: Array<SiteData>
+): Set<SerialisedSiteData> {
+	return new Set(deserialisedList.map(siteData => JSON.stringify(siteData)))
+}
+
+export function deserialiseSetData(
+	serialised: Set<SerialisedSiteData>
+): Array<SiteData> {
+	// TODO: can't convert Set to Array directly? This seems inefficient
+	const res: SiteData[] = []
+	serialised.forEach(serialisedSiteData => {
+		res.push(JSON.parse(serialisedSiteData))
+	})
+	return res
 }
 
 export class SiteDataRepository {
-    procrastinationSites: Set<SerialisedSiteData>
-    productiveSites: Set<SerialisedSiteData>
+	procrastinationSites: Set<SerialisedSiteData>
+	productiveSites: Set<SerialisedSiteData>
 
-    constructor() {
-        // TODO: Load data from Chrome storage
-        this.procrastinationSites = new Set()
-        this.productiveSites = new Set()
-    }
+	constructor() {
+		// TODO: Load data from Chrome storage
+		this.procrastinationSites = new Set()
+		this.productiveSites = new Set()
+		this.loadStoredSites()
+	}
 
-    syncListAndSet() {
-        // TODO - consider keeping both set and list in memory to reduce conversions
-        // In hindsight - this is only really necessary when the model needs it.
-        // If we reduce explicit model resyncs, we shouldn't be too worried about this
-    }
+	private loadStoredSites() {
+		chrome.storage.local.get(null, (items) => {
+			for (const key in items) {
+				const [category, value] = key.split("///")
+				if (category == "procrastination") {
+					this.procrastinationSites.add(value)
+				} else if (category == "productive") {
+					this.productiveSites.add(value)
+				}
+			}
+		})
+	}
 
-    
-    public get procrastinationSiteList(): Array<SiteData> {
-        // Look into caching this value - this is a O(n) operation each time
-        return this.deserialiseData(this.procrastinationSites)
-    }
-    
-    public get productiveSiteList(): Array<SiteData> {
-        // Look into caching this value - this is a O(n) operation each time
-        return this.deserialiseData(this.productiveSites)
-    }
-    
-    private deserialiseData(serialised: Set<SerialisedSiteData>): Array<SiteData> {
-        // TODO: can't convert Set to Array directly? This seems inefficient
-        const res: SiteData[] = []
-        serialised.forEach((serialisedSiteData) => {
-            res.push(JSON.parse(serialisedSiteData))
-        })
-        return res
-    }
+	public get procrastinationSiteList(): Array<SiteData> {
+		// Look into caching this value - this is a O(n) operation each time
+		return deserialiseSetData(this.procrastinationSites)
+	}
 
-    addSite(site: SiteData, category: Category) {
-        if (category == Category.productive) {
-            this.productiveSites.add(serialise(site))
-        } else {
-            this.procrastinationSites.add(serialise(site))
-        }
-    }
+	public get productiveSiteList(): Array<SiteData> {
+		// Look into caching this value - this is a O(n) operation each time
+		return deserialiseSetData(this.productiveSites)
+	}
 
-    removeSite(site: SiteData, category: Category){
-        if (category == Category.productive) {
-            this.productiveSites.delete(serialise(site))
-        } else {
-            this.procrastinationSites.delete(serialise(site))
-        }
-    }
+	addSite(site: SiteData, category: Category) {
+		if (category == Category.productive) {
+			this.productiveSites.add(serialise(site))
+			this.addToLocalStorageSet("productive", serialise(site))
+		} else {
+			this.procrastinationSites.add(serialise(site))
+			this.addToLocalStorageSet("procrastination", serialise(site))
+		}
+	}
 
-    reclassifySite(site: SiteData, currentCategory: Category) {
-        // feels like there's a smarter way of doing this
-        if (currentCategory == Category.productive) {
-            this.removeSite(site, Category.productive)
-            this.addSite(site, Category.procrastination)
-        } else {
-            this.removeSite(site, Category.procrastination)
-            this.addSite(site, Category.productive)
-        }
-    }
+	removeSite(site: SiteData, category: Category) {
+		if (category == Category.productive) {
+			this.productiveSites.delete(serialise(site))
+			this.removeFromLocalStorageSet("productive", serialise(site))
+		} else {
+			this.procrastinationSites.delete(serialise(site))
+			this.removeFromLocalStorageSet("procrastination", serialise(site))
+		}
+	}
+
+	reclassifySite(site: SiteData, currentCategory: Category) {
+		// feels like there's a smarter way of doing this
+		if (currentCategory == Category.productive) {
+			this.removeSite(site, Category.productive)
+			this.addSite(site, Category.procrastination)
+		} else {
+			this.removeSite(site, Category.procrastination)
+			this.addSite(site, Category.productive)
+		}
+	}
+
+	private addToLocalStorageSet(category: string, value: SerialisedSiteData) {
+		const key = `${category}///${value}`
+		chrome.storage.local.set({ [key]: true })
+	}
+
+	private removeFromLocalStorageSet(category: string, value: SerialisedSiteData) {
+		const key = `${category}///${value}`
+		chrome.storage.local.remove(key)
+	}
 }

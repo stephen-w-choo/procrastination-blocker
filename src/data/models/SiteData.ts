@@ -1,10 +1,10 @@
 export enum Category {
-    productive,
-    procrastination
+	productive,
+	procrastination,
 }
 export type SerialisedSiteData = string
 
 export type SiteData = {
-    title: string;
-    domain: string;
+	title: string
+	domain: string
 }
