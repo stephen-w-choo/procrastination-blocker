@@ -175,6 +175,6 @@ dist
 .DS_Store
 
 /build
-/data
+/testData
 
 bun.lockb

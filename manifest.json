@@ -18,7 +18,8 @@
         }
     ],
     "background": {
-        "service_worker": "build/background.js"
+        "service_worker": "build/background.js",
+        "type": "module"
     },
     "permissions": [
         "storage",

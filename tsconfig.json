@@ -2,8 +2,8 @@
   "include": [
     "src/**/*", 
     "demo/**/*",
-    "tests/**/*",
-    "data/**/*",
+    "test/**/*",
+    "testData/**/*",
     "**/*.ts", 
   ],
   "exclude": [
