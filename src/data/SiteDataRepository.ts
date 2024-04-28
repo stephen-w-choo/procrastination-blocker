@@ -1,5 +1,7 @@
 import { Category, SerialisedSiteData, SiteData } from "./models/SiteData"
 
+const SITE_STORAGE_PREFIX = "$SITEDATA"
+
 export function serialise(siteData: SiteData): SerialisedSiteData {
 	return JSON.stringify(siteData)
 }
@@ -35,7 +37,12 @@ export class SiteDataRepository {
 	private loadStoredSites() {
 		chrome.storage.local.get(null, (items) => {
 			for (const key in items) {
-				const [category, value] = key.split("///")
+				if (!key.startsWith(SITE_STORAGE_PREFIX)) {
+					continue
+				}
+				// remove the prefix then split the category and value
+				const [category, value] = key.slice(SITE_STORAGE_PREFIX.length).split("///")
+				
 				if (category == "procrastination") {
 					this.procrastinationSites.add(value)
 				} else if (category == "productive") {
@@ -87,12 +94,16 @@ export class SiteDataRepository {
 	}
 
 	private addToLocalStorageSet(category: string, value: SerialisedSiteData) {
-		const key = `${category}///${value}`
+		// TODO: This will not work with other data stored in local storage
+		// Consider storing with another prefix
+		const key = `${SITE_STORAGE_PREFIX}${category}///${value}`
 		chrome.storage.local.set({ [key]: true })
 	}
 
 	private removeFromLocalStorageSet(category: string, value: SerialisedSiteData) {
-		const key = `${category}///${value}`
+		// TODO: This will not work with other data stored in local storage
+		// Consider storing with another prefix
+		const key = `${SITE_STORAGE_PREFIX}${category}///${value}`
 		chrome.storage.local.remove(key)
 	}
 }
