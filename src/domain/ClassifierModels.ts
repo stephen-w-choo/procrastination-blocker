@@ -60,13 +60,18 @@ export class ClassifierModels {
 		this.domainModel.train(trainingDataSiteDomains)
 	}
 
-	classify(site: SiteData) {
+	classify(site: SiteData): [number, [number, number]] {
 		const titleProbabilities = this.titleModel.predict(site.title)
 		const domainProbabilities = this.domainModel.predict(site.domain)
 
-		return (
-			(titleProbabilities["procrastination"] + domainProbabilities["procrastination"]) / 2 >
-			this.threshold
-		)
+		return [
+			(titleProbabilities["procrastination"] +
+				domainProbabilities["procrastination"]) /
+				2,
+			[
+				titleProbabilities["procrastination"],
+				domainProbabilities["procrastination"],
+			],
+		]
 	}
 }

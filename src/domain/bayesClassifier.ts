@@ -4,6 +4,9 @@ import { TextClass, TextData, TextSequence, Token } from "./models/TextData"
 // encounters words it hasn't seen before
 const NON_EXISTENT_TOKEN = "///nonexistent///"
 
+// TODO: Current implementation requires retraining on the whole set with additions
+// Naive Bayes can actually be updated incrementally - potentially look into this
+
 export default class NaiveBayesClassifier {
 	// holds all the unique tokens in the training data
 	private vocabulary: Set<Token> = new Set()
