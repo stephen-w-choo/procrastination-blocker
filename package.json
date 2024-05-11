@@ -21,7 +21,8 @@
     "prettier-plugin-organize-imports": "^3.2.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "ts-jest": "^29.1.2"
+    "ts-jest": "^29.1.2",
+    "vite": "^5.2.11"
   },
   "jest": {
     "preset": "ts-jest",
@@ -30,7 +31,7 @@
   "scripts": {
     "type-check": "tsc --noEmit",
     "test": "jest",
-    "build": "bun run type-check && bun build src/content.tsx src/background.ts --outdir ./build",
-    "format": "prettier --write \"**/*.ts\""
+    "build": "bun run type-check && bun run vite build",
+    "format": "prettier --write \"**/*.ts\" \"**/*.tsx\""
   }
 }

@@ -178,3 +178,4 @@ dist
 /testData
 
 bun.lockb
+package-lock.json
