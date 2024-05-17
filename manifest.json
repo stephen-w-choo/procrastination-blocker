@@ -9,6 +9,9 @@
         "48": "icons/icon-48.png",
         "128": "icons/icon-128.png"
     },
+    "action": {
+        "default_popup": "build/src/pop-up.html"
+    },
     "content_scripts": [
         {
             "js": ["build/content.js"],
