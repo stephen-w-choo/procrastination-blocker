@@ -13,6 +13,12 @@ export default defineConfig({
                 assetFileNames: `[name].[ext]`,
                 inlineDynamicImports: true,
             },
+            onwarn(warning, warn) {
+                if (warning.code === 'MODULE_LEVEL_DIRECTIVE') {
+                  return
+                }
+                warn(warning)
+            }
         },
         outDir: "./build/content",
         assetsDir: "./",

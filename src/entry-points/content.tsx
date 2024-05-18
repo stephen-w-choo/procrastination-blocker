@@ -1,7 +1,7 @@
 // Entry point for doing anything with the page content
 
 import React from "react"
-import ReactDOM from "react-dom"
+import { createRoot } from "react-dom/client"
 import { TopBar } from "../view/TopBar"
 import {
 	BackgroundRequest,
@@ -56,20 +56,16 @@ function removeSite(siteType: Category) {
 	})
 }
 
-const shadowHost = document.createElement('div');
-document.body.insertBefore(shadowHost, document.body.firstChild);
-const shadowRoot = shadowHost.attachShadow({ mode: 'open' });
-const reactRoot = document.createElement('div');
-const style = document.createElement('style');
+const shadowHost = document.createElement('div')
+document.body.insertBefore(shadowHost, document.body.firstChild)
+const shadowRoot = shadowHost.attachShadow({ mode: 'open' })
+const container = document.createElement('div')
+const root = createRoot(container)
 
-// Assuming you have the CSS as a string, you would add it like this:
-style.textContent = `/* Chakra UI CSS here */`;
-shadowRoot.appendChild(style);
-shadowRoot.appendChild(reactRoot);
+shadowRoot.appendChild(container)
 
-ReactDOM.render(
+root.render(
     <ChakraProvider>
         <TopBar addSite={addSite} removeSite={removeSite} />
-    </ChakraProvider>,
-    reactRoot
-);
+    </ChakraProvider>
+)

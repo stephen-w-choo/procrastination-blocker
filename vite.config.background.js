@@ -6,7 +6,8 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 background: "./src/entry-points/background.ts",
-                popup: "./src/entry-points/pop-up.html"
+                popup: "./src/entry-points/pop-up.html",
+                popupRoot: "./src/entry-points/popUpRoot.tsx",
             },
             output: {
                 // Remove the hash from the file names
