@@ -49,8 +49,7 @@ export default class NaiveBayesClassifier {
 				if (token in this.tokenProbabilities[textClass]) {
 					probability *= this.tokenProbabilities[textClass][token]
 				} else {
-					probability *=
-						this.tokenProbabilities[textClass][NON_EXISTENT_TOKEN]
+					probability *= this.tokenProbabilities[textClass][NON_EXISTENT_TOKEN]
 				}
 			})
 
@@ -135,13 +134,11 @@ export default class NaiveBayesClassifier {
 
 			for (const token in this.tokenProbabilities[textClass]) {
 				this.tokenProbabilities[textClass][token] =
-					(this.tokenProbabilities[textClass][token] + 1) /
-					totalTokensInClass
+					(this.tokenProbabilities[textClass][token] + 1) / totalTokensInClass
 			}
 
 			// Special non-existent token
-			this.tokenProbabilities[textClass][NON_EXISTENT_TOKEN] =
-				1 / totalTokensInClass
+			this.tokenProbabilities[textClass][NON_EXISTENT_TOKEN] = 1 / totalTokensInClass
 		}
 	}
 }

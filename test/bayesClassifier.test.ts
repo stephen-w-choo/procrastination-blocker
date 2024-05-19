@@ -36,21 +36,17 @@ describe("Bayes Classifier", () => {
 
 		// When
 		const table = classifier.predict("I absolutely love this product")
-		const totalProbability = Object.values(table).reduce(
-			(accum, curr) => accum + curr
-		)
+		const totalProbability = Object.values(table).reduce((accum, curr) => accum + curr)
 
 		// Then
 		expect(Math.abs(totalProbability - 1)).toBeLessThan(EPSILON)
 	})
 
 	test("Classifier should predict correctly based on training data", () => {
-		expect(
-			classifier.predict("I absolutely love this product")["positive"]
-		).toBeGreaterThan(0.5)
+		expect(classifier.predict("I absolutely love this product")["positive"]).toBeGreaterThan(
+			0.5
+		)
 		expect(classifier.predict("Unhappy")["negative"]).toBeGreaterThan(0.5)
-		expect(
-			classifier.predict("Terrible experience")["negative"]
-		).toBeGreaterThan(0.5)
+		expect(classifier.predict("Terrible experience")["negative"]).toBeGreaterThan(0.5)
 	})
 })
