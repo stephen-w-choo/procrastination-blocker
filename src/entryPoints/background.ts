@@ -2,12 +2,16 @@ import { SiteDataRepository } from "../data/SiteDataRepository"
 import { Category, SiteData } from "../data/models/SiteData"
 import { ClassifierModels } from "../domain/ClassifierModels"
 import {
-	BackgroundRequest,
-	BackgroundResponse,
-	TrainingRequest,
-} from "../domain/models/MessageTypes"
-import procrastinationSites from "../procrastinationSites"
-import productiveSites from "../productiveSites"
+	ClassificationRequest,
+	GenericResponse,
+	ModelDataRequest,
+	ModelDataResponse,
+	SiteStatusRequest,
+	SiteStatusResponse,
+} from "../messagePassing/base/MessageTypes"
+import { setListener } from "../messagePassing/base/setListener"
+import procrastinationSites from "../procrastinationSitesSeed"
+import productiveSites from "../productiveSitesSeed"
 
 // Initialise repository
 const siteDataRepository = new SiteDataRepository()
@@ -30,18 +34,12 @@ for (const productiveSite of productiveSites) {
 const classifierModels = new ClassifierModels(siteDataRepository)
 
 // In background script
-chrome.runtime.onMessage.addListener(
-	(
-		request: BackgroundRequest,
-		_: chrome.runtime.MessageSender,
-		sendResponse: (response: BackgroundResponse) => void
-	) => {
+setListener<SiteStatusRequest, SiteStatusResponse>(
+	(request, _, sendResponse) => {
 		if (request.command == "checkSiteStatus") {
 			try {
 				const seenBefore = siteDataRepository.hasSite(request.serialisedSiteData)
-				const currentSiteData: SiteData = JSON.parse(
-					request.serialisedSiteData
-				)
+				const currentSiteData: SiteData = JSON.parse(request.serialisedSiteData)
 				let isProcrastinationSite = classifierModels.classify(currentSiteData)
 				sendResponse({
 					isProcrastinationSite: isProcrastinationSite[0],
@@ -60,12 +58,19 @@ chrome.runtime.onMessage.addListener(
 	}
 )
 
-chrome.runtime.onMessage.addListener(
-	(
-		request: TrainingRequest,
-		_: chrome.runtime.MessageSender,
-		sendResponse: (response: BackgroundResponse) => void
-	) => {
+setListener<ModelDataRequest, ModelDataResponse>(
+	(request, _, sendResponse) => {
+		if (request.command == "modelDataRequest") {
+			sendResponse({
+				procrastination: siteDataRepository.procrastinationSiteList.length,
+				productive: siteDataRepository.productiveSiteList.length,
+			})
+		}
+	}
+)
+
+setListener<ClassificationRequest, GenericResponse>(
+	(request, _, sendResponse) => {
 		if (request.command == "addSite") {
 			try {
 				const addingSite: SiteData = JSON.parse(request.serialisedSiteData)
