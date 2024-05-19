@@ -10,11 +10,11 @@
         "128": "icons/icon-128.png"
     },
     "action": {
-        "default_popup": "build/pop-up.html"
+        "default_popup": "build/src/entry-points/pop-up.html"
     },
     "content_scripts": [
         {
-            "js": ["build/content.js"],
+            "js": ["build/content/content.js"],
             "matches": [
                 "<all_urls>"
             ]
@@ -27,6 +27,7 @@
     "permissions": [
         "storage",
         "tabs",
-        "scripting"
+        "scripting",
+        "activeTab"
     ]
 }

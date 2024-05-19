@@ -4,7 +4,7 @@ export default defineConfig({
     build: {
         rollupOptions: {
             input: {
-                content: "./src/entry-points/content.tsx",
+                content: "./src/entryPoints/content.tsx",
             },
             output: {
                 // Remove the hash from the file names
@@ -22,5 +22,6 @@ export default defineConfig({
         },
         outDir: "./build/content",
         assetsDir: "./",
+        target: "ES2022"
     }
 })
