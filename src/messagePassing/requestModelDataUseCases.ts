@@ -13,7 +13,9 @@ export function requestModelDataUseCase(): Promise<ModelDataResponse> {
 	})
 }
 
-export function requestSiteStatusUseCase(siteData: SiteData): Promise<SiteStatusResponse> {
+export function requestSiteStatusUseCase(
+	siteData: SiteData
+): Promise<SiteStatusResponse> {
 	return sendMessage<SiteStatusRequest, SiteStatusResponse>({
 		command: "checkSiteStatus",
 		serialisedSiteData: JSON.stringify(siteData),

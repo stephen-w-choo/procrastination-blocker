@@ -182,6 +182,7 @@ package-lock.json
 *storybook.log
 .storybook
 stories/Configure.mdx
+stories/A
 
 procrastinationSitesSeed.ts
 productiveSitesSeed.ts

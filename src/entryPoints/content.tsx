@@ -44,7 +44,11 @@ sendMessage<SiteStatusRequest, SiteStatusResponse>({
 
 // Listener for when popup requests content data
 chrome.runtime.onMessage.addListener(
-	(request: SiteDataRequest, _, response: (response: SiteDataResponse) => void) => {
+	(
+		request: SiteDataRequest,
+		_,
+		response: (response: SiteDataResponse) => void
+	) => {
 		if (request.command === "siteDataRequest") {
 			response({
 				serialisedSiteData,
@@ -74,7 +78,10 @@ function createNormalDom(): Root {
 	return normalRoot
 }
 
-function renderTopBar(siteStatus: SiteStatusResponse, shadowDom: Boolean = false) {
+function renderTopBar(
+	siteStatus: SiteStatusResponse,
+	shadowDom: Boolean = false
+) {
 	if (shadowDom) {
 		// const [root, cache] = createShadowDom()
 		const root = createNormalDom()
@@ -82,7 +89,10 @@ function renderTopBar(siteStatus: SiteStatusResponse, shadowDom: Boolean = false
 		root.render(
 			// <CacheProvider value={cache}>
 			<ChakraProvider>
-				<TopBar siteStatus={siteStatus} serialisedSiteData={serialisedSiteData} />
+				<TopBar
+					siteStatus={siteStatus}
+					serialisedSiteData={serialisedSiteData}
+				/>
 			</ChakraProvider>
 			// </CacheProvider>
 		)

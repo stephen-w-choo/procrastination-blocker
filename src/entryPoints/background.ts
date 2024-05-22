@@ -38,9 +38,14 @@ setListener<SiteStatusRequest, SiteStatusResponse>(
 	(request, _, sendResponse) => {
 		if (request.command == "checkSiteStatus") {
 			try {
-				const seenBefore = siteDataRepository.hasSite(request.serialisedSiteData)
-				const currentSiteData: SiteData = JSON.parse(request.serialisedSiteData)
-				let isProcrastinationSite = classifierModels.classify(currentSiteData)
+				const seenBefore = siteDataRepository.hasSite(
+					request.serialisedSiteData
+				)
+				const currentSiteData: SiteData = JSON.parse(
+					request.serialisedSiteData
+				)
+				let isProcrastinationSite =
+					classifierModels.classify(currentSiteData)
 				sendResponse({
 					isProcrastinationSite: isProcrastinationSite[0],
 					seenBefore: seenBefore,
@@ -58,22 +63,22 @@ setListener<SiteStatusRequest, SiteStatusResponse>(
 	}
 )
 
-setListener<ModelDataRequest, ModelDataResponse>(
-	(request, _, sendResponse) => {
-		if (request.command == "modelDataRequest") {
-			sendResponse({
-				procrastination: siteDataRepository.procrastinationSiteList.length,
-				productive: siteDataRepository.productiveSiteList.length,
-			})
-		}
+setListener<ModelDataRequest, ModelDataResponse>((request, _, sendResponse) => {
+	if (request.command == "modelDataRequest") {
+		sendResponse({
+			procrastination: siteDataRepository.procrastinationSiteList.length,
+			productive: siteDataRepository.productiveSiteList.length,
+		})
 	}
-)
+})
 
 setListener<ClassificationRequest, GenericResponse>(
 	(request, _, sendResponse) => {
 		if (request.command == "addSite") {
 			try {
-				const addingSite: SiteData = JSON.parse(request.serialisedSiteData)
+				const addingSite: SiteData = JSON.parse(
+					request.serialisedSiteData
+				)
 				siteDataRepository.addSite(addingSite, request.type)
 				sendResponse({ success: true })
 			} catch {

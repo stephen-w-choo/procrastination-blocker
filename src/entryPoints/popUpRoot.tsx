@@ -2,7 +2,10 @@ import { ChakraProvider } from "@chakra-ui/react"
 import React from "react"
 import { createRoot } from "react-dom/client"
 import { SiteData } from "../data/models/SiteData"
-import { ModelDataResponse, SiteStatusResponse } from "../messagePassing/base/MessageTypes"
+import {
+	ModelDataResponse,
+	SiteStatusResponse,
+} from "../messagePassing/base/MessageTypes"
 import {
 	requestModelDataUseCase,
 	requestSiteStatusUseCase,

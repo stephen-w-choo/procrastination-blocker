@@ -14,7 +14,6 @@ import React, { useState } from "react"
 import { Category } from "../../data/models/SiteData"
 import { SiteStatusResponse } from "../../messagePassing/base/MessageTypes"
 import { addSiteUseCase } from "../../messagePassing/classifySiteUseCases"
-import { ModelDataCard } from "../popup/ModelDataCard"
 import { TopBarDropdownTab } from "./TopBarDropdownTab"
 
 export type TopBarProps = {
@@ -73,7 +72,9 @@ export function TopBar({ serialisedSiteData, siteStatus }: TopBarProps) {
 									variant="outline"
 									textAlign={"left"}
 								>
-									<Text>Mark this site as non-productive</Text>
+									<Text>
+										Mark this site as non-productive
+									</Text>
 								</Button>
 								<Button
 									onClick={addProductiveSite}
@@ -94,7 +95,9 @@ export function TopBar({ serialisedSiteData, siteStatus }: TopBarProps) {
 									background="white"
 									variant="outline"
 								>
-									<Text>Skip this website (indeterminate)</Text>
+									<Text>
+										Skip this website (indeterminate)
+									</Text>
 								</Button>
 							</Stack>
 						</Box>
@@ -108,12 +111,18 @@ export function TopBar({ serialisedSiteData, siteStatus }: TopBarProps) {
 							colorScheme="blue"
 							m="20px"
 						>
-							<Text>Turn off training mode and sync the model</Text>
+							<Text>
+								Turn off training mode and sync the model
+							</Text>
 						</Button>
 					</Flex>
 				</Collapse>
 				<Box display="flex" justifyContent="center">
-					<TopBarDropdownTab color={COLOR} isOpen={isOpen} onToggle={onToggle} />
+					<TopBarDropdownTab
+						color={COLOR}
+						isOpen={isOpen}
+						onToggle={onToggle}
+					/>
 				</Box>
 				<IconButton
 					position={"absolute"}

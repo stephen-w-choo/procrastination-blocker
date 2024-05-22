@@ -65,8 +65,13 @@ export class ClassifierModels {
 		const domainProbabilities = this.domainModel.predict(site.domain)
 
 		return [
-			(titleProbabilities["procrastination"] + domainProbabilities["procrastination"]) / 2,
-			[titleProbabilities["procrastination"], domainProbabilities["procrastination"]],
+			(titleProbabilities["procrastination"] +
+				domainProbabilities["procrastination"]) /
+				2,
+			[
+				titleProbabilities["procrastination"],
+				domainProbabilities["procrastination"],
+			],
 		]
 	}
 }
