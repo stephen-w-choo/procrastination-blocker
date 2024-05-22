@@ -8,10 +8,7 @@ import { sendMessage } from "./base/sendMessage"
 
 // Use cases for classifying sites.
 
-export function addSiteUseCase(
-	siteType: Category,
-	siteData: SerialisedSiteData
-) {
+export function addSiteUseCase(siteType: Category, siteData: SerialisedSiteData) {
 	return sendMessage<ClassificationRequest, GenericResponse>({
 		command: "addSite",
 		serialisedSiteData: siteData,
@@ -19,10 +16,7 @@ export function addSiteUseCase(
 	})
 }
 
-export function removeSiteUseCase(
-	siteType: Category,
-	siteData: SerialisedSiteData
-) {
+export function removeSiteUseCase(siteType: Category, siteData: SerialisedSiteData) {
 	return sendMessage<ClassificationRequest, SiteStatusResponse>({
 		command: "removeSite",
 		serialisedSiteData: siteData,

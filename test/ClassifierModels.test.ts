@@ -1,8 +1,5 @@
 import { beforeEach, describe, expect, test } from "@jest/globals"
-import {
-	SiteDataRepository,
-	serialiseListData,
-} from "../src/data/SiteDataRepository"
+import { SiteDataRepository, serialiseListData } from "../src/data/SiteDataRepository"
 import { SiteData } from "../src/data/models/SiteData"
 import { ClassifierModels } from "../src/domain/ClassifierModels"
 
@@ -46,8 +43,7 @@ describe("Bayes Classifier", () => {
 		siteDataRepository.procrastinationSites = serialiseListData(
 			procrastinationSiteData
 		)
-		siteDataRepository.productiveSites =
-			serialiseListData(productiveSiteData)
+		siteDataRepository.productiveSites = serialiseListData(productiveSiteData)
 
 		classifierModels = new ClassifierModels(siteDataRepository)
 	})
@@ -60,8 +56,7 @@ describe("Bayes Classifier", () => {
 		}
 
 		// When
-		const isProcrastinationSite =
-			classifierModels.classify(procrastinationSite)
+		const isProcrastinationSite = classifierModels.classify(procrastinationSite)
 
 		expect(isProcrastinationSite).toBe(true)
 	})

@@ -34,34 +34,27 @@ for (const productiveSite of productiveSites) {
 const classifierModels = new ClassifierModels(siteDataRepository)
 
 // In background script
-setListener<SiteStatusRequest, SiteStatusResponse>(
-	(request, _, sendResponse) => {
-		if (request.command == "checkSiteStatus") {
-			try {
-				const seenBefore = siteDataRepository.hasSite(
-					request.serialisedSiteData
-				)
-				const currentSiteData: SiteData = JSON.parse(
-					request.serialisedSiteData
-				)
-				let isProcrastinationSite =
-					classifierModels.classify(currentSiteData)
-				sendResponse({
-					isProcrastinationSite: isProcrastinationSite[0],
-					seenBefore: seenBefore,
-					success: true,
-					debugInfo: isProcrastinationSite[1].toString(),
-				})
-			} catch {
-				console.log("Error parsing site data")
-				sendResponse({
-					success: false,
-					debugInfo: "Error parsing site data",
-				})
-			}
+setListener<SiteStatusRequest, SiteStatusResponse>((request, _, sendResponse) => {
+	if (request.command == "checkSiteStatus") {
+		try {
+			const seenBefore = siteDataRepository.hasSite(request.serialisedSiteData)
+			const currentSiteData: SiteData = JSON.parse(request.serialisedSiteData)
+			let isProcrastinationSite = classifierModels.classify(currentSiteData)
+			sendResponse({
+				isProcrastinationSite: isProcrastinationSite[0],
+				seenBefore: seenBefore,
+				success: true,
+				debugInfo: isProcrastinationSite[1].toString(),
+			})
+		} catch {
+			console.log("Error parsing site data")
+			sendResponse({
+				success: false,
+				debugInfo: "Error parsing site data",
+			})
 		}
 	}
-)
+})
 
 setListener<ModelDataRequest, ModelDataResponse>((request, _, sendResponse) => {
 	if (request.command == "modelDataRequest") {
@@ -72,22 +65,18 @@ setListener<ModelDataRequest, ModelDataResponse>((request, _, sendResponse) => {
 	}
 })
 
-setListener<ClassificationRequest, GenericResponse>(
-	(request, _, sendResponse) => {
-		if (request.command == "addSite") {
-			try {
-				const addingSite: SiteData = JSON.parse(
-					request.serialisedSiteData
-				)
-				siteDataRepository.addSite(addingSite, request.type)
-				sendResponse({ success: true })
-			} catch {
-				console.log("Error parsing site data")
-				sendResponse({
-					success: false,
-					debugInfo: "Error parsing site data",
-				})
-			}
+setListener<ClassificationRequest, GenericResponse>((request, _, sendResponse) => {
+	if (request.command == "addSite") {
+		try {
+			const addingSite: SiteData = JSON.parse(request.serialisedSiteData)
+			siteDataRepository.addSite(addingSite, request.type)
+			sendResponse({ success: true })
+		} catch {
+			console.log("Error parsing site data")
+			sendResponse({
+				success: false,
+				debugInfo: "Error parsing site data",
+			})
 		}
 	}
-)
+})

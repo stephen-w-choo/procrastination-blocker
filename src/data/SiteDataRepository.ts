@@ -12,9 +12,7 @@ export function serialiseListData(
 	return new Set(deserialisedList.map(siteData => JSON.stringify(siteData)))
 }
 
-export function deserialiseSetData(
-	serialised: Set<SerialisedSiteData>
-): Array<SiteData> {
+export function deserialiseSetData(serialised: Set<SerialisedSiteData>): Array<SiteData> {
 	// TODO: can't convert Set to Array directly? This seems inefficient
 	const res: SiteData[] = []
 	serialised.forEach(serialisedSiteData => {
@@ -35,10 +33,7 @@ export class SiteDataRepository {
 	}
 
 	hasSite(site: SerialisedSiteData) {
-		return (
-			this.procrastinationSites.has(site) ||
-			this.productiveSites.has(site)
-		)
+		return this.procrastinationSites.has(site) || this.productiveSites.has(site)
 	}
 
 	private loadStoredSites() {
@@ -107,10 +102,7 @@ export class SiteDataRepository {
 		chrome.storage.local.set({ [key]: true })
 	}
 
-	private removeFromLocalStorageSet(
-		category: string,
-		value: SerialisedSiteData
-	) {
+	private removeFromLocalStorageSet(category: string, value: SerialisedSiteData) {
 		const key = `${SITE_STORAGE_PREFIX}${category}///${value}`
 		chrome.storage.local.remove(key)
 	}

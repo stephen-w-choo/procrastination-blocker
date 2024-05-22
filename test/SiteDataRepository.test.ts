@@ -1,8 +1,5 @@
 import { beforeEach, describe, expect, test } from "@jest/globals"
-import {
-	SiteDataRepository,
-	serialiseListData,
-} from "../src/data/SiteDataRepository"
+import { SiteDataRepository, serialiseListData } from "../src/data/SiteDataRepository"
 import { Category, SiteData } from "../src/data/models/SiteData"
 
 describe("Bayes Classifier", () => {
@@ -42,8 +39,7 @@ describe("Bayes Classifier", () => {
 		siteDataRepository.procrastinationSites = serialiseListData(
 			procrastinationSiteData
 		)
-		siteDataRepository.productiveSites =
-			serialiseListData(productiveSiteData)
+		siteDataRepository.productiveSites = serialiseListData(productiveSiteData)
 	})
 
 	test("Adding an existing SiteData entry should do nothing - it should be stored as a set", () => {
@@ -57,9 +53,7 @@ describe("Bayes Classifier", () => {
 		// When
 		siteDataRepository.addSite(duplicateEntry, Category.procrastination)
 
-		expect(siteDataRepository.procrastinationSiteList.length).toBe(
-			previousLength
-		)
+		expect(siteDataRepository.procrastinationSiteList.length).toBe(previousLength)
 	})
 
 	test("Reclassifying an entry should adjust the lists appropriately", () => {
@@ -70,14 +64,10 @@ describe("Bayes Classifier", () => {
 		}
 		const previousProcrastinationLength =
 			siteDataRepository.procrastinationSiteList.length
-		const previousProductiveLength =
-			siteDataRepository.productiveSiteList.length
+		const previousProductiveLength = siteDataRepository.productiveSiteList.length
 
 		// When
-		siteDataRepository.reclassifySite(
-			procrastinationEntry,
-			Category.procrastination
-		)
+		siteDataRepository.reclassifySite(procrastinationEntry, Category.procrastination)
 
 		// Then
 		expect(siteDataRepository.procrastinationSiteList.length).toBe(

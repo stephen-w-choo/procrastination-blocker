@@ -49,8 +49,6 @@ describe("Bayes Classifier", () => {
 			classifier.predict("I absolutely love this product")["positive"]
 		).toBeGreaterThan(0.5)
 		expect(classifier.predict("Unhappy")["negative"]).toBeGreaterThan(0.5)
-		expect(
-			classifier.predict("Terrible experience")["negative"]
-		).toBeGreaterThan(0.5)
+		expect(classifier.predict("Terrible experience")["negative"]).toBeGreaterThan(0.5)
 	})
 })

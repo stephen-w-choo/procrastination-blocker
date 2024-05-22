@@ -18,8 +18,7 @@ type PopUpProps = {
 export default function PopUp({ seenBefore }: PopUpProps) {
 	const [modelData, setModelData] = useState<ModelDataResponse | null>(null)
 	const [siteDataState, setSiteDataState] = useState<SiteData | null>(null)
-	const [currentSiteCategory, setCurrentSiteCategory] =
-		useState<Category | null>(null)
+	const [currentSiteCategory, setCurrentSiteCategory] = useState<Category | null>(null)
 
 	// initial model setup
 	useEffect(() => {
@@ -33,11 +32,11 @@ export default function PopUp({ seenBefore }: PopUpProps) {
 
 		requestSiteDataUseCase().then(response => {
 			setSiteDataState(JSON.parse(response.serialisedSiteData))
-			requestSiteStatusUseCase(
-				JSON.parse(response.serialisedSiteData)
-			).then(response => {
-				console.log("Site status response", response)
-			})
+			requestSiteStatusUseCase(JSON.parse(response.serialisedSiteData)).then(
+				response => {
+					console.log("Site status response", response)
+				}
+			)
 		})
 	}, [])
 

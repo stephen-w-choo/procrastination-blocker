@@ -9,11 +9,7 @@ export type TopBarIconProps = {
 	onToggle: () => void
 }
 
-export function TopBarDropdownTab({
-	color,
-	isOpen,
-	onToggle,
-}: TopBarIconProps) {
+export function TopBarDropdownTab({ color, isOpen, onToggle }: TopBarIconProps) {
 	return (
 		<Button
 			position="absolute"
@@ -34,9 +30,7 @@ export function TopBarDropdownTab({
 				display="flex"
 				alignItems="center"
 			>
-				<LuBrainCircuit
-					style={{ display: "inline", marginRight: "5px" }}
-				/>
+				<LuBrainCircuit style={{ display: "inline", marginRight: "5px" }} />
 				Training mode
 			</Heading>
 			<ChevronDownIcon
