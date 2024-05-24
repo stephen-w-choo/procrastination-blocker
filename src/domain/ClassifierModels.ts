@@ -60,7 +60,15 @@ export class ClassifierModels {
 		this.domainModel.train(trainingDataSiteDomains)
 	}
 
-	classify(site: SiteData): [number, [number, number]] {
+	classify(site: SiteData): [combined: number, [title: number, domain: number]] {
+		if ( // unable to classify if the model has not been trained
+			this.siteDataRepository.procrastinationSiteList.length === 0 &&
+			this.siteDataRepository.productiveSiteList.length === 0
+		) { // assume that the site is productive
+			return [0, [0, 0]]
+		}
+		
+		// returns probability of non-productive site
 		const titleProbabilities = this.titleModel.predict(site.title)
 		const domainProbabilities = this.domainModel.predict(site.domain)
 
