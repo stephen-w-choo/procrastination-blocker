@@ -1,4 +1,4 @@
-import { Category, SerialisedSiteData, SiteData } from "./models/SiteData"
+import { Category, SerialisedSiteData, SiteData, SiteSeen } from "./models/SiteData"
 
 const SITE_STORAGE_PREFIX = "$SITEDATA"
 
@@ -32,8 +32,14 @@ export class SiteDataRepository {
 		this.loadStoredSites()
 	}
 
-	hasSite(site: SerialisedSiteData) {
-		return this.procrastinationSites.has(site) || this.productiveSites.has(site)
+	hasSite(site: SerialisedSiteData): Category | SiteSeen {
+		if (this.procrastinationSites.has(site)) {
+			return Category.procrastination
+		}
+		if (this.productiveSites.has(site)) {
+			return Category.productive
+		}
+		return SiteSeen.notSeen
 	}
 
 	private loadStoredSites() {
@@ -76,24 +82,38 @@ export class SiteDataRepository {
 		}
 	}
 
-	removeSite(site: SiteData, category: Category) {
-		if (category == Category.productive) {
-			this.productiveSites.delete(serialise(site))
-			this.removeFromLocalStorageSet("productive", serialise(site))
-		} else {
-			this.procrastinationSites.delete(serialise(site))
-			this.removeFromLocalStorageSet("procrastination", serialise(site))
+	removeSite(site: SiteData) {
+		// check which category the site is in
+		const category = this.hasSite(serialise(site))
+
+		if (category == SiteSeen.notSeen) return
+		
+		switch (category) {
+			case Category.productive:
+				this.productiveSites.delete(serialise(site))
+				this.removeFromLocalStorageSet("productive", serialise(site))
+				break
+			case Category.procrastination:
+				this.procrastinationSites.delete(serialise(site))
+				this.removeFromLocalStorageSet("procrastination", serialise(site))
+				break
 		}
 	}
 
 	reclassifySite(site: SiteData, currentCategory: Category) {
-		// feels like there's a smarter way of doing this
-		if (currentCategory == Category.productive) {
-			this.removeSite(site, Category.productive)
-			this.addSite(site, Category.procrastination)
-		} else {
-			this.removeSite(site, Category.procrastination)
-			this.addSite(site, Category.productive)
+		const category = this.hasSite(serialise(site))
+		
+		if (category == SiteSeen.notSeen) return
+
+		this.removeSite(site)
+
+		switch (category) {
+			case Category.productive:
+				this.addSite(site, Category.procrastination)
+				break
+			case Category.procrastination:
+				this.addSite(site, Category.productive)
+				break
 		}
 	}
 

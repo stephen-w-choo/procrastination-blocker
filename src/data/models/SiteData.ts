@@ -3,6 +3,10 @@ export enum Category {
 	procrastination,
 }
 
+export enum SiteSeen {
+	notSeen,
+}
+
 export function catStr(category: Category) {
 	switch (category) {
 		case Category.productive:
