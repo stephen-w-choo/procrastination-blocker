@@ -15,10 +15,16 @@ export function addSiteUseCase(siteType: Category, siteData: SerialisedSiteData)
 	})
 }
 
-export function removeSiteUseCase(siteType: Category, siteData: SerialisedSiteData) {
-	return sendMessage<RepositoryRequest, SiteClassificationResponse>({
+export function removeSiteUseCase(siteData: SerialisedSiteData) {
+	return sendMessage<RepositoryRequest, GenericResponse>({
 		command: "removeSite",
 		serialisedSiteData: siteData,
-		type: siteType,
+	})
+}
+
+export function reclassifySiteUseCase(siteData: SerialisedSiteData) {
+	return sendMessage<RepositoryRequest, GenericResponse>({
+		command: "reclassifySite",
+		serialisedSiteData: siteData,
 	})
 }

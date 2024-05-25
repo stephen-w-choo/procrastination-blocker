@@ -1,33 +1,33 @@
-import { Category } from "../../data/models/SiteData"
+import { Category, SiteSeen } from "../../data/models/SiteData"
 
 // TODO - experiment and see if we can use enums for the commands?
 // Not sure if it will get propelry serialised into a unique string when parsed
 
 // Content/popup to background script
-export type SiteStatusRequest = {
+export type SiteClassificationRequest = {
 	command: "checkSiteStatus"
 	serialisedSiteData: string
 }
 
-export type ClassificationRequest = {
+export type RepositoryRequest = {
 	command: "addSite" | "removeSite" | "reclassifySite"
 	serialisedSiteData: string
-	type: Category
+	type?: Category
 }
 
-export type ModelDataRequest = {
+export type ModelMetricsRequest = {
 	command: "modelDataRequest"
 }
 
-export type ModelDataResponse = {
+export type ModelMetricsResponse = {
 	procrastination: number
 	productive: number
 }
 
 // Background script to content script
-export type SiteStatusResponse = {
+export type SiteClassificationResponse = {
 	isProcrastinationSite?: number
-	seenBefore?: boolean
+	seenBefore?: Category | SiteSeen
 	success: boolean
 	debugInfo?: string
 }
@@ -42,7 +42,7 @@ export type SiteDataResponse = {
 
 export type GenericResponse = {
 	success: boolean
-	debugInfo?: String
+	debugInfo?: string
 }
 
 export type GenericRequest = {

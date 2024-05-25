@@ -9,10 +9,10 @@ import {
 	Text,
 } from "@chakra-ui/react"
 import React from "react"
-import { ModelDataResponse } from "../../messagePassing/base/MessageTypes"
+import { ModelMetricsResponse } from "../../messagePassing/base/MessageTypes"
 
 type ModelDataCardProps = {
-	modelData: ModelDataResponse | null
+	modelData: ModelMetricsResponse | null
 }
 
 export function ModelDataCard({ modelData }: ModelDataCardProps) {

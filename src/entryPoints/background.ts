@@ -18,13 +18,9 @@ class BackgroundProcess {
 	classifierModels: ClassifierModels
 
 	constructor() {
-		let siteDataRepository = new SiteDataRepository()
-
-		this.siteDataRepository = siteDataRepository
-
-		this.seedRepository()
-
-		this.classifierModels = new ClassifierModels(siteDataRepository)
+		this.siteDataRepository = new SiteDataRepository()
+		// this.seedRepository()
+		this.classifierModels = new ClassifierModels(this.siteDataRepository)
 	}
 
 	setListeners() {
@@ -48,15 +44,18 @@ class BackgroundProcess {
 				try {
 					const seenBefore = this.siteDataRepository.hasSite(request.serialisedSiteData)
 					const currentSiteData: SiteData = JSON.parse(request.serialisedSiteData)
-					let isProcrastinationSite = this.classifierModels.classify(currentSiteData)
+					console.log("Current site data", currentSiteData)
+					// let isProcrastinationSite = this.classifierModels.classify(currentSiteData)
 					sendResponse({
-						isProcrastinationSite: isProcrastinationSite[0],
+						// isProcrastinationSite: isProcrastinationSite[0],
+						isProcrastinationSite: 0,
 						seenBefore: seenBefore,
 						success: true,
-						debugInfo: isProcrastinationSite[1].toString(),
+						// debugInfo: isProcrastinationSite[1].toString(),
 					})
 				} catch {
 					console.log("Error parsing site data")
+					console.log(request)
 					sendResponse({
 						success: false,
 						debugInfo: "Error parsing site data",
@@ -81,8 +80,37 @@ class BackgroundProcess {
 		setListener<RepositoryRequest, GenericResponse>((request, _, sendResponse) => {
 			if (request.command == "addSite") {
 				try {
+					if (request.type == undefined) throw new Error("No site type provided")
 					const addingSite: SiteData = JSON.parse(request.serialisedSiteData)
 					this.siteDataRepository.addSite(addingSite, request.type)
+					sendResponse({ success: true })
+				} catch {
+					console.log("Error parsing site data")
+					sendResponse({
+						success: false,
+						debugInfo: "Error parsing site data",
+					})
+				}
+			}
+
+			if (request.command == "removeSite") {
+				try {
+					const removingSite: SiteData = JSON.parse(request.serialisedSiteData)
+					this.siteDataRepository.removeSite(removingSite)
+					sendResponse({ success: true })
+				} catch {
+					console.log("Error parsing site data")
+					sendResponse({
+						success: false,
+						debugInfo: "Error parsing site data",
+					})
+				}
+			}
+
+			if (request.command == "reclassifySite") {
+				try {
+					const reclassifyingSite: SiteData = JSON.parse(request.serialisedSiteData)
+					this.siteDataRepository.reclassifySite(reclassifyingSite)
 					sendResponse({ success: true })
 				} catch {
 					console.log("Error parsing site data")

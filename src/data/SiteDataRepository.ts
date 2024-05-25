@@ -73,17 +73,19 @@ export class SiteDataRepository {
 	}
 
 	addSite(site: SiteData, category: Category) {
-		if (category == Category.productive) {
-			this.productiveSites.add(serialise(site))
-			this.addToLocalStorageSet("productive", serialise(site))
-		} else {
-			this.procrastinationSites.add(serialise(site))
-			this.addToLocalStorageSet("procrastination", serialise(site))
+		switch (category) {
+			case Category.productive:
+				this.productiveSites.add(serialise(site))
+				this.addToLocalStorageSet("productive", serialise(site))
+				break
+			case Category.procrastination:
+				this.procrastinationSites.add(serialise(site))
+				this.addToLocalStorageSet("procrastination", serialise(site))
+				break
 		}
 	}
 
 	removeSite(site: SiteData) {
-		// check which category the site is in
 		const category = this.hasSite(serialise(site))
 
 		if (category == SiteSeen.notSeen) return
@@ -100,18 +102,18 @@ export class SiteDataRepository {
 		}
 	}
 
-	reclassifySite(site: SiteData, currentCategory: Category) {
+	reclassifySite(site: SiteData) {
 		const category = this.hasSite(serialise(site))
 		
-		if (category == SiteSeen.notSeen) return
-
-		this.removeSite(site)
-
 		switch (category) {
+			case SiteSeen.notSeen:
+				break
 			case Category.productive:
+				this.removeSite(site)
 				this.addSite(site, Category.procrastination)
 				break
 			case Category.procrastination:
+				this.removeSite(site)
 				this.addSite(site, Category.productive)
 				break
 		}

@@ -1,114 +1,112 @@
 import { Box, Button, Stack, Text } from "@chakra-ui/react"
 import React, { useEffect, useState } from "react"
-import { Category, SiteData } from "../../data/models/SiteData"
-import { ModelDataResponse } from "../../messagePassing/base/MessageTypes"
-import { addSiteUseCase } from "../../messagePassing/classifySiteUseCases"
+import { Category, SiteData, SiteSeen } from "../../data/models/SiteData"
+import { GenericResponse, ModelMetricsResponse, SiteClassificationResponse } from "../../messagePassing/base/MessageTypes"
+import { addSiteUseCase, reclassifySiteUseCase, removeSiteUseCase } from "../../messagePassing/repositoryUseCases"
 import {
-	requestModelDataUseCase,
-	requestSiteStatusUseCase,
-} from "../../messagePassing/requestModelDataUseCases"
+	requestModelMetrics,
+} from "../../messagePassing/classificationModelUseCases"
+import { requestSiteClassification } from "../../messagePassing/classificationModelUseCases"
 import { requestSiteDataUseCase } from "../../messagePassing/requestSiteDataUseCases"
 import { ModelDataCard } from "./ModelDataCard"
+import { RepositoryClassificationBox } from "./RepositoryClassificationBox"
 
-type PopUpProps = {
-	siteData: SiteData | null
-	seenBefore: boolean
-}
 
-export default function PopUp({ seenBefore }: PopUpProps) {
-	const [modelData, setModelData] = useState<ModelDataResponse | null>(null)
+export default function PopUp() {
+	const [modelMetrics, setModelMetrics] = useState<ModelMetricsResponse | null>(null)
 	const [siteDataState, setSiteDataState] = useState<SiteData | null>(null)
-	const [currentSiteCategory, setCurrentSiteCategory] = useState<Category | null>(null)
+	const [siteCategory, setSiteCategory] = useState<Category | SiteSeen | null>(null)
+	const [siteClassificationState, setSiteClassificationState] = useState<Category | null>(null)
 
 	// initial model setup
 	useEffect(() => {
-		requestModelDataUseCase()
+		updateModelMetrics()
+		updateSiteDataState()
+	}, [])
+
+	const updateSiteDataState = () => {
+		requestSiteDataUseCase().then(response => {
+			const siteData: SiteData = JSON.parse(response.serialisedSiteData)
+			setSiteDataState(siteData)
+			updateSiteClassificationState(siteData)
+		})
+	}
+
+	const updateModelMetrics = () => {
+		requestModelMetrics()
 			.then(response => {
-				setModelData(response)
+				setModelMetrics(response)
 			})
 			.catch(error => {
 				console.error("Error requesting model data", error)
 			})
+	}
 
-		requestSiteDataUseCase().then(response => {
-			setSiteDataState(JSON.parse(response.serialisedSiteData))
-			requestSiteStatusUseCase(JSON.parse(response.serialisedSiteData)).then(
-				response => {
-					console.log("Site status response", response)
-				}
-			)
+	const updateSiteClassificationState = (siteData: SiteData) => {
+		if (siteData.domain === undefined) { return }
+
+		requestSiteClassification(siteData).then(response => {
+			console.log("Response from background script:", response)
+			if (response.seenBefore !== undefined)
+				setSiteCategory(response.seenBefore)
+			// setSiteClassificationState(response.category) TODO
 		})
-	}, [])
+	}
 
-	const incrementModelData = (category: "procrastination" | "productive") => {
-		if (modelData !== null) {
-			setModelData({
-				...modelData,
-				[category]: modelData[category] + 1,
+	const addSite = (category: Category) => {
+		addSiteUseCase(category, JSON.stringify(siteDataState))
+			.then(response => {
+				handleRepositoryChange(response)
 			})
+			.catch(() => {
+				setModelMetrics(null)
+			})
+	}
+
+	const removeSite = () => {
+		if (siteCategory !== null && siteCategory !== SiteSeen.notSeen)
+			removeSiteUseCase(JSON.stringify(siteDataState))
+				.then(response => {
+					handleRepositoryChange(response)
+				})
+				.catch(() => {
+					setModelMetrics(null)
+				})
+	}
+
+	const reclassifySite = () => {
+		reclassifySiteUseCase(JSON.stringify(siteDataState))
+			.then(response => {
+				handleRepositoryChange(response)
+			})
+			.catch(() => {
+				setModelMetrics(null)
+			})
+	}
+
+	const handleRepositoryChange = (response: GenericResponse) => {
+		if (response.success === false || response.success === undefined) {
+			throw new Error(response.debugInfo)
 		}
-	}
-
-	const addProcrastinationSite = () => {
-		addSiteUseCase(Category.procrastination, JSON.stringify(siteDataState))
-			.then(response => {
-				console.log("Response", response)
-				if (response.success) {
-					incrementModelData("procrastination")
-				} else {
-					setModelData(null)
-				}
-			})
-			.catch(() => {
-				setModelData(null)
-			})
-	}
-
-	const addProductiveSite = () => {
-		addSiteUseCase(Category.productive, JSON.stringify(siteDataState))
-			.then(response => {
-				console.log("Response", response)
-				if (response.success) {
-					incrementModelData("productive")
-				} else {
-					setModelData(null)
-				}
-			})
-			.catch(() => {
-				setModelData(null)
-			})
+		updateModelMetrics()
+		updateSiteClassificationState(siteDataState!)
 	}
 
 	return (
 		<Box padding={4}>
-			<ModelDataCard modelData={modelData} />
+			<ModelDataCard modelData={modelMetrics} />
 			{siteDataState ? (
-				<Box flex={1}>
-					<Stack>
-						<Button
-							onClick={addProcrastinationSite}
-							width="100%"
-							colorScheme="red"
-							background="white"
-							variant="outline"
-							textAlign={"left"}
-						>
-							<Text>Mark this site as non-productive</Text>
-						</Button>
-						<Button
-							onClick={addProductiveSite}
-							width="100%"
-							colorScheme="green"
-							background="white"
-							variant="outline"
-						>
-							<Text>Mark this site as productive</Text>
-						</Button>
-					</Stack>
-				</Box>
+				<RepositoryClassificationBox
+					siteSeenBefore={siteCategory}
+					addProductiveSite={() => addSite(Category.productive)}
+					addProcrastinationSite={() => addSite(Category.procrastination)}
+					removeSite={removeSite}
+					reclassifySite={reclassifySite}
+				/>
 			) : (
-				<Box>
-					<Text>Site data not available</Text>
+				<Box flex={1} justifyContent="center">
+					<Text>Error: we can't seem to get the data about the current page.</Text>
+					<Text>You might need to refresh the page.</Text>
 				</Box>
 			)}
 		</Box>

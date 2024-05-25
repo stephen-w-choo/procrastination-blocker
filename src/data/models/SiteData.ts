@@ -1,19 +1,10 @@
 export enum Category {
-	productive,
-	procrastination,
+	productive = "productive",
+	procrastination = "procrastination",
 }
 
 export enum SiteSeen {
-	notSeen,
-}
-
-export function catStr(category: Category) {
-	switch (category) {
-		case Category.productive:
-			return "productive"
-		case Category.procrastination:
-			return "procrastination"
-	}
+	notSeen = "notSeen",
 }
 
 export type SerialisedSiteData = string
