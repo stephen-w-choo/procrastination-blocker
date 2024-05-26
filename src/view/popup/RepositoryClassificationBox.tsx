@@ -1,6 +1,6 @@
 import { Box, Button, Stack, Text } from "@chakra-ui/react"
 import React from "react"
-import { Category, SiteSeen } from "../../data/models/SiteData"
+import { Category, opposite, SiteSeen } from "../../data/models/SiteData"
 
 type RepositoryClassificationBoxProps = {
     siteSeenBefore: Category | SiteSeen | null
@@ -28,6 +28,7 @@ export function RepositoryClassificationBox({
                 </>)
             case SiteSeen.notSeen:
                 return (<>
+                    <Text>This site has not been seen before</Text>
                     <Button
                         onClick={addProcrastinationSite}
                         width="100%"
@@ -51,6 +52,7 @@ export function RepositoryClassificationBox({
             case Category.productive: 
             case Category.procrastination:
                 return (<>
+                    <Text>This site has previously been categorised as {opposite(siteSeenBefore)}</Text>
                     <Button
                         onClick={removeSite}
                         width="100%"
@@ -58,7 +60,7 @@ export function RepositoryClassificationBox({
                         background="white"
                         variant="outline"
                         textAlign={"left"}
-                        >
+                    >
                         <Text>Remove site</Text>
                     </Button>
                     <Button
@@ -76,6 +78,9 @@ export function RepositoryClassificationBox({
 
     return (
         <Box flex={1}>
+            <Text>
+                Currently on: "{window.location.hostname}"
+            </Text>
             <Stack>
                 <ClassificationOptions />
             </Stack>

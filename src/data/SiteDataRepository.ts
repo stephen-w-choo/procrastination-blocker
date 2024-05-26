@@ -24,6 +24,7 @@ export function deserialiseSetData(serialised: Set<SerialisedSiteData>): Array<S
 export class SiteDataRepository {
 	procrastinationSites: Set<SerialisedSiteData>
 	productiveSites: Set<SerialisedSiteData>
+	changesSinceLastSync = 0
 
 	constructor() {
 		// TODO: Load data from Chrome storage
@@ -40,6 +41,14 @@ export class SiteDataRepository {
 			return Category.productive
 		}
 		return SiteSeen.notSeen
+	}
+
+	isDataEmpty(): boolean {
+		return this.procrastinationSites.size === 0 || this.productiveSites.size === 0
+	}
+
+	resetChangesSinceLastSync() {
+		this.changesSinceLastSync = 0
 	}
 
 	private loadStoredSites() {
@@ -83,6 +92,7 @@ export class SiteDataRepository {
 				this.addToLocalStorageSet("procrastination", serialise(site))
 				break
 		}
+		this.changesSinceLastSync++
 	}
 
 	removeSite(site: SiteData) {
@@ -100,6 +110,8 @@ export class SiteDataRepository {
 				this.removeFromLocalStorageSet("procrastination", serialise(site))
 				break
 		}
+
+		this.changesSinceLastSync++
 	}
 
 	reclassifySite(site: SiteData) {
@@ -111,10 +123,12 @@ export class SiteDataRepository {
 			case Category.productive:
 				this.removeSite(site)
 				this.addSite(site, Category.procrastination)
+				this.changesSinceLastSync--
 				break
 			case Category.procrastination:
 				this.removeSite(site)
 				this.addSite(site, Category.productive)
+				this.changesSinceLastSync--
 				break
 		}
 	}

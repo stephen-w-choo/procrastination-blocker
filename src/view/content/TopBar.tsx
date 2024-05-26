@@ -12,13 +12,13 @@ import {
 } from "@chakra-ui/react"
 import React, { useState } from "react"
 import { Category } from "../../data/models/SiteData"
-import { SiteStatusResponse } from "../../messagePassing/base/MessageTypes"
-import { addSiteUseCase } from "../../messagePassing/classifySiteUseCases"
+import { SiteClassificationResponse } from "../../messagePassing/base/MessageTypes"
+import { addSiteUseCase } from "../../messagePassing/repositoryUseCases"
 import { TopBarDropdownTab } from "./TopBarDropdownTab"
 
 export type TopBarProps = {
 	serialisedSiteData: string
-	siteStatus: SiteStatusResponse
+	siteStatus: SiteClassificationResponse
 }
 
 export function TopBar({ serialisedSiteData, siteStatus }: TopBarProps) {

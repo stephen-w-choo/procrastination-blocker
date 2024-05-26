@@ -21,7 +21,12 @@ export type ModelMetricsRequest = {
 
 export type ModelMetricsResponse = {
 	procrastination: number
-	productive: number
+	productive: number,
+	changesSinceLastSync: number
+}
+
+export type ModelSyncRequest = {
+	command: "syncModel"
 }
 
 // Background script to content script
@@ -30,6 +35,7 @@ export type SiteClassificationResponse = {
 	seenBefore?: Category | SiteSeen
 	success: boolean
 	debugInfo?: string
+	modelUntrained?: boolean
 }
 
 export type SiteDataRequest = {

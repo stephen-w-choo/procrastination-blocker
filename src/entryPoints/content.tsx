@@ -10,9 +10,9 @@ import {
 	SiteDataRequest,
 	SiteDataResponse,
 } from "../messagePassing/base/MessageTypes"
-import { requestSiteClassification } from "../messagePassing/classificationModelUseCases"
-import { TopBar } from "../view/content/TopBar"
 import { setListener } from "../messagePassing/base/setListener"
+import { requestSiteClassificationUseCase } from "../messagePassing/classificationModelUseCases"
+import { TopBar } from "../view/content/TopBar"
 
 class ContentProcess {
 	currentSiteData: SiteData
@@ -40,7 +40,7 @@ class ContentProcess {
 	}
 
 	classifySiteAndRenderTopBar() {
-		requestSiteClassification(this.currentSiteData)
+		requestSiteClassificationUseCase(this.currentSiteData)
 			.then((siteClassificationData) => {
 				this.conditionallyRenderTopBar(siteClassificationData)
 			})

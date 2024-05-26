@@ -1,10 +1,11 @@
 import { SiteDataRepository } from "../data/SiteDataRepository"
 import { Category, SiteData } from "../data/models/SiteData"
-import { ClassifierModels } from "../domain/ClassifierModels"
+import { SiteClassifier } from "../domain/SiteClassifier"
 import {
 	GenericResponse,
 	ModelMetricsRequest,
 	ModelMetricsResponse,
+	ModelSyncRequest,
 	RepositoryRequest,
 	SiteClassificationRequest,
 	SiteClassificationResponse,
@@ -15,18 +16,19 @@ import productiveSites from "../productiveSitesSeed"
 
 class BackgroundProcess {
 	siteDataRepository: SiteDataRepository
-	classifierModels: ClassifierModels
+	classifierModels: SiteClassifier
 
 	constructor() {
 		this.siteDataRepository = new SiteDataRepository()
 		// this.seedRepository()
-		this.classifierModels = new ClassifierModels(this.siteDataRepository)
+		this.classifierModels = new SiteClassifier(this.siteDataRepository)
 	}
 
 	setListeners() {
 		this.setSiteClassificationListener()
 		this.setModelMetricsListener()
 		this.setRepositoryRequestListener()
+		this.setModelSyncRequestListener()
 	}
 
 	seedRepository() {
@@ -38,27 +40,33 @@ class BackgroundProcess {
 		}
 	}
 
-	setSiteClassificationListener() {
+	setSiteClassificationListener() { // TODO: Refactor this into two separate listeners
 		setListener<SiteClassificationRequest, SiteClassificationResponse>((request, _, sendResponse) => {
 			if (request.command == "checkSiteStatus") {
 				try {
 					const seenBefore = this.siteDataRepository.hasSite(request.serialisedSiteData)
 					const currentSiteData: SiteData = JSON.parse(request.serialisedSiteData)
 					console.log("Current site data", currentSiteData)
-					// let isProcrastinationSite = this.classifierModels.classify(currentSiteData)
-					sendResponse({
-						// isProcrastinationSite: isProcrastinationSite[0],
-						isProcrastinationSite: 0,
-						seenBefore: seenBefore,
-						success: true,
-						// debugInfo: isProcrastinationSite[1].toString(),
-					})
-				} catch {
-					console.log("Error parsing site data")
+					let isProcrastinationSite = this.classifierModels.classify(currentSiteData)
+					if (isProcrastinationSite !== null) {
+						sendResponse({
+							isProcrastinationSite: isProcrastinationSite[0],
+							seenBefore: seenBefore,
+							success: true,
+							debugInfo: isProcrastinationSite[1].toString(),
+						})
+					} else {
+						sendResponse({
+							seenBefore: seenBefore,
+							success: true,
+							modelUntrained: true,
+						})
+					}
+				} catch (error) {
+					console.log(error)
 					console.log(request)
 					sendResponse({
 						success: false,
-						debugInfo: "Error parsing site data",
 					})
 				}
 			}
@@ -71,7 +79,17 @@ class BackgroundProcess {
 				sendResponse({
 					procrastination: this.siteDataRepository.procrastinationSiteList.length,
 					productive: this.siteDataRepository.productiveSiteList.length,
+					changesSinceLastSync: this.siteDataRepository.changesSinceLastSync,
 				})
+			}
+		})
+	}
+
+	setModelSyncRequestListener() {
+		setListener<ModelSyncRequest, GenericResponse>((request, _, sendResponse) => {
+			if (request.command == "syncModel") {
+				this.classifierModels.syncModels()
+				sendResponse({ success: true })
 			}
 		})
 	}

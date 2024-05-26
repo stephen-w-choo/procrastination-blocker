@@ -7,7 +7,7 @@ const NON_EXISTENT_TOKEN = "///nonexistent///"
 // TODO: Current implementation requires retraining on the whole set with additions
 // Naive Bayes can actually be updated incrementally - potentially look into this
 
-export default class NaiveBayesClassifier {
+export default class NaiveBayesModel {
 	// holds all the unique tokens in the training data
 	private vocabulary: Set<Token> = new Set()
 

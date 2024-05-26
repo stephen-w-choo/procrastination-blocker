@@ -1,20 +1,21 @@
 import { SiteDataRepository } from "../data/SiteDataRepository"
 import { SiteData } from "../data/models/SiteData"
-import NaiveBayesClassifier from "./bayesClassifier"
+import NaiveBayesModel from "./NaiveBayesModel"
 import { TextData } from "./models/TextData"
 
-export class ClassifierModels {
+export class SiteClassifier {
 	private siteDataRepository: SiteDataRepository
-	titleModel: NaiveBayesClassifier
-	domainModel: NaiveBayesClassifier
+	titleModel: NaiveBayesModel
+	domainModel: NaiveBayesModel
+	modelsInvalid: boolean = false
 
 	// How likely a site has to be for procrastination before we block it
 	threshold: number = 0.6
 
 	constructor(siteDataRepository: SiteDataRepository) {
 		this.siteDataRepository = siteDataRepository
-		this.titleModel = new NaiveBayesClassifier()
-		this.domainModel = new NaiveBayesClassifier()
+		this.titleModel = new NaiveBayesModel()
+		this.domainModel = new NaiveBayesModel()
 		this.syncModels()
 	}
 
@@ -26,9 +27,6 @@ export class ClassifierModels {
         TODO: Consider saving this to disk (Chrome storage) so that it can be 
         retrieved without needing to retrain the model each time the background 
         process re-initialises. The model can be saved as JSON.
-
-        When retrieving the model from storage, we can do a simple length check 
-        to verify that the models are synced with existing data
         */
 
 		let trainingDataSiteTitles: TextData[] = []
@@ -58,14 +56,15 @@ export class ClassifierModels {
 
 		this.titleModel.train(trainingDataSiteTitles)
 		this.domainModel.train(trainingDataSiteDomains)
+
+		// If the data is empty on either side, the model is invalid
+		this.modelsInvalid = this.siteDataRepository.isDataEmpty()
+		this.siteDataRepository.resetChangesSinceLastSync()
 	}
 
-	classify(site: SiteData): [combined: number, [title: number, domain: number]] {
-		if ( // unable to classify if the model has not been trained
-			this.siteDataRepository.procrastinationSiteList.length === 0 &&
-			this.siteDataRepository.productiveSiteList.length === 0
-		) { // assume that the site is productive
-			return [0, [0, 0]]
+	classify(site: SiteData): [combined: number, [title: number, domain: number]] | null {
+		if (this.modelsInvalid === true) { 
+			return null
 		}
 		
 		// returns probability of non-productive site

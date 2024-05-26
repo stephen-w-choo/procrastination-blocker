@@ -1,27 +1,32 @@
 import { SiteData } from "../data/models/SiteData"
-import { SiteDataRepository } from "../data/SiteDataRepository";
-import { ClassifierModels } from "../domain/ClassifierModels";
 import {
+    GenericResponse,
 	ModelMetricsRequest,
 	ModelMetricsResponse,
+    ModelSyncRequest,
     SiteClassificationRequest,
     SiteClassificationResponse,
 } from "./base/MessageTypes"
 import { sendMessage } from "./base/sendMessage"
-import { setListener } from "./base/setListener";
 
 // Messages
-export function requestModelMetrics(): Promise<ModelMetricsResponse> {
+export function requestModelMetricsUseCase(): Promise<ModelMetricsResponse> {
 	return sendMessage<ModelMetricsRequest, ModelMetricsResponse>({
 		command: "modelDataRequest",
 	})
 }
 
-export function requestSiteClassification(
+export function requestSiteClassificationUseCase(
     siteData: SiteData
 ): Promise<SiteClassificationResponse> {
     return sendMessage<SiteClassificationRequest, SiteClassificationResponse>({
         command: "checkSiteStatus",
         serialisedSiteData: JSON.stringify(siteData),
     });
+}
+
+export function requestModelSyncUseCase() {
+    return sendMessage<ModelSyncRequest, GenericResponse>(
+        { command: "syncModel" }
+    )
 }
