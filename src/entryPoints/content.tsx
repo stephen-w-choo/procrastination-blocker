@@ -6,12 +6,14 @@ import React from "react"
 import { createRoot, Root } from "react-dom/client"
 import { SiteData } from "../data/models/SiteData"
 import {
+	CheckSiteSeenResponse,
 	SiteClassificationResponse,
 	SiteDataRequest,
 	SiteDataResponse,
 } from "../messagePassing/base/MessageTypes"
 import { setListener } from "../messagePassing/base/setListener"
 import { requestSiteClassificationUseCase } from "../messagePassing/classificationModelUseCases"
+import { checkSiteSeenUseCase } from "../messagePassing/repositoryUseCases"
 import { TopBar } from "../view/content/TopBar"
 
 class ContentProcess {
@@ -30,25 +32,29 @@ class ContentProcess {
 
 	setSiteDataRequestListener() {
 		const serialisedSiteData = this.serialisedSiteData
-		setListener<SiteDataRequest, SiteDataResponse>(
-			(request, _, sendResponse) => {
-				if (request.command === "siteDataRequest") {
-					sendResponse({serialisedSiteData})
-				}
+		setListener<SiteDataRequest, SiteDataResponse>((request, _, sendResponse) => {
+			if (request.command === "siteDataRequest") {
+				sendResponse({ serialisedSiteData })
+			}
+		})
+	}
+
+	classifySiteAndRenderTopBar() {
+		requestSiteClassificationUseCase(this.currentSiteData).then(
+			siteClassificationData => {
+				checkSiteSeenUseCase(this.serialisedSiteData).then(siteSeen => {
+					this.conditionallyRenderTopBar(siteClassificationData, siteSeen)
+				})
 			}
 		)
 	}
 
-	classifySiteAndRenderTopBar() {
-		requestSiteClassificationUseCase(this.currentSiteData)
-			.then((siteClassificationData) => {
-				this.conditionallyRenderTopBar(siteClassificationData)
-			})
-	}
-
-	conditionallyRenderTopBar(siteStatus: SiteClassificationResponse) {
+	conditionallyRenderTopBar(
+		siteStatus: SiteClassificationResponse,
+		siteSeen: CheckSiteSeenResponse
+	) {
 		console.log("Response from background script:", siteStatus)
-		if (siteStatus.success && siteStatus.seenBefore != undefined) {
+		if (siteStatus.success != undefined) {
 			if (
 				siteStatus.isProcrastinationSite != undefined &&
 				siteStatus.isProcrastinationSite > this.THRESHOLD
@@ -67,32 +73,35 @@ class ContentProcess {
 			container: shadowRoot,
 		})
 		const root = createRoot(shadowHost)
-	
+
 		return [root, cache]
 	}
-	
+
 	createNormalDom(): Root {
 		const normalHost = document.createElement("div")
 		document.body.insertBefore(normalHost, document.body.firstChild)
 		const normalRoot = createRoot(normalHost)
-	
+
 		return normalRoot
 	}
-	
+
 	renderTopBar(siteStatus: SiteClassificationResponse, shadowDom: Boolean = false) {
 		if (shadowDom) {
 			// const [root, cache] = createShadowDom()
 			const root = this.createNormalDom()
-	
+
 			root.render(
 				// <CacheProvider value={cache}>
 				<ChakraProvider>
-					<TopBar siteStatus={siteStatus} serialisedSiteData={this.serialisedSiteData} />
+					<TopBar
+						siteStatus={siteStatus}
+						serialisedSiteData={this.serialisedSiteData}
+					/>
 				</ChakraProvider>
 				// </CacheProvider>
 			)
 		}
-	}	
+	}
 }
 
 const contentProcess = new ContentProcess()

@@ -15,13 +15,22 @@ export type RepositoryRequest = {
 	type?: Category
 }
 
+export type CheckSiteSeenRequest = {
+	command: "checkSiteSeen"
+	serialisedSiteData: string
+}
+
+export type CheckSiteSeenResponse = {
+	seenBefore: Category | SiteSeen
+}
+
 export type ModelMetricsRequest = {
 	command: "modelDataRequest"
 }
 
 export type ModelMetricsResponse = {
 	procrastination: number
-	productive: number,
+	productive: number
 	changesSinceLastSync: number
 }
 
@@ -32,7 +41,6 @@ export type ModelSyncRequest = {
 // Background script to content script
 export type SiteClassificationResponse = {
 	isProcrastinationSite?: number
-	seenBefore?: Category | SiteSeen
 	success: boolean
 	debugInfo?: string
 	modelUntrained?: boolean

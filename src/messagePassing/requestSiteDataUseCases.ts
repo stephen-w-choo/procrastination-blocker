@@ -11,11 +11,9 @@ export function requestSiteDataUseCase(): Promise<SiteDataResponse> {
 
 export function setSiteDataRequestListener(siteData: SiteData) {
 	const serialisedSiteData = JSON.stringify(siteData)
-	setListener<SiteDataRequest, SiteDataResponse>(
-		(request, _, sendResponse) => {
-			if (request.command === "siteDataRequest") {
-				sendResponse({serialisedSiteData})
-			}
+	setListener<SiteDataRequest, SiteDataResponse>((request, _, sendResponse) => {
+		if (request.command === "siteDataRequest") {
+			sendResponse({ serialisedSiteData })
 		}
-	)
+	})
 }

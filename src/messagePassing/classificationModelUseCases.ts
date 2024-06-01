@@ -1,11 +1,11 @@
 import { SiteData } from "../data/models/SiteData"
 import {
-    GenericResponse,
+	GenericResponse,
 	ModelMetricsRequest,
 	ModelMetricsResponse,
-    ModelSyncRequest,
-    SiteClassificationRequest,
-    SiteClassificationResponse,
+	ModelSyncRequest,
+	SiteClassificationRequest,
+	SiteClassificationResponse,
 } from "./base/MessageTypes"
 import { sendMessage } from "./base/sendMessage"
 
@@ -17,16 +17,14 @@ export function requestModelMetricsUseCase(): Promise<ModelMetricsResponse> {
 }
 
 export function requestSiteClassificationUseCase(
-    siteData: SiteData
+	siteData: SiteData
 ): Promise<SiteClassificationResponse> {
-    return sendMessage<SiteClassificationRequest, SiteClassificationResponse>({
-        command: "checkSiteStatus",
-        serialisedSiteData: JSON.stringify(siteData),
-    });
+	return sendMessage<SiteClassificationRequest, SiteClassificationResponse>({
+		command: "checkSiteStatus",
+		serialisedSiteData: JSON.stringify(siteData),
+	})
 }
 
 export function requestModelSyncUseCase() {
-    return sendMessage<ModelSyncRequest, GenericResponse>(
-        { command: "syncModel" }
-    )
+	return sendMessage<ModelSyncRequest, GenericResponse>({ command: "syncModel" })
 }

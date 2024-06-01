@@ -1,8 +1,9 @@
 import { Category, SerialisedSiteData } from "../data/models/SiteData"
 import {
-	RepositoryRequest,
+	CheckSiteSeenRequest,
+	CheckSiteSeenResponse,
 	GenericResponse,
-	SiteClassificationResponse,
+	RepositoryRequest,
 } from "./base/MessageTypes"
 import { sendMessage } from "./base/sendMessage"
 
@@ -25,6 +26,13 @@ export function removeSiteUseCase(siteData: SerialisedSiteData) {
 export function reclassifySiteUseCase(siteData: SerialisedSiteData) {
 	return sendMessage<RepositoryRequest, GenericResponse>({
 		command: "reclassifySite",
+		serialisedSiteData: siteData,
+	})
+}
+
+export function checkSiteSeenUseCase(siteData: SerialisedSiteData) {
+	return sendMessage<CheckSiteSeenRequest, CheckSiteSeenResponse>({
+		command: "checkSiteSeen",
 		serialisedSiteData: siteData,
 	})
 }

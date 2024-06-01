@@ -2,6 +2,8 @@ import { SiteDataRepository } from "../data/SiteDataRepository"
 import { Category, SiteData } from "../data/models/SiteData"
 import { SiteClassifier } from "../domain/SiteClassifier"
 import {
+	CheckSiteSeenRequest,
+	CheckSiteSeenResponse,
 	GenericResponse,
 	ModelMetricsRequest,
 	ModelMetricsResponse,
@@ -29,6 +31,7 @@ class BackgroundProcess {
 		this.setModelMetricsListener()
 		this.setRepositoryRequestListener()
 		this.setModelSyncRequestListener()
+		this.setCheckSiteSeenListener()
 	}
 
 	seedRepository() {
@@ -40,49 +43,70 @@ class BackgroundProcess {
 		}
 	}
 
-	setSiteClassificationListener() { // TODO: Refactor this into two separate listeners
-		setListener<SiteClassificationRequest, SiteClassificationResponse>((request, _, sendResponse) => {
-			if (request.command == "checkSiteStatus") {
-				try {
-					const seenBefore = this.siteDataRepository.hasSite(request.serialisedSiteData)
-					const currentSiteData: SiteData = JSON.parse(request.serialisedSiteData)
-					console.log("Current site data", currentSiteData)
-					let isProcrastinationSite = this.classifierModels.classify(currentSiteData)
-					if (isProcrastinationSite !== null) {
+	setSiteClassificationListener() {
+		setListener<SiteClassificationRequest, SiteClassificationResponse>(
+			(request, _, sendResponse) => {
+				if (request.command == "checkSiteStatus") {
+					try {
+						const currentSiteData: SiteData = JSON.parse(
+							request.serialisedSiteData
+						)
+						console.log("Current site data", currentSiteData)
+						let isProcrastinationSite =
+							this.classifierModels.classify(currentSiteData)
+						if (isProcrastinationSite !== null) {
+							sendResponse({
+								isProcrastinationSite: isProcrastinationSite[0],
+								success: true,
+								debugInfo: isProcrastinationSite[1].toString(),
+							})
+						} else {
+							sendResponse({
+								success: true,
+								modelUntrained: true,
+							})
+						}
+					} catch (error) {
+						console.log(error)
+						console.log(request)
 						sendResponse({
-							isProcrastinationSite: isProcrastinationSite[0],
-							seenBefore: seenBefore,
-							success: true,
-							debugInfo: isProcrastinationSite[1].toString(),
-						})
-					} else {
-						sendResponse({
-							seenBefore: seenBefore,
-							success: true,
-							modelUntrained: true,
+							success: false,
 						})
 					}
-				} catch (error) {
-					console.log(error)
-					console.log(request)
-					sendResponse({
-						success: false,
-					})
 				}
 			}
-		})
+		)
+	}
+
+	setCheckSiteSeenListener() {
+		setListener<CheckSiteSeenRequest, CheckSiteSeenResponse>(
+			(request, _, sendResponse) => {
+				console.log("Checking site seen")
+				if (request.command == "checkSiteSeen") {
+					const seenBefore = this.siteDataRepository.hasSite(
+						request.serialisedSiteData
+					)
+					console.log("Site seen before", seenBefore)
+					sendResponse({ seenBefore: seenBefore })
+				}
+			}
+		)
 	}
 
 	setModelMetricsListener() {
-		setListener<ModelMetricsRequest, ModelMetricsResponse>((request, _, sendResponse) => {
-			if (request.command == "modelDataRequest") {
-				sendResponse({
-					procrastination: this.siteDataRepository.procrastinationSiteList.length,
-					productive: this.siteDataRepository.productiveSiteList.length,
-					changesSinceLastSync: this.siteDataRepository.changesSinceLastSync,
-				})
+		setListener<ModelMetricsRequest, ModelMetricsResponse>(
+			(request, _, sendResponse) => {
+				if (request.command == "modelDataRequest") {
+					sendResponse({
+						procrastination:
+							this.siteDataRepository.procrastinationSiteList.length,
+						productive: this.siteDataRepository.productiveSiteList.length,
+						changesSinceLastSync:
+							this.siteDataRepository.changesSinceLastSync,
+					})
+				}
 			}
-		})
+		)
 	}
 
 	setModelSyncRequestListener() {
@@ -93,12 +117,13 @@ class BackgroundProcess {
 			}
 		})
 	}
-	
+
 	setRepositoryRequestListener() {
 		setListener<RepositoryRequest, GenericResponse>((request, _, sendResponse) => {
 			if (request.command == "addSite") {
 				try {
-					if (request.type == undefined) throw new Error("No site type provided")
+					if (request.type == undefined)
+						throw new Error("No site type provided")
 					const addingSite: SiteData = JSON.parse(request.serialisedSiteData)
 					this.siteDataRepository.addSite(addingSite, request.type)
 					sendResponse({ success: true })
@@ -127,7 +152,9 @@ class BackgroundProcess {
 
 			if (request.command == "reclassifySite") {
 				try {
-					const reclassifyingSite: SiteData = JSON.parse(request.serialisedSiteData)
+					const reclassifyingSite: SiteData = JSON.parse(
+						request.serialisedSiteData
+					)
 					this.siteDataRepository.reclassifySite(reclassifyingSite)
 					sendResponse({ success: true })
 				} catch {
