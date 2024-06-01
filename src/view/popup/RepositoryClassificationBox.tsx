@@ -1,89 +1,105 @@
-import { Box, Button, Stack, Text } from "@chakra-ui/react"
+import { Button, ButtonGroup, Flex } from "@chakra-ui/react"
 import React from "react"
-import { Category, opposite, SiteSeen } from "../../data/models/SiteData"
+import { Category, SiteSeen } from "../../data/models/SiteData"
 
 type RepositoryClassificationBoxProps = {
-    siteSeenBefore: Category | SiteSeen | null
-    addProductiveSite: () => void
-    addProcrastinationSite: () => void
-    removeSite: () => void
-    reclassifySite: () => void
+	siteSeenBefore: Category | SiteSeen | null
+	addProductiveSite: () => void
+	addProcrastinationSite: () => void
+	removeSite: () => void
+	reclassifySite: () => void
 }
 
 export function RepositoryClassificationBox({
-    siteSeenBefore,
-    addProductiveSite,
-    addProcrastinationSite,
-    removeSite,
-    reclassifySite,
+	siteSeenBefore,
+	addProductiveSite,
+	addProcrastinationSite,
+	removeSite,
+	reclassifySite,
 }: RepositoryClassificationBoxProps) {
-    console.log("siteSeenBefore", siteSeenBefore)
+	console.log("siteSeenBefore", siteSeenBefore)
 
-    const ClassificationOptions = () => {
-        switch (siteSeenBefore) {
-            case undefined || null:
-                return (<>
-                    <Text>Error: we can't seem to access the database.</Text>
-                    <Text>You might need to disable and re-enable the extension.</Text>
-                </>)
-            case SiteSeen.notSeen:
-                return (<>
-                    <Text>This site has not been seen before</Text>
-                    <Button
-                        onClick={addProcrastinationSite}
-                        width="100%"
-                        colorScheme="red"
-                        background="white"
-                        variant="outline"
-                        textAlign={"left"}
-                    >
-                        <Text>Classify as non-productive</Text>
-                    </Button>
-                    <Button
-                        onClick={addProductiveSite}
-                        width="100%"
-                        colorScheme="green"
-                        background="white"
-                        variant="outline"
-                    >
-                        <Text>Classify as productive</Text>
-                    </Button>
-                </>)
-            case Category.productive: 
-            case Category.procrastination:
-                return (<>
-                    <Text>This site has previously been categorised as {opposite(siteSeenBefore)}</Text>
-                    <Button
-                        onClick={removeSite}
-                        width="100%"
-                        colorScheme="red"
-                        background="white"
-                        variant="outline"
-                        textAlign={"left"}
-                    >
-                        <Text>Remove site</Text>
-                    </Button>
-                    <Button
-                        onClick={reclassifySite}
-                        width="100%"
-                        colorScheme="orange"
-                        background="white"
-                        variant="outline"
-                        >
-                        <Text>Reclassify this site</Text>
-                    </Button>
-                </>)
-        }
-    }
+	const uncategorisedButtonAction: () => void = () => {
+		switch (siteSeenBefore) {
+			case Category.productive:
+			case Category.procrastination:
+				removeSite()
+			default:
+				return // do nothing
+		}
+	}
 
-    return (
-        <Box flex={1}>
-            <Text>
-                Currently on: "{window.location.hostname}"
-            </Text>
-            <Stack>
-                <ClassificationOptions />
-            </Stack>
-        </Box>
-    )
+	const productiveButtonAction: () => void = () => {
+		switch (siteSeenBefore) {
+			case Category.productive:
+				return
+			case Category.procrastination:
+				reclassifySite()
+				return
+			default:
+				addProductiveSite()
+				return
+		}
+	}
+
+	const procrastinationButtonAction: () => void = () => {
+		switch (siteSeenBefore) {
+			case Category.procrastination:
+				return
+			case Category.productive:
+				reclassifySite()
+				return
+			default:
+				addProcrastinationSite()
+				return
+		}
+	}
+
+	return (
+		<Flex justifyContent="center">
+			<ButtonGroup
+				size="md"
+				isAttached
+				variant="outline"
+				orientation="vertical"
+				borderRadius="lg"
+				boxShadow="xl"
+			>
+				<Button
+					isDisabled={
+						siteSeenBefore === SiteSeen.notSeen || siteSeenBefore === null
+					}
+					isActive={
+						siteSeenBefore === SiteSeen.notSeen || siteSeenBefore === null
+					}
+					flex="1"
+					colorScheme="blackAlpha"
+					onClick={uncategorisedButtonAction}
+					p="10px 30px"
+				>
+					Uncategorised
+				</Button>
+				<Button
+					colorScheme="teal"
+					flex="1"
+					isDisabled={siteSeenBefore === Category.productive}
+					isActive={siteSeenBefore === Category.productive}
+					onClick={productiveButtonAction}
+					p="10px 30px"
+				>
+					Productive
+				</Button>
+				<Button
+					colorScheme="orange"
+					flex="1"
+					isDisabled={siteSeenBefore === Category.procrastination}
+					isActive={siteSeenBefore === Category.procrastination}
+					onClick={procrastinationButtonAction}
+					p="10px 30px"
+				>
+					Procrastination
+				</Button>
+			</ButtonGroup>
+		</Flex>
+	)
 }
