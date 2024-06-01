@@ -23,7 +23,6 @@ export type TopBarProps = {
 
 export function TopBar({ serialisedSiteData, siteStatus }: TopBarProps) {
 	const COLOR = "#edf2f7"
-	const PLACEHOLDER_NUMBER = 329
 
 	const { isOpen, onToggle } = useDisclosure()
 	const [disabled, disableTopBar] = useState(false)

@@ -15,6 +15,7 @@ import { setListener } from "../messagePassing/base/setListener"
 import { requestSiteClassificationUseCase } from "../messagePassing/classificationModelUseCases"
 import { checkSiteSeenUseCase } from "../messagePassing/repositoryUseCases"
 import { TopBar } from "../view/content/TopBar"
+import { CacheProvider } from "@emotion/react"
 
 class ContentProcess {
 	currentSiteData: SiteData
@@ -55,24 +56,26 @@ class ContentProcess {
 	) {
 		console.log("Response from background script:", siteStatus)
 		if (siteStatus.success != undefined) {
-			if (
-				siteStatus.isProcrastinationSite != undefined &&
-				siteStatus.isProcrastinationSite > this.THRESHOLD
-			) {
+			// if (
+			// 	siteStatus.isProcrastinationSite != undefined &&
+			// 	siteStatus.isProcrastinationSite > this.THRESHOLD
+			// ) {
 				this.renderTopBar(siteStatus, true)
-			}
+			// }
 		}
 	}
 
 	createShadowDom(): [Root, EmotionCache] {
 		const shadowHost = document.createElement("div")
-		const shadowRoot = shadowHost.attachShadow({ mode: "open" })
 		document.body.insertBefore(shadowHost, document.body.firstChild)
+		const shadowRoot = shadowHost.attachShadow({ mode: "open" })
+		
 		const cache = createCache({
 			key: "css",
 			container: shadowRoot,
 		})
-		const root = createRoot(shadowHost)
+
+		const root = createRoot(shadowRoot)
 
 		return [root, cache]
 	}
@@ -87,18 +90,18 @@ class ContentProcess {
 
 	renderTopBar(siteStatus: SiteClassificationResponse, shadowDom: Boolean = false) {
 		if (shadowDom) {
-			// const [root, cache] = createShadowDom()
-			const root = this.createNormalDom()
+			const [root, cache] = this.createShadowDom()
+			// const root = this.createNormalDom()
 
 			root.render(
-				// <CacheProvider value={cache}>
-				<ChakraProvider>
-					<TopBar
-						siteStatus={siteStatus}
-						serialisedSiteData={this.serialisedSiteData}
-					/>
-				</ChakraProvider>
-				// </CacheProvider>
+				<CacheProvider value={cache}>
+					<ChakraProvider>
+						<TopBar
+							siteStatus={siteStatus}
+							serialisedSiteData={this.serialisedSiteData}
+						/>
+					</ChakraProvider>
+				</CacheProvider>
 			)
 		}
 	}
