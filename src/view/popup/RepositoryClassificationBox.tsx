@@ -17,8 +17,6 @@ export function RepositoryClassificationBox({
 	removeSite,
 	reclassifySite,
 }: RepositoryClassificationBoxProps) {
-	console.log("siteSeenBefore", siteSeenBefore)
-
 	const uncategorisedButtonAction: () => void = () => {
 		switch (siteSeenBefore) {
 			case Category.productive:

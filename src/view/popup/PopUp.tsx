@@ -70,7 +70,6 @@ export default function PopUp({
 	const updateSiteCategoryState = (siteData: SiteData) => {
 		checkSiteSeenUseCase(JSON.stringify(siteData)).then(response => {
 			setSiteCategory(response.seenBefore)
-			console.log(response)
 		})
 	}
 
@@ -150,9 +149,7 @@ export default function PopUp({
 							siteDataState={siteDataState}
 							siteCategory={siteCategory}
 						/>
-
 						<Spacer p={3} />
-
 						<RepositoryClassificationBox
 							siteSeenBefore={siteCategory}
 							addProductiveSite={() => addSite(Category.productive)}
@@ -162,7 +159,6 @@ export default function PopUp({
 							removeSite={removeSite}
 							reclassifySite={reclassifySite}
 						/>
-
 						<Spacer p={3} />
 						<Flex alignItems="center" justifyContent="center">
 							<Switch m={2} />

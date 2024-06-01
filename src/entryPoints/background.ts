@@ -81,12 +81,10 @@ class BackgroundProcess {
 	setCheckSiteSeenListener() {
 		setListener<CheckSiteSeenRequest, CheckSiteSeenResponse>(
 			(request, _, sendResponse) => {
-				console.log("Checking site seen")
 				if (request.command == "checkSiteSeen") {
 					const seenBefore = this.siteDataRepository.hasSite(
 						request.serialisedSiteData
 					)
-					console.log("Site seen before", seenBefore)
 					sendResponse({ seenBefore: seenBefore })
 				}
 			}
