@@ -43,10 +43,6 @@ export class SiteDataRepository {
 		return SiteSeen.notSeen
 	}
 
-	isDataEmpty(): boolean {
-		return this.procrastinationSites.size === 0 || this.productiveSites.size === 0
-	}
-
 	resetChangesSinceLastSync() {
 		this.changesSinceLastSync = 0
 	}
@@ -99,7 +95,7 @@ export class SiteDataRepository {
 		const category = this.hasSite(serialise(site))
 
 		if (category == SiteSeen.notSeen) return
-		
+
 		switch (category) {
 			case Category.productive:
 				this.productiveSites.delete(serialise(site))
@@ -116,7 +112,7 @@ export class SiteDataRepository {
 
 	reclassifySite(site: SiteData) {
 		const category = this.hasSite(serialise(site))
-		
+
 		switch (category) {
 			case SiteSeen.notSeen:
 				break

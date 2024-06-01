@@ -8,6 +8,13 @@ export class SiteClassifier {
 	titleModel: NaiveBayesModel
 	domainModel: NaiveBayesModel
 	modelsInvalid: boolean = false
+	trainedOn: {
+		procrastination: number
+		productive: number
+	} = {
+		procrastination: 0,
+		productive: 0,
+	}
 
 	// How likely a site has to be for procrastination before we block it
 	threshold: number = 0.6
@@ -57,16 +64,22 @@ export class SiteClassifier {
 		this.titleModel.train(trainingDataSiteTitles)
 		this.domainModel.train(trainingDataSiteDomains)
 
+		this.trainedOn = {
+			procrastination: this.siteDataRepository.procrastinationSiteList.length,
+			productive: this.siteDataRepository.productiveSiteList.length,
+		}
+
 		// If the data is empty on either side, the model is invalid
-		this.modelsInvalid = this.siteDataRepository.isDataEmpty()
+		this.modelsInvalid =
+			this.trainedOn.procrastination === 0 || this.trainedOn.productive === 0
 		this.siteDataRepository.resetChangesSinceLastSync()
 	}
 
 	classify(site: SiteData): [combined: number, [title: number, domain: number]] | null {
-		if (this.modelsInvalid === true) { 
+		if (this.modelsInvalid === true) {
 			return null
 		}
-		
+
 		// returns probability of non-productive site
 		const titleProbabilities = this.titleModel.predict(site.title)
 		const domainProbabilities = this.domainModel.predict(site.domain)
