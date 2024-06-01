@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import PopUp from "../src/view/popup/PopUp"
 import { Category } from "../src/data/models/SiteData"
+import PopUp from "../src/view/popup/PopUp"
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 const meta = {
@@ -44,7 +44,6 @@ export const PopUpExampleView: Story = {
 		siteCategoryVal: Category.productive,
 		siteClassificationStateVal: {
 			isProcrastinationSite: 0.5,
-			seenBefore: Category.productive,
 			success: true,
 			modelUntrained: false,
 		},
