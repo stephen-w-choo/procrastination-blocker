@@ -1,4 +1,4 @@
-import { Box, Card, Flex, Spacer, Switch, Text } from "@chakra-ui/react"
+import { Alert, AlertIcon, Box, Card, CardHeader, Flex, Heading, Spacer, Switch, Text } from "@chakra-ui/react"
 import React, { useEffect, useState } from "react"
 import { Category, SiteData, SiteSeen } from "../../data/models/SiteData"
 import {
@@ -22,6 +22,7 @@ import { COLORS } from "../colours"
 import { ModelDataCard } from "./ModelDataCard"
 import { RepositoryClassificationBox } from "./RepositoryClassificationBox"
 import { SiteDataBox } from "./SiteDataBox"
+import { ErrorBox } from "./ErrorBox"
 
 type PopUpViewProps = {
 	modelMetricsVal?: ModelMetricsResponse | null
@@ -141,67 +142,55 @@ export default function PopUp({
 	}
 
 	return (
-		<Box padding={4} minW="300px">
-			<Card backgroundColor={COLORS.lightGrey} p={2}>
-				{siteDataState && modelMetrics ? (
-					<>
-						<SiteDataBox
-							siteDataState={siteDataState}
-							siteCategory={siteCategory}
+		<Box maxW="400px" minW="300px" backgroundColor={COLORS.lightGrey} padding={4}>
+			{(siteDataState && modelMetrics) ? (
+				<>
+					<SiteDataBox
+						siteDataState={siteDataState}
+						siteCategory={siteCategory}
+					/>
+					<Spacer p={3} />
+					<RepositoryClassificationBox
+						siteSeenBefore={siteCategory}
+						addProductiveSite={() => addSite(Category.productive)}
+						addProcrastinationSite={() =>
+							addSite(Category.procrastination)
+						}
+						removeSite={removeSite}
+						reclassifySite={reclassifySite}
+					/>
+					<Spacer p={3} />
+					<Flex alignItems="center" justifyContent="center">
+						<Switch m={2} />
+						Focus mode
+					</Flex>
+					<Spacer p={3} />
+					<ModelDataCard
+						modelData={modelMetrics}
+						showChanges={false}
+						resyncModel={resyncModel}
+					/>
+				</>
+			) : (
+				<>
+					{ !siteDataState && (
+						<ErrorBox
+							errorHeader="Content script not responding"
+							errorText="You might need to refresh the page, or this 
+							might not be a page that we can access data about 
+							(eg a Chrome settings page)."
 						/>
-						<Spacer p={3} />
-						<RepositoryClassificationBox
-							siteSeenBefore={siteCategory}
-							addProductiveSite={() => addSite(Category.productive)}
-							addProcrastinationSite={() =>
-								addSite(Category.procrastination)
-							}
-							removeSite={removeSite}
-							reclassifySite={reclassifySite}
+					) } 
+					<Spacer m="10px"/>
+					{ !modelMetrics && (
+						<ErrorBox
+							errorHeader="Background script not responding"
+							errorText="If you've just installed the extension,
+							you might need to restart the browser first."
 						/>
-						<Spacer p={3} />
-						<Flex alignItems="center" justifyContent="center">
-							<Switch m={2} />
-							Focus mode
-						</Flex>
-						<Spacer p={3} />
-						<ModelDataCard
-							modelData={modelMetrics}
-							showChanges={false}
-							resyncModel={resyncModel}
-						/>
-					</>
-				) : (
-					<>
-						( siteDataState &&
-						<Box>
-							<Box flex={1} justifyContent="center">
-								<Text>
-									Error: we can't seem to get the data about the current
-									page.
-								</Text>
-								<Text>
-									You might need to refresh the page, or this might not
-									be a page that we can access.
-								</Text>
-							</Box>
-						</Box>
-						) ( modelMetrics &&
-						<Box>
-							<Box flex={1} justifyContent="center">
-								<Text>
-									Error: we can't seem to get the data about the model.
-								</Text>
-								<Text>
-									There appears to be an issue with the background
-									process.
-								</Text>
-							</Box>
-						</Box>
-						)
-					</>
-				)}
-			</Card>
+					) }
+				</>
+			)}
 		</Box>
 	)
 }
