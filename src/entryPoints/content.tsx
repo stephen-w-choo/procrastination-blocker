@@ -2,20 +2,23 @@
 
 import { ChakraProvider } from "@chakra-ui/react"
 import createCache, { EmotionCache } from "@emotion/cache"
+import { CacheProvider } from "@emotion/react"
 import React from "react"
 import { createRoot, Root } from "react-dom/client"
 import { SiteData } from "../data/models/SiteData"
 import {
 	CheckSiteSeenResponse,
+	ModelMetricsResponse,
 	SiteClassificationResponse,
 	SiteDataRequest,
 	SiteDataResponse,
 } from "../messagePassing/base/MessageTypes"
 import { setListener } from "../messagePassing/base/setListener"
-import { requestSiteClassificationUseCase } from "../messagePassing/classificationModelUseCases"
+import { requestModelMetricsUseCase, requestSiteClassificationUseCase } from "../messagePassing/classificationModelUseCases"
 import { checkSiteSeenUseCase } from "../messagePassing/repositoryUseCases"
 import { TopBar } from "../view/content/TopBar"
-import { CacheProvider } from "@emotion/react"
+import { TrainingMode } from "../view/content/TrainingMode"
+import { ContentView } from "../view/content/ContentView"
 
 class ContentProcess {
 	currentSiteData: SiteData
@@ -41,35 +44,20 @@ class ContentProcess {
 	}
 
 	classifySiteAndRenderTopBar() {
-		requestSiteClassificationUseCase(this.currentSiteData).then(
-			siteClassificationData => {
-				checkSiteSeenUseCase(this.serialisedSiteData).then(siteSeen => {
-					this.conditionallyRenderTopBar(siteClassificationData, siteSeen)
-				})
-			}
-		)
-	}
-
-	conditionallyRenderTopBar(
-		siteStatus: SiteClassificationResponse,
-		siteSeen: CheckSiteSeenResponse
-	) {
-		console.log("Response from background script:", siteStatus)
-		if (siteStatus.success != undefined) {
-			// if (
-			// 	siteStatus.isProcrastinationSite != undefined &&
-			// 	siteStatus.isProcrastinationSite > this.THRESHOLD
-			// ) {
-				this.renderTopBar(siteStatus, true)
-			// }
-		}
+		Promise.all([
+			requestSiteClassificationUseCase(this.currentSiteData),
+			checkSiteSeenUseCase(this.serialisedSiteData),
+			requestModelMetricsUseCase()
+		]).then(([siteClassificationData, siteSeen, modelMetrics]) => {
+			this.renderTopBar(siteClassificationData, siteSeen, modelMetrics)
+		})
 	}
 
 	createShadowDom(): [Root, EmotionCache] {
 		const shadowHost = document.createElement("div")
 		document.body.insertBefore(shadowHost, document.body.firstChild)
 		const shadowRoot = shadowHost.attachShadow({ mode: "open" })
-		
+
 		const cache = createCache({
 			key: "css",
 			container: shadowRoot,
@@ -88,17 +76,25 @@ class ContentProcess {
 		return normalRoot
 	}
 
-	renderTopBar(siteStatus: SiteClassificationResponse, shadowDom: Boolean = false) {
-		if (shadowDom) {
-			const [root, cache] = this.createShadowDom()
-			// const root = this.createNormalDom()
-
+	renderTopBar(
+		siteStatus: SiteClassificationResponse, 
+		siteSeen: CheckSiteSeenResponse,
+		modelMetrics: ModelMetricsResponse
+	) {
+		const [root, cache] = this.createShadowDom()
+		// const root = this.createNormalDom()
+		
+		if (siteStatus.procrastinationScore && siteStatus.trainedOn) {
 			root.render(
 				<CacheProvider value={cache}>
 					<ChakraProvider>
-						<TopBar
-							siteStatus={siteStatus}
-							serialisedSiteData={this.serialisedSiteData}
+						<ContentView
+							siteData={this.currentSiteData}
+							siteStatus={{
+								procrastinationScore: siteStatus.procrastinationScore,
+								trainedOn: siteStatus.trainedOn
+							}}
+							modelMetrics={modelMetrics}
 						/>
 					</ChakraProvider>
 				</CacheProvider>

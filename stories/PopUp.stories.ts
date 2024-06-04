@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react"
 import { Category } from "../src/data/models/SiteData"
-import PopUp from "../src/view/popup/PopUp"
+import PopUpView from "../src/view/popup/PopUpView"
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 const meta = {
 	title: "Pop Up View",
-	component: PopUp,
+	component: PopUpView,
 	parameters: {
 		// Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
 		layout: "centered",
@@ -15,7 +15,7 @@ const meta = {
 	// More on argTypes: https://storybook.js.org/docs/api/argtypes
 	// Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
 	args: {},
-} satisfies Meta<typeof PopUp>
+} satisfies Meta<typeof PopUpView>
 
 export default meta
 
@@ -43,7 +43,6 @@ export const PopUpExampleView: Story = {
 		},
 		siteCategoryVal: Category.productive,
 		siteClassificationStateVal: {
-			isProcrastinationSite: 0.5,
 			success: true,
 			modelUntrained: false,
 		},

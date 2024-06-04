@@ -113,9 +113,9 @@ class BackgroundProcess {
 			if (request.command == "syncModel") {
 				try {
 					this.classifierModels.syncModels()
-					sendResponse({ 
+					sendResponse({
 						success: true,
-						trainedOn: this.classifierModels.trainedOn
+						trainedOn: this.classifierModels.trainedOn,
 					})
 				} catch {
 					sendResponse({

@@ -1,7 +1,7 @@
 import { ChakraProvider } from "@chakra-ui/react"
 import React from "react"
 import { createRoot } from "react-dom/client"
-import PopUp from "../view/popup/PopUp"
+import PopUpView from "../view/popup/PopUpView"
 
 renderPopUp()
 
@@ -12,7 +12,7 @@ function renderPopUp() {
 		const root = createRoot(rootElement)
 		root.render(
 			<ChakraProvider>
-				<PopUp />
+				<PopUpView />
 			</ChakraProvider>
 		)
 	}
