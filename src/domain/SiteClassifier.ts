@@ -1,7 +1,9 @@
 import { SiteDataRepository } from "../data/SiteDataRepository"
 import { SiteData } from "../data/models/SiteData"
 import NaiveBayesModel from "./NaiveBayesModel"
+import { ProcrastinationScore } from "./models/ProcrastinationScore"
 import { TextData } from "./models/TextData"
+import { TrainedOn } from "./models/TrainedOn"
 
 export class SiteClassifier {
 	private siteDataRepository: SiteDataRepository
@@ -75,7 +77,10 @@ export class SiteClassifier {
 		this.siteDataRepository.resetChangesSinceLastSync()
 	}
 
-	classify(site: SiteData): [combined: number, [title: number, domain: number]] | null {
+	classify(site: SiteData): {
+		procrastinationScore: ProcrastinationScore,
+		trainedOn: TrainedOn
+	} | null {
 		if (this.modelsInvalid === true) {
 			return null
 		}
@@ -84,14 +89,12 @@ export class SiteClassifier {
 		const titleProbabilities = this.titleModel.predict(site.title)
 		const domainProbabilities = this.domainModel.predict(site.domain)
 
-		return [
-			(titleProbabilities["procrastination"] +
-				domainProbabilities["procrastination"]) /
-				2,
-			[
-				titleProbabilities["procrastination"],
-				domainProbabilities["procrastination"],
-			],
-		]
+		return {
+			procrastinationScore: {
+				title: titleProbabilities["procrastination"],
+				domain: domainProbabilities["procrastination"],
+			},
+			trainedOn: this.trainedOn,
+		}
 	}
 }

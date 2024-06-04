@@ -1,4 +1,4 @@
-import { Alert, AlertIcon, Box, Card, CardHeader, Flex, Heading, Spacer, Switch, Text } from "@chakra-ui/react"
+import { Box, Flex, Spacer, Switch } from "@chakra-ui/react"
 import React, { useEffect, useState } from "react"
 import { Category, SiteData, SiteSeen } from "../../data/models/SiteData"
 import {
@@ -19,10 +19,10 @@ import {
 } from "../../messagePassing/repositoryUseCases"
 import { requestSiteDataUseCase } from "../../messagePassing/requestSiteDataUseCases"
 import { COLORS } from "../colours"
+import { ErrorBox } from "./ErrorBox"
 import { ModelDataCard } from "./ModelDataCard"
 import { RepositoryClassificationBox } from "./RepositoryClassificationBox"
 import { SiteDataBox } from "./SiteDataBox"
-import { ErrorBox } from "./ErrorBox"
 
 type PopUpViewProps = {
 	modelMetricsVal?: ModelMetricsResponse | null
@@ -143,7 +143,7 @@ export default function PopUp({
 
 	return (
 		<Box maxW="400px" minW="300px" backgroundColor={COLORS.lightGrey} padding={4}>
-			{(siteDataState && modelMetrics) ? (
+			{siteDataState && modelMetrics ? (
 				<>
 					<SiteDataBox
 						siteDataState={siteDataState}
@@ -153,9 +153,7 @@ export default function PopUp({
 					<RepositoryClassificationBox
 						siteSeenBefore={siteCategory}
 						addProductiveSite={() => addSite(Category.productive)}
-						addProcrastinationSite={() =>
-							addSite(Category.procrastination)
-						}
+						addProcrastinationSite={() => addSite(Category.procrastination)}
 						removeSite={removeSite}
 						reclassifySite={reclassifySite}
 					/>
@@ -173,22 +171,22 @@ export default function PopUp({
 				</>
 			) : (
 				<>
-					{ !siteDataState && (
+					{!siteDataState && (
 						<ErrorBox
 							errorHeader="Content script not responding"
 							errorText="You might need to refresh the page, or this 
 							might not be a page that we can access data about 
 							(eg a Chrome settings page)."
 						/>
-					) } 
-					<Spacer m="10px"/>
-					{ !modelMetrics && (
+					)}
+					<Spacer m="10px" />
+					{!modelMetrics && (
 						<ErrorBox
 							errorHeader="Background script not responding"
 							errorText="If you've just installed the extension,
 							you might need to restart the browser first."
 						/>
-					) }
+					)}
 				</>
 			)}
 		</Box>
