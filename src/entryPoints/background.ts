@@ -8,6 +8,7 @@ import {
 	ModelMetricsRequest,
 	ModelMetricsResponse,
 	ModelSyncRequest,
+	ModelSyncResponse,
 	RepositoryRequest,
 	SiteClassificationRequest,
 	SiteClassificationResponse,
@@ -52,17 +53,17 @@ class BackgroundProcess {
 							request.serialisedSiteData
 						)
 						console.log("Current site data", currentSiteData)
-						let isProcrastinationSite =
+						let classification =
 							this.classifierModels.classify(currentSiteData)
-						if (isProcrastinationSite !== null) {
+						if (classification != null) {
 							sendResponse({
-								isProcrastinationSite: isProcrastinationSite[0],
+								procrastinationScore: classification.procrastinationScore,
+								trainedOn: classification.trainedOn,
 								success: true,
-								debugInfo: isProcrastinationSite[1].toString(),
 							})
 						} else {
 							sendResponse({
-								success: true,
+								success: false,
 								modelUntrained: true,
 							})
 						}
@@ -108,10 +109,19 @@ class BackgroundProcess {
 	}
 
 	setModelSyncRequestListener() {
-		setListener<ModelSyncRequest, GenericResponse>((request, _, sendResponse) => {
+		setListener<ModelSyncRequest, ModelSyncResponse>((request, _, sendResponse) => {
 			if (request.command == "syncModel") {
-				this.classifierModels.syncModels()
-				sendResponse({ success: true })
+				try {
+					this.classifierModels.syncModels()
+					sendResponse({ 
+						success: true,
+						trainedOn: this.classifierModels.trainedOn
+					})
+				} catch {
+					sendResponse({
+						success: false,
+					})
+				}
 			}
 		})
 	}

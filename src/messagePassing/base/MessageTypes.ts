@@ -1,4 +1,6 @@
 import { Category, SiteSeen } from "../../data/models/SiteData"
+import { ProcrastinationScore } from "../../domain/models/ProcrastinationScore"
+import { TrainedOn } from "../../domain/models/TrainedOn"
 
 // TODO - experiment and see if we can use enums for the commands?
 // Not sure if it will get propelry serialised into a unique string when parsed
@@ -38,11 +40,19 @@ export type ModelSyncRequest = {
 	command: "syncModel"
 }
 
+export type ModelSyncResponse = {
+	success: boolean
+	trainedOn?: {
+		procrastination: number
+		productive: number
+	}
+}
+
 // Background script to content script
 export type SiteClassificationResponse = {
-	isProcrastinationSite?: number
+	procrastinationScore?: ProcrastinationScore
+	trainedOn?: TrainedOn
 	success: boolean
-	debugInfo?: string
 	modelUntrained?: boolean
 }
 
