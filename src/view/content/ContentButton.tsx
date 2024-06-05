@@ -1,24 +1,28 @@
-import { Button, Text } from "@chakra-ui/react"
+import { Button } from "@chakra-ui/react"
 import React from "react"
 
 type ContentButtonProps = {
 	color: string
-	text: string
+	children?: React.ReactNode
 	onClick: () => void
 }
 
-export function ContentButton({ color, text, onClick }: ContentButtonProps) {
+export function ContentButton({ color, children, onClick }: ContentButtonProps) {
 	return (
 		<Button
 			onClick={onClick}
 			colorScheme={color}
+			display="flex"
+			flexDir="column"
 			background="white"
-			variant="outline"
+			opacity="0.9"
+			boxShadow="base"
+			variant="ghost"
 			whiteSpace="normal"
 			height="auto"
 			p="2"
 		>
-			<Text fontSize="medium">{text}</Text>
+			{children}
 		</Button>
 	)
 }

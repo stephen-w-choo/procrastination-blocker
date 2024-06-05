@@ -1,9 +1,9 @@
 import { SiteData } from "../data/models/SiteData"
 import {
-	GenericResponse,
 	ModelMetricsRequest,
 	ModelMetricsResponse,
 	ModelSyncRequest,
+	ModelSyncResponse,
 	SiteClassificationRequest,
 	SiteClassificationResponse,
 } from "./base/MessageTypes"
@@ -26,5 +26,5 @@ export function requestSiteClassificationUseCase(
 }
 
 export function requestModelSyncUseCase() {
-	return sendMessage<ModelSyncRequest, GenericResponse>({ command: "syncModel" })
+	return sendMessage<ModelSyncRequest, ModelSyncResponse>({ command: "syncModel" })
 }

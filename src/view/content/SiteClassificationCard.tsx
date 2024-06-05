@@ -1,13 +1,4 @@
-import {
-	Card,
-	Heading,
-	Spacer,
-	Stat,
-	StatGroup,
-	StatHelpText,
-	StatNumber,
-	Text,
-} from "@chakra-ui/react"
+import { Card, Heading, Spacer, Text } from "@chakra-ui/react"
 import React from "react"
 import { ProcrastinationScore } from "../../domain/models/ProcrastinationScore"
 import { TrainedOn } from "../../domain/models/TrainedOn"
@@ -15,36 +6,33 @@ import { TrainedOn } from "../../domain/models/TrainedOn"
 type ProcrastinationScoreCardProps = {
 	procrastinationScore: ProcrastinationScore
 	trainedOn: TrainedOn
-	showChanges: boolean
-	resyncModel: () => void
 }
 
 export function ProcrastinationScoreCard({
 	procrastinationScore,
 	trainedOn,
-	showChanges,
-	resyncModel,
 }: ProcrastinationScoreCardProps) {
+	const calculatePercentage = () => {
+		const percentage =
+			Math.round(
+				((procrastinationScore.title + procrastinationScore.domain) / 2) * 100
+			).toString() + "%"
+		return percentage
+	}
+
 	return (
-		<Card p={3} maxW="350px" m={3}>
+		<Card p={3}>
 			<Heading size="sm" textAlign="center">
-				This website's procrastination score is:
+				Procrastination score
 			</Heading>
 			<Spacer p={2} />
-			<StatGroup textAlign={"center"}>
-				<Stat>
-					<StatNumber>{procrastinationScore.title}</StatNumber>
-					<StatHelpText>title</StatHelpText>
-				</Stat>
-				<Stat>
-					<StatNumber>{procrastinationScore.domain}</StatNumber>
-					<StatHelpText>domain</StatHelpText>
-				</Stat>
-			</StatGroup>
+			<Heading size="lg" textAlign="center">
+				{calculatePercentage()}
+			</Heading>
 			<Spacer p={2} />
-			<Text>
-				This procrastination score is based on your model, which has been trained
-				on a total of {trainedOn.procrastination + trainedOn.productive} sites.
+			<Text fontSize="small">
+				This score is based on your model, which has been trained on a total of{" "}
+				<strong>{trainedOn.procrastination + trainedOn.productive}</strong> sites.
 			</Text>
 		</Card>
 	)

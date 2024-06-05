@@ -78,7 +78,7 @@ export class SiteClassifier {
 	}
 
 	classify(site: SiteData): {
-		procrastinationScore: ProcrastinationScore,
+		procrastinationScore: ProcrastinationScore
 		trainedOn: TrainedOn
 	} | null {
 		if (this.modelsInvalid === true) {
@@ -94,7 +94,10 @@ export class SiteClassifier {
 				title: titleProbabilities["procrastination"],
 				domain: domainProbabilities["procrastination"],
 			},
-			trainedOn: this.trainedOn,
+			trainedOn: {
+				...this.trainedOn,
+				changesSinceLastSync: this.siteDataRepository.changesSinceLastSync,
+			},
 		}
 	}
 }

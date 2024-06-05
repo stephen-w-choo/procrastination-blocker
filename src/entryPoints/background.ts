@@ -115,7 +115,6 @@ class BackgroundProcess {
 					this.classifierModels.syncModels()
 					sendResponse({
 						success: true,
-						trainedOn: this.classifierModels.trainedOn,
 					})
 				} catch {
 					sendResponse({

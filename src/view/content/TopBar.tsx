@@ -1,23 +1,24 @@
 import { CloseIcon } from "@chakra-ui/icons"
 import { Box, Collapse, IconButton } from "@chakra-ui/react"
 import React, { ReactNode } from "react"
-import { COLORS } from "../colours"
 import { TopBarDropdownTab } from "./TopBarDropdownTab"
 
 export type TopBarProps = {
 	isOpen: boolean
-	onToggle: () => void
+	backgroundColor: string
 	disabled: boolean
-	closeTopBar: () => void
 	children: ReactNode
+	closeTopBar: () => void
+	onToggle: () => void
 }
 
 export function TopBar({
 	isOpen,
-	onToggle,
+	backgroundColor,
 	disabled,
-	closeTopBar: disableTopBar,
 	children,
+	closeTopBar,
+	onToggle,
 }: TopBarProps) {
 	if (disabled === true) {
 		return null
@@ -35,14 +36,14 @@ export function TopBar({
 				width="100%"
 				zIndex="10000"
 				p={2}
-				backgroundColor={COLORS.backgroundYellow}
+				backgroundColor={backgroundColor}
 			>
 				<Collapse animateOpacity in={isOpen} startingHeight="1px">
 					{children}
 				</Collapse>
 				<Box display="flex" justifyContent="center" w="100%" overflow="hidden">
 					<TopBarDropdownTab
-						color={COLORS.blueWhite}
+						color={backgroundColor}
 						isOpen={isOpen}
 						onToggle={onToggle}
 					/>
@@ -58,7 +59,7 @@ export function TopBar({
 					icon={<CloseIcon />}
 					height="15px"
 					width="15px"
-					onClick={disableTopBar}
+					onClick={closeTopBar}
 				/>
 			</Box>
 		</>

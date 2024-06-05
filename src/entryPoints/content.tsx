@@ -8,16 +8,13 @@ import { createRoot, Root } from "react-dom/client"
 import { SiteData } from "../data/models/SiteData"
 import {
 	CheckSiteSeenResponse,
-	ModelMetricsResponse,
 	SiteClassificationResponse,
 	SiteDataRequest,
 	SiteDataResponse,
 } from "../messagePassing/base/MessageTypes"
 import { setListener } from "../messagePassing/base/setListener"
-import { requestModelMetricsUseCase, requestSiteClassificationUseCase } from "../messagePassing/classificationModelUseCases"
+import { requestSiteClassificationUseCase } from "../messagePassing/classificationModelUseCases"
 import { checkSiteSeenUseCase } from "../messagePassing/repositoryUseCases"
-import { TopBar } from "../view/content/TopBar"
-import { TrainingMode } from "../view/content/TrainingMode"
 import { ContentView } from "../view/content/ContentView"
 
 class ContentProcess {
@@ -47,9 +44,8 @@ class ContentProcess {
 		Promise.all([
 			requestSiteClassificationUseCase(this.currentSiteData),
 			checkSiteSeenUseCase(this.serialisedSiteData),
-			requestModelMetricsUseCase()
-		]).then(([siteClassificationData, siteSeen, modelMetrics]) => {
-			this.renderTopBar(siteClassificationData, siteSeen, modelMetrics)
+		]).then(([siteClassificationData, siteSeen]) => {
+			this.renderTopBar(siteClassificationData, siteSeen)
 		})
 	}
 
@@ -77,13 +73,14 @@ class ContentProcess {
 	}
 
 	renderTopBar(
-		siteStatus: SiteClassificationResponse, 
-		siteSeen: CheckSiteSeenResponse,
-		modelMetrics: ModelMetricsResponse
+		siteStatus: SiteClassificationResponse,
+		siteSeen: CheckSiteSeenResponse
 	) {
 		const [root, cache] = this.createShadowDom()
 		// const root = this.createNormalDom()
-		
+		// TODO: add a conditional on whether or not to show
+		// currently shows in all cases for debugging purposes
+
 		if (siteStatus.procrastinationScore && siteStatus.trainedOn) {
 			root.render(
 				<CacheProvider value={cache}>
@@ -92,9 +89,8 @@ class ContentProcess {
 							siteData={this.currentSiteData}
 							siteStatus={{
 								procrastinationScore: siteStatus.procrastinationScore,
-								trainedOn: siteStatus.trainedOn
+								trainedOn: siteStatus.trainedOn,
 							}}
-							modelMetrics={modelMetrics}
 						/>
 					</ChakraProvider>
 				</CacheProvider>

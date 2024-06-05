@@ -3,7 +3,7 @@ import React, { useState } from "react"
 import { SiteData } from "../../data/models/SiteData"
 import { ProcrastinationScore } from "../../domain/models/ProcrastinationScore"
 import { TrainedOn } from "../../domain/models/TrainedOn"
-import { ModelMetricsResponse } from "../../messagePassing/base/MessageTypes"
+import { COLORS } from "../colours"
 import { FocusMode } from "./FocusMode"
 import { TopBar } from "./TopBar"
 
@@ -13,10 +13,9 @@ type ContentViewProps = {
 		procrastinationScore: ProcrastinationScore
 		trainedOn: TrainedOn
 	}
-	modelMetrics: ModelMetricsResponse
 }
 
-export function ContentView({ siteData, siteStatus, modelMetrics }: ContentViewProps) {
+export function ContentView({ siteData, siteStatus }: ContentViewProps) {
 	const { isOpen, onToggle } = useDisclosure()
 	const [disabled, disableTopBar] = useState(false)
 
@@ -27,6 +26,7 @@ export function ContentView({ siteData, siteStatus, modelMetrics }: ContentViewP
 	return (
 		<TopBar
 			isOpen={isOpen}
+			backgroundColor={COLORS.lightGrey}
 			onToggle={onToggle}
 			disabled={disabled}
 			closeTopBar={closeTopBar}
@@ -34,7 +34,6 @@ export function ContentView({ siteData, siteStatus, modelMetrics }: ContentViewP
 			<FocusMode
 				siteData={siteData}
 				siteStatus={siteStatus}
-				modelMetrics={modelMetrics}
 				closeTopBar={closeTopBar}
 			/>
 		</TopBar>

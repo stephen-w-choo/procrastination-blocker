@@ -42,10 +42,6 @@ export type ModelSyncRequest = {
 
 export type ModelSyncResponse = {
 	success: boolean
-	trainedOn?: {
-		procrastination: number
-		productive: number
-	}
 }
 
 // Background script to content script

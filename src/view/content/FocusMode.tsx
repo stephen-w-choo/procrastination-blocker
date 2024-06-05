@@ -1,10 +1,28 @@
-import { Button, Divider, Flex, Heading, HStack, Stack, Text } from "@chakra-ui/react"
-import React from "react"
+import {
+	Accordion,
+	AccordionButton,
+	AccordionIcon,
+	AccordionItem,
+	AccordionPanel,
+	Button,
+	Divider,
+	Flex,
+	Heading,
+	Spacer,
+	Stack,
+	Text,
+	VStack,
+} from "@chakra-ui/react"
+import React, { useState } from "react"
 import { Category, SiteData } from "../../data/models/SiteData"
 import { ProcrastinationScore } from "../../domain/models/ProcrastinationScore"
 import { TrainedOn } from "../../domain/models/TrainedOn"
-import { ModelMetricsResponse } from "../../messagePassing/base/MessageTypes"
+import {
+	requestModelSyncUseCase,
+	requestSiteClassificationUseCase,
+} from "../../messagePassing/classificationModelUseCases"
 import { addSiteUseCase } from "../../messagePassing/repositoryUseCases"
+import { ModelDataCard } from "../popup/ModelDataCard"
 import { ContentButton } from "./ContentButton"
 import { ProcrastinationScoreCard } from "./SiteClassificationCard"
 
@@ -14,17 +32,12 @@ export type FocusModeProps = {
 		procrastinationScore: ProcrastinationScore
 		trainedOn: TrainedOn
 	}
-	modelMetrics: ModelMetricsResponse
 	closeTopBar: () => void
 }
 
-export function FocusMode({
-	siteData,
-	siteStatus,
-	modelMetrics,
-	closeTopBar,
-}: FocusModeProps) {
+export function FocusMode({ siteData, siteStatus, closeTopBar }: FocusModeProps) {
 	const serialisedSiteData = JSON.stringify(siteData)
+	const [siteStatusState, setSiteStatusState] = useState(siteStatus)
 
 	function addProductiveSite() {
 		addSiteUseCase(Category.productive, serialisedSiteData)
@@ -36,49 +49,93 @@ export function FocusMode({
 		closeTopBar()
 	}
 
+	function resyncAndRefreshSiteStatus() {
+		requestModelSyncUseCase().then(modelSyncResponse => {
+			if (modelSyncResponse.success) {
+				refreshSiteStatus()
+			}
+		})
+	}
+
+	function refreshSiteStatus() {
+		requestSiteClassificationUseCase(siteData).then(siteClassificationResponse => {
+			setSiteStatusState({
+				// asserting non-null is not ideal, but the user should not be able
+				// to enter this mode without a non-null procrastination score in the first place
+				procrastinationScore: siteClassificationResponse.procrastinationScore!!,
+				trainedOn: siteClassificationResponse.trainedOn!!,
+			})
+		})
+	}
+
 	return (
 		<>
-			<Heading size="lg">
+			<Heading size="md">
 				This looks like it could be a non-productive site.
 			</Heading>
 			<Divider borderColor="black" mt="10px" mb="20px" />
-			<HStack>
-				<ProcrastinationScoreCard
-					procrastinationScore={siteStatus.procrastinationScore}
-					trainedOn={siteStatus.trainedOn}
-					showChanges={false}
-					resyncModel={() => {}} // TODO - add use case to sync the model
-				/>
-				<Stack>
+			<Flex>
+				<VStack p={4} maxW="250px">
+					<ProcrastinationScoreCard
+						procrastinationScore={siteStatus.procrastinationScore}
+						trainedOn={siteStatus.trainedOn}
+					/>
+					<Accordion allowToggle w="100%">
+						<AccordionItem borderStyle="none" w="100%">
+							<AccordionButton p={0} w="100%">
+								<AccordionIcon />
+								<Text fontSize="small" textAlign="start">
+									More details about the model
+								</Text>
+							</AccordionButton>
+							<AccordionPanel p={0}>
+								<Spacer p={2} />
+								<ModelDataCard
+									modelData={siteStatus.trainedOn}
+									showChanges
+									resyncModel={resyncAndRefreshSiteStatus}
+								/>
+							</AccordionPanel>
+						</AccordionItem>
+					</Accordion>
+				</VStack>
+				<Stack maxW="350px" p={4}>
 					<Heading size="md">What would you like to do?</Heading>
 					<Divider borderColor="black" />
 					<ContentButton
 						color="red"
-						text="Send me back, and mark this as a procrastination site."
 						onClick={() => {
 							addProcrastinationSite()
 							window.history.back()
 						}}
-					/>
+					>
+						<Text>Send me back</Text>
+						<Text>(mark this as a procrastination site)</Text>
+					</ContentButton>
 					<ContentButton
-						color="green"
-						text="You're wrong - let me in, and mark this as a productive website."
+						color="teal"
 						onClick={() => {
 							addProductiveSite()
 							closeTopBar()
 						}}
-					/>
+					>
+						<Text>Let me continue</Text>
+						<Text>(mark this as a productive site)</Text>
+					</ContentButton>
 					<ContentButton
 						color="yellow"
-						text="😈 It is a procrastination site, but let me in anyway."
 						onClick={() => {
 							addProcrastinationSite()
 							closeTopBar()
 						}}
-					/>
+					>
+						<Text>
+							😈 This is a procrastination site, but let me in anyway.
+						</Text>
+					</ContentButton>
 				</Stack>
-			</HStack>
-			<Flex width="100%">
+			</Flex>
+			<Flex width="100%" justifyContent="center">
 				<Button
 					onClick={() => {
 						closeTopBar()
