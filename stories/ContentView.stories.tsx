@@ -37,12 +37,8 @@ export const ContentViewStory: Story = {
 			trainedOn: {
 				productive: 1,
 				procrastination: 1,
+				changesSinceLastSync: 20,
 			},
-		},
-		modelMetrics: {
-			productive: 15,
-			procrastination: 25,
-			changesSinceLastSync: 0,
 		},
 	},
 }

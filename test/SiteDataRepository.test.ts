@@ -67,7 +67,7 @@ describe("Bayes Classifier", () => {
 		const previousProductiveLength = siteDataRepository.productiveSiteList.length
 
 		// When
-		siteDataRepository.reclassifySite(procrastinationEntry, Category.procrastination)
+		siteDataRepository.reclassifySite(procrastinationEntry)
 
 		// Then
 		expect(siteDataRepository.procrastinationSiteList.length).toBe(

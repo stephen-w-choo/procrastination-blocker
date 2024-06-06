@@ -11,6 +11,13 @@ export type SiteClassificationRequest = {
 	serialisedSiteData: string
 }
 
+export type SiteClassificationResponse = {
+	procrastinationScore?: ProcrastinationScore
+	trainedOn?: TrainedOn
+	success: boolean
+	modelUntrained?: boolean
+}
+
 export type RepositoryRequest = {
 	command: "addSite" | "removeSite" | "reclassifySite"
 	serialisedSiteData: string
@@ -44,20 +51,26 @@ export type ModelSyncResponse = {
 	success: boolean
 }
 
-// Background script to content script
-export type SiteClassificationResponse = {
-	procrastinationScore?: ProcrastinationScore
-	trainedOn?: TrainedOn
-	success: boolean
-	modelUntrained?: boolean
-}
-
 export type SiteDataRequest = {
 	command: "siteDataRequest"
 }
 
 export type SiteDataResponse = {
 	serialisedSiteData: string
+}
+
+export type ToggleFocusModeRequest = {
+	command: "toggleFocusMode"
+	toggle: boolean
+}
+
+export type FocusModeResponse = {
+	success: boolean
+	toggleStatus?: boolean
+}
+
+export type CheckFocusModeRequest = {
+	command: "checkFocusMode"
 }
 
 export type GenericResponse = {

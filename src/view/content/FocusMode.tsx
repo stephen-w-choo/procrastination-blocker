@@ -25,6 +25,7 @@ import { addSiteUseCase } from "../../messagePassing/repositoryUseCases"
 import { ModelDataCard } from "../popup/ModelDataCard"
 import { ContentButton } from "./ContentButton"
 import { ProcrastinationScoreCard } from "./SiteClassificationCard"
+import { toggleFocusModeUseCase } from "../../messagePassing/backgroundToggleUseCases"
 
 export type FocusModeProps = {
 	siteData: SiteData
@@ -139,7 +140,7 @@ export function FocusMode({ siteData, siteStatus, closeTopBar }: FocusModeProps)
 				<Button
 					onClick={() => {
 						closeTopBar()
-						// TODO - add use case to sync the model
+						toggleFocusModeUseCase(false)
 					}}
 					colorScheme="blue"
 					m="20px"

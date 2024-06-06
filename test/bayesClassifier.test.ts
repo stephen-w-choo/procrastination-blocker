@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, test } from "@jest/globals"
-import NaiveBayesClassifier from "../src/domain/bayesClassifier"
+import NaiveBayesModel from "../src/domain/NaiveBayesModel"
 import { TextData } from "../src/domain/models/TextData"
 
 describe("Bayes Classifier", () => {
-	let classifier: NaiveBayesClassifier
+	let classifier: NaiveBayesModel
 	const trainingData: TextData[] = [
 		{ text: "I love this product", class: "positive" },
 		{ text: "Absolutely great experience", class: "positive" },
@@ -18,7 +18,7 @@ describe("Bayes Classifier", () => {
 	]
 
 	beforeEach(() => {
-		classifier = new NaiveBayesClassifier()
+		classifier = new NaiveBayesModel()
 		classifier.train(trainingData)
 	})
 

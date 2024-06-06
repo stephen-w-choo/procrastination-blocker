@@ -4,7 +4,7 @@
     "demo/**/*",
     "test/**/*",
     "testData/**/*",
-    "**/*.ts", 
+    "**/*.ts", "stories/ContentView.stories.tsx", 
   ],
   "exclude": [
     "node_modules",

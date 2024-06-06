@@ -23,6 +23,7 @@ import { ErrorBox } from "./ErrorBox"
 import { ModelDataCard } from "./ModelDataCard"
 import { RepositoryClassificationBox } from "./RepositoryClassificationBox"
 import { SiteDataBox } from "./SiteDataBox"
+import { checkFocusModeUseCase, toggleFocusModeUseCase } from "../../messagePassing/backgroundToggleUseCases"
 
 type PopUpViewProps = {
 	modelMetricsVal?: ModelMetricsResponse | null
@@ -31,7 +32,7 @@ type PopUpViewProps = {
 	siteClassificationStateVal?: SiteClassificationResponse | null
 }
 
-export default function PopUp({
+export default function PopUpView({
 	modelMetricsVal = null,
 	siteDataStateVal = null,
 	siteCategoryVal = null,
@@ -40,6 +41,7 @@ export default function PopUp({
 	const [modelMetrics, setModelMetrics] = useState(modelMetricsVal)
 	const [siteDataState, setSiteDataState] = useState(siteDataStateVal)
 	const [siteCategory, setSiteCategory] = useState(siteCategoryVal)
+	const [focusModeState, setFocusModeState] = useState<boolean | "loading">(false)
 	const [siteClassificationState, setSiteClassificationState] = useState(
 		siteClassificationStateVal
 	)
@@ -48,7 +50,29 @@ export default function PopUp({
 	useEffect(() => {
 		updateModelMetrics()
 		updateSiteDataState()
+
 	}, [])
+
+	const updateFocusToggleState = () => {
+		checkFocusModeUseCase().then(response => {
+			console.log(response)
+			if (response.toggleStatus === undefined) return
+			setFocusModeState(response.toggleStatus)
+		})
+	}
+
+	const toggleFocusMode = () => {
+		setFocusModeState("loading")
+		const toggleTo = !focusModeState
+
+		toggleFocusModeUseCase(toggleTo).then(response => {
+			if (response.toggleStatus === undefined) {
+				setFocusModeState(false)
+			} else {
+				setFocusModeState(response.toggleStatus)
+			}
+		})
+	}
 
 	const updateSiteDataState = () => {
 		requestSiteDataUseCase().then(response => {
@@ -89,7 +113,7 @@ export default function PopUp({
 		requestModelSyncUseCase()
 			.then(response => {
 				if (response.success === false || response.success === undefined) {
-					throw new Error(response.debugInfo)
+					throw new Error()
 				}
 				updateModelMetrics()
 			})
@@ -137,10 +161,6 @@ export default function PopUp({
 		updateSiteCategoryState(siteDataState!!) // this feels bad
 	}
 
-	const toggleFocusMode = () => {
-		// TODO
-	}
-
 	return (
 		<Box maxW="400px" minW="300px" backgroundColor={COLORS.lightGrey} padding={4}>
 			{siteDataState && modelMetrics ? (
@@ -159,7 +179,12 @@ export default function PopUp({
 					/>
 					<Spacer p={3} />
 					<Flex alignItems="center" justifyContent="center">
-						<Switch m={2} />
+						<Switch 
+							isChecked={focusModeState === true}
+							isDisabled={focusModeState === "loading"}
+							onChange={toggleFocusMode}
+							m={2} 
+						/>
 						Focus mode
 					</Flex>
 					<Spacer p={3} />

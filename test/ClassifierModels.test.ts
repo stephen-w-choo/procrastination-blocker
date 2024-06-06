@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, test } from "@jest/globals"
 import { SiteDataRepository, serialiseListData } from "../src/data/SiteDataRepository"
 import { SiteData } from "../src/data/models/SiteData"
-import { ClassifierModels } from "../src/domain/ClassifierModels"
+import { SiteClassifier } from "../src/domain/SiteClassifier"
 
 describe("Bayes Classifier", () => {
 	let siteDataRepository: SiteDataRepository
 
-	let classifierModels: ClassifierModels
+	let classifierModels: SiteClassifier
 
 	const productiveSiteData: SiteData[] = [
 		{
@@ -45,7 +45,7 @@ describe("Bayes Classifier", () => {
 		)
 		siteDataRepository.productiveSites = serialiseListData(productiveSiteData)
 
-		classifierModels = new ClassifierModels(siteDataRepository)
+		classifierModels = new SiteClassifier(siteDataRepository)
 	})
 
 	test("Should appropriately classify a given SiteData entry", () => {

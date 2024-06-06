@@ -2,8 +2,10 @@ import { SiteDataRepository } from "../data/SiteDataRepository"
 import { Category, SiteData } from "../data/models/SiteData"
 import { SiteClassifier } from "../domain/SiteClassifier"
 import {
+	CheckFocusModeRequest,
 	CheckSiteSeenRequest,
 	CheckSiteSeenResponse,
+	FocusModeResponse,
 	GenericResponse,
 	ModelMetricsRequest,
 	ModelMetricsResponse,
@@ -12,6 +14,7 @@ import {
 	RepositoryRequest,
 	SiteClassificationRequest,
 	SiteClassificationResponse,
+	ToggleFocusModeRequest,
 } from "../messagePassing/base/MessageTypes"
 import { setListener } from "../messagePassing/base/setListener"
 import procrastinationSites from "../procrastinationSitesSeed"
@@ -20,6 +23,7 @@ import productiveSites from "../productiveSitesSeed"
 class BackgroundProcess {
 	siteDataRepository: SiteDataRepository
 	classifierModels: SiteClassifier
+	focusModeState: boolean = false
 
 	constructor() {
 		this.siteDataRepository = new SiteDataRepository()
@@ -33,6 +37,7 @@ class BackgroundProcess {
 		this.setRepositoryRequestListener()
 		this.setModelSyncRequestListener()
 		this.setCheckSiteSeenListener()
+		this.setToggleFocusModeListener()
 	}
 
 	seedRepository() {
@@ -87,6 +92,29 @@ class BackgroundProcess {
 						request.serialisedSiteData
 					)
 					sendResponse({ seenBefore: seenBefore })
+				}
+			}
+		)
+	}
+
+	setToggleFocusModeListener() {
+		setListener<ToggleFocusModeRequest | CheckFocusModeRequest, FocusModeResponse>(
+			(request, _, sendResponse) => {
+				try {
+					if (request.command == "toggleFocusMode") {
+						if (request.toggle === true) { // sync models if toggling on
+							this.classifierModels.syncModels()
+						}
+						this.focusModeState = request.toggle
+						sendResponse({ toggleStatus: this.focusModeState, success: true })
+						return
+					}
+					if (request.command == "checkFocusMode") {
+						sendResponse({ toggleStatus: this.focusModeState, success: true })
+						return
+					}
+				} catch {
+					sendResponse({ success: false })
 				}
 			}
 		)

@@ -1,5 +1,6 @@
 import {
 	Button,
+	Card,
 	Heading,
 	Spacer,
 	Stat,
@@ -9,10 +10,13 @@ import {
 	Text,
 } from "@chakra-ui/react"
 import React from "react"
-import { ModelMetricsResponse } from "../../messagePassing/base/MessageTypes"
 
 type ModelDataCardProps = {
-	modelData: ModelMetricsResponse
+	modelData: {
+		procrastination: number
+		productive: number
+		changesSinceLastSync: number
+	}
 	showChanges: boolean
 	resyncModel: () => void
 }
@@ -24,11 +28,11 @@ export function ModelDataCard({
 }: ModelDataCardProps) {
 	const changesSection = () => {
 		if (modelData?.changesSinceLastSync === 0) {
-			return <Text textAlign={"center"}>Model is up to date with data</Text>
+			return <Text fontSize="small">Model is up to date with data</Text>
 		} else {
 			return (
 				<>
-					<Text textAlign={"center"}>
+					<Text fontSize="small">
 						Data changes since last model sync:{" "}
 						{modelData?.changesSinceLastSync}
 					</Text>
@@ -45,8 +49,11 @@ export function ModelDataCard({
 	}
 
 	return (
-		<>
-			<Heading size="sm">Text classifier data</Heading>
+		<Card p={3}>
+			<Heading size="sm" textAlign="center">
+				Text classifier data
+			</Heading>
+			<Spacer p={2} />
 			<StatGroup textAlign={"center"}>
 				<Stat>
 					<StatNumber>{modelData.productive}</StatNumber>
@@ -57,8 +64,8 @@ export function ModelDataCard({
 					<StatHelpText>procrastination</StatHelpText>
 				</Stat>
 			</StatGroup>
-			{showChanges && changesSection()}
 			<Spacer p={2} />
-		</>
+			{showChanges && changesSection()}
+		</Card>
 	)
 }

@@ -10,7 +10,7 @@
         "128": "icons/icon-128.png"
     },
     "action": {
-        "default_popup": "build/src/entry-points/pop-up.html"
+        "default_popup": "build/src/entryPoints/pop-up.html"
     },
     "content_scripts": [
         {

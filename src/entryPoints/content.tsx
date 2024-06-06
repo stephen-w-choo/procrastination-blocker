@@ -16,6 +16,7 @@ import { setListener } from "../messagePassing/base/setListener"
 import { requestSiteClassificationUseCase } from "../messagePassing/classificationModelUseCases"
 import { checkSiteSeenUseCase } from "../messagePassing/repositoryUseCases"
 import { ContentView } from "../view/content/ContentView"
+import { checkFocusModeUseCase } from "../messagePassing/backgroundToggleUseCases"
 
 class ContentProcess {
 	currentSiteData: SiteData
@@ -28,7 +29,7 @@ class ContentProcess {
 			domain: window.location.href,
 		}
 		this.serialisedSiteData = JSON.stringify(this.currentSiteData)
-		this.classifySiteAndRenderTopBar()
+		this.getFocusModeState()
 	}
 
 	setSiteDataRequestListener() {
@@ -36,6 +37,15 @@ class ContentProcess {
 		setListener<SiteDataRequest, SiteDataResponse>((request, _, sendResponse) => {
 			if (request.command === "siteDataRequest") {
 				sendResponse({ serialisedSiteData })
+			}
+		})
+	}
+
+	getFocusModeState() {
+		checkFocusModeUseCase().then(response => {
+			if (response.toggleStatus === undefined) return
+			if (response.toggleStatus === true) {
+				this.classifySiteAndRenderTopBar()
 			}
 		})
 	}
@@ -51,11 +61,11 @@ class ContentProcess {
 
 	createShadowDom(): [Root, EmotionCache] {
 		const shadowHost = document.createElement("div")
-		document.body.insertBefore(shadowHost, document.body.firstChild)
+		document.body.appendChild(shadowHost)
 		const shadowRoot = shadowHost.attachShadow({ mode: "open" })
 
 		const cache = createCache({
-			key: "css",
+			key: "CHAKRAUICSS",
 			container: shadowRoot,
 		})
 
@@ -77,11 +87,11 @@ class ContentProcess {
 		siteSeen: CheckSiteSeenResponse
 	) {
 		const [root, cache] = this.createShadowDom()
-		// const root = this.createNormalDom()
-		// TODO: add a conditional on whether or not to show
-		// currently shows in all cases for debugging purposes
-
 		if (siteStatus.procrastinationScore && siteStatus.trainedOn) {
+			// const root = this.createNormalDom()
+			// TODO: add a conditional on whether or not to show
+			// currently shows in all cases for debugging purposes
+			
 			root.render(
 				<CacheProvider value={cache}>
 					<ChakraProvider>
