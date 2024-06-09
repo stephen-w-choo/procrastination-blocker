@@ -29,6 +29,7 @@ type PopUpViewProps = {
 	modelMetricsVal?: ModelMetricsResponse | null
 	siteDataStateVal?: SiteData | null
 	siteCategoryVal?: Category | SiteSeen | null
+	focusModeStateVal?: boolean | "loading" 
 	siteClassificationStateVal?: SiteClassificationResponse | null
 }
 
@@ -36,26 +37,26 @@ export default function PopUpView({
 	modelMetricsVal = null,
 	siteDataStateVal = null,
 	siteCategoryVal = null,
+	focusModeStateVal = false,
 	siteClassificationStateVal = null,
 }: PopUpViewProps) {
 	const [modelMetrics, setModelMetrics] = useState(modelMetricsVal)
 	const [siteDataState, setSiteDataState] = useState(siteDataStateVal)
 	const [siteCategory, setSiteCategory] = useState(siteCategoryVal)
-	const [focusModeState, setFocusModeState] = useState<boolean | "loading">(false)
-	const [siteClassificationState, setSiteClassificationState] = useState(
-		siteClassificationStateVal
-	)
+	const [focusModeState, setFocusModeState] = 
+		useState<boolean | "loading">(focusModeStateVal)
+	const [siteClassificationState, setSiteClassificationState] = 
+		useState(siteClassificationStateVal)
 
 	// initial model setup
 	useEffect(() => {
 		updateModelMetrics()
 		updateSiteDataState()
-
+		updateFocusToggleState()
 	}, [])
 
 	const updateFocusToggleState = () => {
 		checkFocusModeUseCase().then(response => {
-			console.log(response)
 			if (response.toggleStatus === undefined) return
 			setFocusModeState(response.toggleStatus)
 		})
