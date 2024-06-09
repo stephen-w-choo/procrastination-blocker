@@ -49,7 +49,7 @@ export function ModelDataCard({
 	}
 
 	return (
-		<Card p={3}>
+		<Card p={3} backgroundColor="white">
 			<Heading size="sm" textAlign="center">
 				Text classifier data
 			</Heading>

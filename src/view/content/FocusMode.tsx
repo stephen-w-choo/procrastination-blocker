@@ -23,8 +23,8 @@ import {
 } from "../../messagePassing/classificationModelUseCases"
 import { addSiteUseCase } from "../../messagePassing/repositoryUseCases"
 import { ModelDataCard } from "../popup/ModelDataCard"
-import { ContentButton } from "./ContentButton"
-import { ProcrastinationScoreCard } from "./SiteClassificationCard"
+import { ContentButton } from "./components/ContentButton"
+import { ProcrastinationScoreCard } from "./sections/SiteClassificationCard"
 import { toggleFocusModeUseCase } from "../../messagePassing/backgroundToggleUseCases"
 
 export type FocusModeProps = {

@@ -5,7 +5,7 @@ import { ProcrastinationScore } from "../../domain/models/ProcrastinationScore"
 import { TrainedOn } from "../../domain/models/TrainedOn"
 import { COLORS } from "../colours"
 import { FocusMode } from "./FocusMode"
-import { TopBar } from "./TopBar"
+import { TopBar } from "./components/TopBar"
 
 type ContentViewProps = {
 	siteData: SiteData

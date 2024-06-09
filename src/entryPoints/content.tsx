@@ -65,10 +65,17 @@ class ContentProcess {
 		const shadowRoot = shadowHost.attachShadow({ mode: "open" })
 
 		const cache = createCache({
-			key: "CHAKRAUICSS",
+			key: "chakra",
 			container: shadowRoot,
 		})
 
+		const style = document.createElement('style')
+		style.textContent = `
+		  * {
+			font-family: sans-serif;
+		  }
+		`
+		shadowRoot.appendChild(style)
 		const root = createRoot(shadowRoot)
 
 		return [root, cache]

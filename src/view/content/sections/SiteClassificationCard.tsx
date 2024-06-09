@@ -1,7 +1,7 @@
 import { Card, Heading, Spacer, Text } from "@chakra-ui/react"
 import React from "react"
-import { ProcrastinationScore } from "../../domain/models/ProcrastinationScore"
-import { TrainedOn } from "../../domain/models/TrainedOn"
+import { ProcrastinationScore } from "../../../domain/models/ProcrastinationScore"
+import { TrainedOn } from "../../../domain/models/TrainedOn"
 
 type ProcrastinationScoreCardProps = {
 	procrastinationScore: ProcrastinationScore
@@ -13,15 +13,13 @@ export function ProcrastinationScoreCard({
 	trainedOn,
 }: ProcrastinationScoreCardProps) {
 	const calculatePercentage = () => {
-		const percentage =
-			Math.round(
-				((procrastinationScore.title + procrastinationScore.domain) / 2) * 100
-			).toString() + "%"
-		return percentage
+		return Math.round((
+			(procrastinationScore.title + procrastinationScore.domain) / 2) * 100
+		).toString() + "%"
 	}
 
 	return (
-		<Card p={3}>
+		<Card p={3} backgroundColor="white">
 			<Heading size="sm" textAlign="center">
 				Procrastination score
 			</Heading>
