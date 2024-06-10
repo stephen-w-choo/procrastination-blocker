@@ -17,6 +17,7 @@ import React, { useState } from "react"
 import { Category, SiteData } from "../../data/models/SiteData"
 import { ProcrastinationScore } from "../../domain/models/ProcrastinationScore"
 import { TrainedOn } from "../../domain/models/TrainedOn"
+import { toggleFocusModeUseCase } from "../../messagePassing/backgroundToggleUseCases"
 import {
 	requestModelSyncUseCase,
 	requestSiteClassificationUseCase,
@@ -25,7 +26,6 @@ import { addSiteUseCase } from "../../messagePassing/repositoryUseCases"
 import { ModelDataCard } from "../popup/ModelDataCard"
 import { ContentButton } from "./components/ContentButton"
 import { ProcrastinationScoreCard } from "./sections/SiteClassificationCard"
-import { toggleFocusModeUseCase } from "../../messagePassing/backgroundToggleUseCases"
 
 export type FocusModeProps = {
 	siteData: SiteData

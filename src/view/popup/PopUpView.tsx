@@ -2,6 +2,10 @@ import { Box, Flex, Spacer, Switch } from "@chakra-ui/react"
 import React, { useEffect, useState } from "react"
 import { Category, SiteData, SiteSeen } from "../../data/models/SiteData"
 import {
+	checkFocusModeUseCase,
+	toggleFocusModeUseCase,
+} from "../../messagePassing/backgroundToggleUseCases"
+import {
 	GenericResponse,
 	ModelMetricsResponse,
 	SiteClassificationResponse,
@@ -23,13 +27,12 @@ import { ErrorBox } from "./ErrorBox"
 import { ModelDataCard } from "./ModelDataCard"
 import { RepositoryClassificationBox } from "./RepositoryClassificationBox"
 import { SiteDataBox } from "./SiteDataBox"
-import { checkFocusModeUseCase, toggleFocusModeUseCase } from "../../messagePassing/backgroundToggleUseCases"
 
 type PopUpViewProps = {
 	modelMetricsVal?: ModelMetricsResponse | null
 	siteDataStateVal?: SiteData | null
 	siteCategoryVal?: Category | SiteSeen | null
-	focusModeStateVal?: boolean | "loading" 
+	focusModeStateVal?: boolean | "loading"
 	siteClassificationStateVal?: SiteClassificationResponse | null
 }
 
@@ -43,10 +46,12 @@ export default function PopUpView({
 	const [modelMetrics, setModelMetrics] = useState(modelMetricsVal)
 	const [siteDataState, setSiteDataState] = useState(siteDataStateVal)
 	const [siteCategory, setSiteCategory] = useState(siteCategoryVal)
-	const [focusModeState, setFocusModeState] = 
-		useState<boolean | "loading">(focusModeStateVal)
-	const [siteClassificationState, setSiteClassificationState] = 
-		useState(siteClassificationStateVal)
+	const [focusModeState, setFocusModeState] = useState<boolean | "loading">(
+		focusModeStateVal
+	)
+	const [siteClassificationState, setSiteClassificationState] = useState(
+		siteClassificationStateVal
+	)
 
 	// initial model setup
 	useEffect(() => {
@@ -180,11 +185,11 @@ export default function PopUpView({
 					/>
 					<Spacer p={3} />
 					<Flex alignItems="center" justifyContent="center">
-						<Switch 
+						<Switch
 							isChecked={focusModeState === true}
 							isDisabled={focusModeState === "loading"}
 							onChange={toggleFocusMode}
-							m={2} 
+							m={2}
 						/>
 						Focus mode
 					</Flex>

@@ -102,7 +102,8 @@ class BackgroundProcess {
 			(request, _, sendResponse) => {
 				try {
 					if (request.command == "toggleFocusMode") {
-						if (request.toggle === true) { // sync models if toggling on
+						if (request.toggle === true) {
+							// sync models if toggling on
 							this.classifierModels.syncModels()
 						}
 						this.focusModeState = request.toggle

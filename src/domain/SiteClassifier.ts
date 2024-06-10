@@ -1,9 +1,10 @@
-import { SiteDataRepository } from "../data/SiteDataRepository"
+import { fromUrl, parseDomain, ParseResultType } from "parse-domain"
 import { SiteData } from "../data/models/SiteData"
-import NaiveBayesModel from "./NaiveBayesModel"
+import { SiteDataRepository } from "../data/SiteDataRepository"
 import { ProcrastinationScore } from "./models/ProcrastinationScore"
 import { TextData } from "./models/TextData"
 import { TrainedOn } from "./models/TrainedOn"
+import NaiveBayesModel from "./NaiveBayesModel"
 
 export class SiteClassifier {
 	private siteDataRepository: SiteDataRepository
@@ -23,9 +24,18 @@ export class SiteClassifier {
 
 	constructor(siteDataRepository: SiteDataRepository) {
 		this.siteDataRepository = siteDataRepository
-		this.titleModel = new NaiveBayesModel()
-		this.domainModel = new NaiveBayesModel()
+		this.titleModel = new NaiveBayesModel() // title model will use the default tokeniser
+		this.domainModel = new NaiveBayesModel(this.domainTokeniser)
 		this.syncModels()
+	}
+
+	domainTokeniser(url: string): string[] {
+		const parsedDomain = parseDomain(fromUrl(url))
+		if (parsedDomain.type === ParseResultType.Listed && parsedDomain.domain) {
+			return [parsedDomain.domain]
+		}
+
+		return []
 	}
 
 	syncModels() {
