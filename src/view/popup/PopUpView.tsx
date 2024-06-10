@@ -41,16 +41,12 @@ export default function PopUpView({
 	siteDataStateVal = null,
 	siteCategoryVal = null,
 	focusModeStateVal = false,
-	siteClassificationStateVal = null,
 }: PopUpViewProps) {
 	const [modelMetrics, setModelMetrics] = useState(modelMetricsVal)
 	const [siteDataState, setSiteDataState] = useState(siteDataStateVal)
 	const [siteCategory, setSiteCategory] = useState(siteCategoryVal)
 	const [focusModeState, setFocusModeState] = useState<boolean | "loading">(
 		focusModeStateVal
-	)
-	const [siteClassificationState, setSiteClassificationState] = useState(
-		siteClassificationStateVal
 	)
 
 	// initial model setup
@@ -101,17 +97,6 @@ export default function PopUpView({
 	const updateSiteCategoryState = (siteData: SiteData) => {
 		checkSiteSeenUseCase(JSON.stringify(siteData)).then(response => {
 			setSiteCategory(response.seenBefore)
-		})
-	}
-
-	const updateSiteClassificationState = (siteData: SiteData) => {
-		if (siteData.domain === undefined) {
-			return
-		}
-
-		requestSiteClassificationUseCase(siteData).then(response => {
-			console.log("Response from background script:", response)
-			// setSiteClassificationState(response.category) TODO
 		})
 	}
 
@@ -194,11 +179,13 @@ export default function PopUpView({
 						Focus mode
 					</Flex>
 					<Spacer p={3} />
-					<ModelDataCard
-						modelData={modelMetrics}
-						showChanges={false}
-						resyncModel={resyncModel}
-					/>
+					<Box maxW="250px" m="0 auto">
+						<ModelDataCard
+							modelData={modelMetrics}
+							showDownload
+							resyncModel={resyncModel}
+						/>
+					</Box>
 				</>
 			) : (
 				<>
