@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test } from "@jest/globals"
 import NaiveBayesModel from "../src/domain/NaiveBayesModel"
 import { TextData } from "../src/domain/models/TextData"
 
-describe("Bayes Classifier", () => {
+describe("Bayes Model", () => {
 	let classifier: NaiveBayesModel
 	const trainingData: TextData[] = [
 		{ text: "I love this product", class: "positive" },
@@ -50,5 +50,14 @@ describe("Bayes Classifier", () => {
 		).toBeGreaterThan(0.5)
 		expect(classifier.predict("Unhappy")["negative"]).toBeGreaterThan(0.5)
 		expect(classifier.predict("Terrible experience")["negative"]).toBeGreaterThan(0.5)
+	})
+
+	test("Classifier will throw an error if data is empty", () => {
+		// Given
+		const emptyClassifier = new NaiveBayesModel()
+		classifier.train([])
+
+		// Expect to throw error
+		expect(() => emptyClassifier.predict("I absolutely love this product")).toThrow()
 	})
 })
