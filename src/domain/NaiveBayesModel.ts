@@ -9,16 +9,27 @@ const NON_EXISTENT_TOKEN = "///nonexistent///"
 
 export default class NaiveBayesModel {
 	// holds all the unique tokens in the training data
-	private vocabulary: Set<Token> = new Set()
 
 	classProbabilities: Record<TextClass, number> = {}
 	tokenProbabilities: Record<TextClass, Record<Token, number>> = {}
+	tokenise: (text: TextSequence) => Token[]
+
+	constructor(tokeniser?: (text: TextSequence) => Token[]) {
+		if (!tokeniser) {
+			this.tokenise = this.defaultTokeniser
+		} else {
+			this.tokenise = tokeniser
+		}
+	}
 
 	public train(data: TextData[]): void {
 		/*
         Processes the training data to build up the vocabulary, 
         classProbabilities, and tokenProbabilities. Does it over two passes.
         */
+		if (data.length === 0) {
+			return
+		}
 
 		// first pass to build up the frequencies
 		this.buildUpFrequencies(data)
@@ -62,7 +73,7 @@ export default class NaiveBayesModel {
 		return probabilityTable
 	}
 
-	public tokenise(text: TextSequence): Token[] {
+	public defaultTokeniser(text: TextSequence): Token[] {
 		/*
         Simple tokeniser that splits the text into words and removes punctuation.
         Unsure if this is efficient - that looks like a lot of copies and memory
@@ -99,7 +110,6 @@ export default class NaiveBayesModel {
 	private buildUpFrequencies(data: TextData[]): void {
 		data.forEach(textDataItem => {
 			const tokens = this.tokenise(textDataItem.text)
-			tokens.forEach(token => this.vocabulary.add(token))
 			this.setUpDataStructure(textDataItem)
 
 			// Increment the class count

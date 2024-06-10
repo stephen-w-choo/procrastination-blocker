@@ -6,6 +6,7 @@ import { CacheProvider } from "@emotion/react"
 import React from "react"
 import { createRoot, Root } from "react-dom/client"
 import { SiteData } from "../data/models/SiteData"
+import { checkFocusModeUseCase } from "../messagePassing/backgroundToggleUseCases"
 import {
 	CheckSiteSeenResponse,
 	SiteClassificationResponse,
@@ -16,7 +17,6 @@ import { setListener } from "../messagePassing/base/setListener"
 import { requestSiteClassificationUseCase } from "../messagePassing/classificationModelUseCases"
 import { checkSiteSeenUseCase } from "../messagePassing/repositoryUseCases"
 import { ContentView } from "../view/content/ContentView"
-import { checkFocusModeUseCase } from "../messagePassing/backgroundToggleUseCases"
 
 class ContentProcess {
 	currentSiteData: SiteData
@@ -69,7 +69,7 @@ class ContentProcess {
 			container: shadowRoot,
 		})
 
-		const style = document.createElement('style')
+		const style = document.createElement("style")
 		style.textContent = `
 		  * {
 			font-family: sans-serif;
@@ -98,7 +98,7 @@ class ContentProcess {
 			// const root = this.createNormalDom()
 			// TODO: add a conditional on whether or not to show
 			// currently shows in all cases for debugging purposes
-			
+
 			root.render(
 				<CacheProvider value={cache}>
 					<ChakraProvider>

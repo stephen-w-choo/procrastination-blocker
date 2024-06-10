@@ -13,9 +13,11 @@ export function ProcrastinationScoreCard({
 	trainedOn,
 }: ProcrastinationScoreCardProps) {
 	const calculatePercentage = () => {
-		return Math.round((
-			(procrastinationScore.title + procrastinationScore.domain) / 2) * 100
-		).toString() + "%"
+		return (
+			Math.round(
+				((procrastinationScore.title + procrastinationScore.domain) / 2) * 100
+			).toString() + "%"
+		)
 	}
 
 	return (

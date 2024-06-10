@@ -49,6 +49,8 @@ export class SiteDataRepository {
 
 	private loadStoredSites() {
 		chrome.storage.local.get(null, items => {
+			console.log(items)
+
 			for (const key in items) {
 				if (!key.startsWith(SITE_STORAGE_PREFIX)) {
 					continue
