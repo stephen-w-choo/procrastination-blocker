@@ -98,12 +98,14 @@ class ContentProcess {
 			// const root = this.createNormalDom()
 			// TODO: add a conditional on whether or not to show
 			// currently shows in all cases for debugging purposes
+			// TODO - turn siteData, siteSeen, and siteStatus into a provider
 
 			root.render(
 				<CacheProvider value={cache}>
 					<ChakraProvider>
 						<ContentView
 							siteData={this.currentSiteData}
+							siteSeen={siteSeen.seenBefore}
 							siteStatus={{
 								procrastinationScore: siteStatus.procrastinationScore,
 								trainedOn: siteStatus.trainedOn,

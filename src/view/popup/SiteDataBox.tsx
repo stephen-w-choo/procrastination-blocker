@@ -26,6 +26,7 @@ export function SiteDataBox({ siteDataState, siteCategory }: SiteDataBoxProps) {
 		<>
 			<Flex
 				alignItems="center"
+				maxW="300px"
 				whiteSpace="nowrap"
 				overflow="hidden"
 				textOverflow="ellipsis"
@@ -34,6 +35,7 @@ export function SiteDataBox({ siteDataState, siteCategory }: SiteDataBoxProps) {
 			</Flex>
 			<Flex
 				alignItems="center"
+				maxW="300px"
 				whiteSpace="nowrap"
 				overflow="hidden"
 				textOverflow="ellipsis"

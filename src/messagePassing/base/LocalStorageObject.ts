@@ -1,3 +1,3 @@
 export type LocalStorageObject = {
-    [key: string]: any
+	[key: string]: any
 }

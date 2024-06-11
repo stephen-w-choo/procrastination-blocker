@@ -12,7 +12,10 @@ import {
 	Text,
 } from "@chakra-ui/react"
 import React from "react"
-import { exportLocalStorage, importLocalStorage } from "../../messagePassing/chromeLocalStorageCases"
+import {
+	exportLocalStorage,
+	importLocalStorage,
+} from "../../messagePassing/chromeLocalStorageCases"
 
 type ModelDataCardProps = {
 	modelData: {
@@ -55,15 +58,12 @@ export function ModelDataCard({
 
 	const downloadModel = () => {
 		// TODO - refactor this part, increase type safety
-		exportLocalStorage().then((data) => {
+		exportLocalStorage().then(data => {
 			triggerDownload(data, "model_data.json")
 		})
 
 		const triggerDownload = (data: Object, downloadName: string) => {
-			const blob = new Blob(
-				[JSON.stringify(data)], 
-				{ type: "application/json" }
-			)
+			const blob = new Blob([JSON.stringify(data)], { type: "application/json" })
 			const url = URL.createObjectURL(blob)
 			const a = document.createElement("a")
 			a.download = downloadName
@@ -83,13 +83,15 @@ export function ModelDataCard({
 
 		const reader = new FileReader()
 		reader.onload = e => {
-		  	const json = JSON.parse(e.target?.result as string)
+			const json = JSON.parse(e.target?.result as string)
 			importLocalStorage(json)
 		}
 		reader.readAsText(file)
 	}
 
-	function HackedUploadInput(action: (event: React.ChangeEvent<HTMLInputElement>) => void) {
+	function HackedUploadInput(
+		action: (event: React.ChangeEvent<HTMLInputElement>) => void
+	) {
 		return (
 			<FormLabel
 				position="absolute"
@@ -119,7 +121,7 @@ export function ModelDataCard({
 	const DownloadSection = () => {
 		return (
 			<>
-				<Button 
+				<Button
 					onClick={downloadModel}
 					maxW="200px"
 					m="5px auto"
@@ -127,11 +129,7 @@ export function ModelDataCard({
 				>
 					Download model data
 				</Button>
-				<Button
-					maxW="200px"
-					m="5px auto"
-					fontSize="small"
-				>
+				<Button maxW="200px" m="5px auto" fontSize="small">
 					Upload a previous model
 					{HackedUploadInput(uploadModel)}
 				</Button>

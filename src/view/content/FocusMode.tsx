@@ -9,12 +9,11 @@ import {
 	Flex,
 	Heading,
 	Spacer,
-	Stack,
 	Text,
 	VStack,
 } from "@chakra-ui/react"
 import React, { useState } from "react"
-import { Category, SiteData } from "../../data/models/SiteData"
+import { Category, SiteData, SiteSeen } from "../../data/models/SiteData"
 import { ProcrastinationScore } from "../../domain/models/ProcrastinationScore"
 import { TrainedOn } from "../../domain/models/TrainedOn"
 import { toggleFocusModeUseCase } from "../../messagePassing/backgroundToggleUseCases"
@@ -22,13 +21,13 @@ import {
 	requestModelSyncUseCase,
 	requestSiteClassificationUseCase,
 } from "../../messagePassing/classificationModelUseCases"
-import { addSiteUseCase } from "../../messagePassing/repositoryUseCases"
 import { ModelDataCard } from "../popup/ModelDataCard"
-import { ContentButton } from "./components/ContentButton"
+import { OptionsSection } from "./sections/OptionsSection"
 import { ProcrastinationScoreCard } from "./sections/SiteClassificationCard"
 
 export type FocusModeProps = {
 	siteData: SiteData
+	siteSeen: Category | SiteSeen
 	siteStatus: {
 		procrastinationScore: ProcrastinationScore
 		trainedOn: TrainedOn
@@ -36,19 +35,13 @@ export type FocusModeProps = {
 	closeTopBar: () => void
 }
 
-export function FocusMode({ siteData, siteStatus, closeTopBar }: FocusModeProps) {
-	const serialisedSiteData = JSON.stringify(siteData)
+export function FocusMode({
+	siteData,
+	siteSeen,
+	siteStatus,
+	closeTopBar,
+}: FocusModeProps) {
 	const [siteStatusState, setSiteStatusState] = useState(siteStatus)
-
-	function addProductiveSite() {
-		addSiteUseCase(Category.productive, serialisedSiteData)
-		closeTopBar()
-	}
-
-	function addProcrastinationSite() {
-		addSiteUseCase(Category.procrastination, serialisedSiteData)
-		closeTopBar()
-	}
 
 	function resyncAndRefreshSiteStatus() {
 		requestModelSyncUseCase().then(modelSyncResponse => {
@@ -72,7 +65,9 @@ export function FocusMode({ siteData, siteStatus, closeTopBar }: FocusModeProps)
 	return (
 		<>
 			<Heading size="md">
-				This looks like it could be a non-productive site.
+				{siteSeen === Category.procrastination
+					? "You've previously marked this as a non-productive site."
+					: "This looks like it could be a non-productive site."}
 			</Heading>
 			<Divider borderColor="black" mt="10px" mb="20px" />
 			<Flex>
@@ -100,41 +95,11 @@ export function FocusMode({ siteData, siteStatus, closeTopBar }: FocusModeProps)
 						</AccordionItem>
 					</Accordion>
 				</VStack>
-				<Stack maxW="350px" p={4}>
-					<Heading size="md">What would you like to do?</Heading>
-					<Divider borderColor="black" />
-					<ContentButton
-						color="red"
-						onClick={() => {
-							addProcrastinationSite()
-							window.history.back()
-						}}
-					>
-						<Text>Send me back</Text>
-						<Text>(mark this as a procrastination site)</Text>
-					</ContentButton>
-					<ContentButton
-						color="teal"
-						onClick={() => {
-							addProductiveSite()
-							closeTopBar()
-						}}
-					>
-						<Text>Let me continue</Text>
-						<Text>(mark this as a productive site)</Text>
-					</ContentButton>
-					<ContentButton
-						color="yellow"
-						onClick={() => {
-							addProcrastinationSite()
-							closeTopBar()
-						}}
-					>
-						<Text>
-							😈 This is a procrastination site, but let me in anyway.
-						</Text>
-					</ContentButton>
-				</Stack>
+				<OptionsSection
+					siteSeen={siteSeen}
+					siteData={siteData}
+					closeTopBar={closeTopBar}
+				/>
 			</Flex>
 			<Flex width="100%" justifyContent="center">
 				<Button

@@ -1,6 +1,6 @@
 import { useDisclosure } from "@chakra-ui/react"
 import React, { useState } from "react"
-import { SiteData } from "../../data/models/SiteData"
+import { Category, SiteData, SiteSeen } from "../../data/models/SiteData"
 import { ProcrastinationScore } from "../../domain/models/ProcrastinationScore"
 import { TrainedOn } from "../../domain/models/TrainedOn"
 import { COLORS } from "../colours"
@@ -9,13 +9,14 @@ import { TopBar } from "./components/TopBar"
 
 type ContentViewProps = {
 	siteData: SiteData
+	siteSeen: Category | SiteSeen
 	siteStatus: {
 		procrastinationScore: ProcrastinationScore
 		trainedOn: TrainedOn
 	}
 }
 
-export function ContentView({ siteData, siteStatus }: ContentViewProps) {
+export function ContentView({ siteData, siteSeen, siteStatus }: ContentViewProps) {
 	const { isOpen, onToggle } = useDisclosure()
 	const [disabled, disableTopBar] = useState(false)
 
@@ -33,6 +34,7 @@ export function ContentView({ siteData, siteStatus }: ContentViewProps) {
 		>
 			<FocusMode
 				siteData={siteData}
+				siteSeen={siteSeen}
 				siteStatus={siteStatus}
 				closeTopBar={closeTopBar}
 			/>

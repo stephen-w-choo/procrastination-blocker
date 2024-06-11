@@ -56,7 +56,7 @@ export function RepositoryClassificationBox({
 	return (
 		<Flex justifyContent="center">
 			<ButtonGroup
-				size="md"
+				size="sm"
 				isAttached
 				variant="outline"
 				orientation="vertical"

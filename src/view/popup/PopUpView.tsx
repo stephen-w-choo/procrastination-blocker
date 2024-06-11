@@ -13,7 +13,6 @@ import {
 import {
 	requestModelMetricsUseCase,
 	requestModelSyncUseCase,
-	requestSiteClassificationUseCase,
 } from "../../messagePassing/classificationModelUseCases"
 import {
 	addSiteUseCase,
@@ -52,7 +51,7 @@ export default function PopUpView({
 	// initial model setup
 	useEffect(() => {
 		updateModelMetrics()
-		updateSiteDataState()
+		updateSiteDataAndCategoryState()
 		updateFocusToggleState()
 	}, [])
 
@@ -76,7 +75,7 @@ export default function PopUpView({
 		})
 	}
 
-	const updateSiteDataState = () => {
+	const updateSiteDataAndCategoryState = () => {
 		requestSiteDataUseCase().then(response => {
 			const siteData: SiteData = JSON.parse(response.serialisedSiteData)
 			setSiteDataState(siteData)
