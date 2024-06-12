@@ -55,23 +55,11 @@ export default function PopUpView({
 		updateFocusToggleState()
 	}, [])
 
+	// Local state update functions
 	const updateFocusToggleState = () => {
 		checkFocusModeUseCase().then(response => {
 			if (response.toggleStatus === undefined) return
 			setFocusModeState(response.toggleStatus)
-		})
-	}
-
-	const toggleFocusMode = () => {
-		setFocusModeState("loading")
-		const toggleTo = !focusModeState
-
-		toggleFocusModeUseCase(toggleTo).then(response => {
-			if (response.toggleStatus === undefined) {
-				setFocusModeState(false)
-			} else {
-				setFocusModeState(response.toggleStatus)
-			}
 		})
 	}
 
@@ -99,6 +87,20 @@ export default function PopUpView({
 		})
 	}
 
+	// Classifier model interaction functions
+	const toggleFocusMode = () => {
+		setFocusModeState("loading")
+		const toggleTo = !focusModeState
+
+		toggleFocusModeUseCase(toggleTo).then(response => {
+			if (response.toggleStatus === undefined) {
+				setFocusModeState(false)
+			} else {
+				setFocusModeState(response.toggleStatus)
+			}
+		})
+	}
+
 	const resyncModel = () => {
 		requestModelSyncUseCase()
 			.then(response => {
@@ -112,6 +114,7 @@ export default function PopUpView({
 			})
 	}
 
+	// Repository interaction functions
 	const addSite = (category: Category) => {
 		addSiteUseCase(category, JSON.stringify(siteDataState))
 			.then(response => {

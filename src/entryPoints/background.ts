@@ -1,3 +1,4 @@
+import { SettingsRepository } from "../data/SettingsRepository"
 import { SiteDataRepository } from "../data/SiteDataRepository"
 import { Category, SiteData } from "../data/models/SiteData"
 import { SiteClassifier } from "../domain/SiteClassifier"
@@ -16,9 +17,12 @@ import {
 	SiteClassificationResponse,
 	ToggleFocusModeRequest,
 } from "../messagePassing/base/MessageTypes"
-import { setListener } from "../messagePassing/base/setListener"
+import { setAsynchronousListener, setListener } from "../messagePassing/base/setListener"
 import procrastinationSites from "../procrastinationSitesSeed"
 import productiveSites from "../productiveSitesSeed"
+
+const SETTINGS_STORAGE_PREFIX = "$SETTINGS"
+const FOCUS_MODE_SUFFIX = "///focusMode"
 
 class BackgroundProcess {
 	siteDataRepository: SiteDataRepository
@@ -29,6 +33,12 @@ class BackgroundProcess {
 		this.siteDataRepository = new SiteDataRepository()
 		// this.seedRepository()
 		this.classifierModels = new SiteClassifier(this.siteDataRepository)
+
+		SettingsRepository.getFocusModeSetting().then(value => {
+			if (value) {
+				this.classifierModels.syncModels()
+			}
+		})
 	}
 
 	setListeners() {
@@ -98,27 +108,28 @@ class BackgroundProcess {
 	}
 
 	setToggleFocusModeListener() {
-		setListener<ToggleFocusModeRequest | CheckFocusModeRequest, FocusModeResponse>(
-			(request, _, sendResponse) => {
-				try {
-					if (request.command == "toggleFocusMode") {
-						if (request.toggle === true) {
-							// sync models if toggling on
-							this.classifierModels.syncModels()
-						}
-						this.focusModeState = request.toggle
-						sendResponse({ toggleStatus: this.focusModeState, success: true })
-						return
+		setAsynchronousListener<
+			ToggleFocusModeRequest | CheckFocusModeRequest,
+			FocusModeResponse
+		>((request, _, sendResponse) => {
+			try {
+				if (request.command == "toggleFocusMode") {
+					if (request.toggle === true) {
+						// sync models if toggling on
+						this.classifierModels.syncModels()
 					}
-					if (request.command == "checkFocusMode") {
-						sendResponse({ toggleStatus: this.focusModeState, success: true })
-						return
-					}
-				} catch {
-					sendResponse({ success: false })
+					SettingsRepository.setFocusModeSetting(request.toggle).then(value => {
+						sendResponse({ toggleStatus: value, success: true })
+					})
+				} else if (request.command == "checkFocusMode") {
+					SettingsRepository.getFocusModeSetting().then(value => {
+						sendResponse({ toggleStatus: value, success: true })
+					})
 				}
+			} catch {
+				sendResponse({ success: false })
 			}
-		)
+		})
 	}
 
 	setModelMetricsListener() {
@@ -164,7 +175,6 @@ class BackgroundProcess {
 					this.siteDataRepository.addSite(addingSite, request.type)
 					sendResponse({ success: true })
 				} catch {
-					console.log("Error parsing site data")
 					sendResponse({
 						success: false,
 						debugInfo: "Error parsing site data",
@@ -178,7 +188,6 @@ class BackgroundProcess {
 					this.siteDataRepository.removeSite(removingSite)
 					sendResponse({ success: true })
 				} catch {
-					console.log("Error parsing site data")
 					sendResponse({
 						success: false,
 						debugInfo: "Error parsing site data",
@@ -194,7 +203,6 @@ class BackgroundProcess {
 					this.siteDataRepository.reclassifySite(reclassifyingSite)
 					sendResponse({ success: true })
 				} catch {
-					console.log("Error parsing site data")
 					sendResponse({
 						success: false,
 						debugInfo: "Error parsing site data",
