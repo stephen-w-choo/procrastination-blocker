@@ -104,6 +104,7 @@ class ContentProcess {
 				<CacheProvider value={cache}>
 					<ChakraProvider>
 						<ContentView
+							isActive={true}
 							siteData={this.currentSiteData}
 							siteSeen={siteSeen.seenBefore}
 							siteStatus={{
