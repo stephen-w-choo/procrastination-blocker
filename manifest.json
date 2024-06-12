@@ -10,18 +10,18 @@
         "128": "icons/icon-128.png"
     },
     "action": {
-        "default_popup": "build/src/entryPoints/pop-up.html"
+        "default_popup": "src/entryPoints/pop-up.html"
     },
     "content_scripts": [
         {
-            "js": ["build/content/content.js"],
+            "js": ["content/content.js"],
             "matches": [
                 "<all_urls>"
             ]
         }
     ],
     "background": {
-        "service_worker": "build/background.js",
+        "service_worker": "background.js",
         "type": "module"
     },
     "permissions": [

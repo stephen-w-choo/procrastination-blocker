@@ -51,11 +51,13 @@
   "scripts": {
     "type-check": "tsc --noEmit",
     "test": "jest",
-    "build": "bun run type-check && bun run build:background && bun run build:content",
+    "build": "bun run type-check && bun run build:background && bun run build:content && bun run build:manifest",
     "format": "prettier --write \"**/*.ts\" \"**/*.tsx\"",
     "storybook": "storybook dev -p 6006",
     "build:background": "vite build --config vite.config.background.js",
     "build:content": "vite build --config vite.config.content.js",
+    "build:manifest": "cp -r icons manifest.json build",
+    "build:zip": "cd build && zip -r ../procrastination-blocker.zip .",
     "build-storybook": "storybook build"
   }
 }

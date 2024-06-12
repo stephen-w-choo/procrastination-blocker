@@ -186,3 +186,7 @@ stories/A
 
 procrastinationSitesSeed.ts
 productiveSitesSeed.ts
+
+build.crx
+build.pem
+build.zip
