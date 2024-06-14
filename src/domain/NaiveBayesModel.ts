@@ -4,14 +4,22 @@ import { TextClass, TextData, TextSequence, Token } from "./models/TextData"
 // encounters words it hasn't seen before
 const NON_EXISTENT_TOKEN = "///nonexistent///"
 
+const ALPHA = 1 // modifiable Alpha for Laplace smoothing
+
+const DECAY_RATE = 1.5 // modifiable decay rate for unseen tokens
+
 // TODO: Current implementation requires retraining on the whole set with additions
-// Naive Bayes can actually be updated incrementally - potentially look into this
+// The frequency buildup step can actually be updated incrementally
+// However, the probabilities will still need to be recalculated, which is where
+// the bulk of the computational cost is
 
 export default class NaiveBayesModel {
 	// holds all the unique tokens in the training data
 
 	classProbabilities: Record<TextClass, number> = {}
+	classTokenCounts: Record<TextClass, number> = {}
 	tokenProbabilities: Record<TextClass, Record<Token, number>> = {}
+	vocabulary: Set<Token> = new Set()
 	tokenise: (text: TextSequence) => Token[]
 
 	constructor(tokeniser?: (text: TextSequence) => Token[]) {
@@ -50,6 +58,8 @@ export default class NaiveBayesModel {
 		// Bayes - P(a | b) = b * P(b | a) / a
 		// Treat each word as a possible trait, then calculate the probability of
 		// the class given all traits are present
+		// Adjust for smaller token counts
+		let nonExistentTokenCount = 0
 
 		Object.keys(this.classProbabilities).forEach(textClass => {
 			// Start with the base probability of a given class
@@ -61,18 +71,20 @@ export default class NaiveBayesModel {
 					probability *= this.tokenProbabilities[textClass][token]
 				} else {
 					probability *= this.tokenProbabilities[textClass][NON_EXISTENT_TOKEN]
+					nonExistentTokenCount++
 				}
 			})
 
 			// Add to probability table
 			probabilityTable[textClass] = probability
 		})
-
-		this.normalise(probabilityTable)
+		
+		this.normalise(probabilityTable, nonExistentTokenCount)
 
 		return probabilityTable
 	}
-
+	
+	
 	public defaultTokeniser(text: TextSequence): Token[] {
 		/*
         Simple tokeniser that splits the text into words and removes punctuation.
@@ -86,21 +98,34 @@ export default class NaiveBayesModel {
 			.trim()
 			.split(" ")
 	}
-
-	private normalise(probabilityTable: Record<string, number>) {
+	
+	private normalise(
+		probabilityTable: Record<string, number>,
+		unseenTokenCount: number
+	) {
 		// Normalise probabilities, does it in place as Objects are passed by reference
 		const totalProbability = Object.values(probabilityTable).reduce(
 			(accum, curr) => accum + curr
-		)
-		const normaliser = 1 / totalProbability
-		Object.keys(probabilityTable).forEach(textClass => {
-			probabilityTable[textClass] *= normaliser
-		})
+			)
+			const normaliser = 1 / totalProbability
+			Object.keys(probabilityTable).forEach(textClass => {
+				probabilityTable[textClass] *= normaliser
+				probabilityTable[textClass] = this.decayTowardsHalf(probabilityTable[textClass], unseenTokenCount)
+			})
+	}
+
+	private decayTowardsHalf(probability: number, magnitude: number): number {
+		magnitude *= 0.2
+		
+		return 0.5 + (probability - 0.5) * Math.pow(DECAY_RATE, -magnitude)
 	}
 
 	private setUpDataStructure(textDataItem: TextData): void {
 		if (!this.classProbabilities[textDataItem.class]) {
 			this.classProbabilities[textDataItem.class] = 0
+		}
+		if (!this.classTokenCounts[textDataItem.class]) {
+			this.classTokenCounts[textDataItem.class] = 0
 		}
 		if (!this.tokenProbabilities[textDataItem.class]) {
 			this.tokenProbabilities[textDataItem.class] = {}
@@ -114,9 +139,12 @@ export default class NaiveBayesModel {
 
 			// Increment the class count
 			this.classProbabilities[textDataItem.class]++
+			this.classTokenCounts[textDataItem.class] += tokens.length
 
 			// Increment the token count for a given class
 			tokens.forEach(token => {
+				this.vocabulary.add(token)
+
 				if (!this.tokenProbabilities[textDataItem.class][token]) {
 					this.tokenProbabilities[textDataItem.class][token] = 0
 				}
@@ -132,24 +160,29 @@ export default class NaiveBayesModel {
 			this.classProbabilities[textClass] /= totalDocuments
 		}
 
+		const totalTokens = Object.values(this.classTokenCounts).reduce(
+			(accum, curr) => accum + curr
+		)
+
 		// Token probabilities with Laplace smoothing
 		for (const textClass in this.tokenProbabilities) {
 			// Total tokens in a class + 1 for Laplace smoothing
 			// Plus 1 extra for the case where a token doesn't exist
-			const totalTokensInClass =
-				Object.values(this.tokenProbabilities[textClass]).reduce(
-					(acc, val) => acc + val,
-					0
-				) + 1
+			const totalTokensInClass = this.classTokenCounts[textClass]
 
 			for (const token in this.tokenProbabilities[textClass]) {
 				this.tokenProbabilities[textClass][token] =
-					(this.tokenProbabilities[textClass][token] + 1) / totalTokensInClass
+					(this.tokenProbabilities[textClass][token] + ALPHA) / 
+					(totalTokensInClass + this.vocabulary.size)
 			}
 
 			// Special non-existent token
+			// naive Bayes modification - we divide by total tokens instead of total tokens in class
+			// this is because we expect our corpus to rarely be even on both sides
+			// this means that with the conventional method, non-existent tokens would have
+			// a heavy skew towards the class with less tokens
 			this.tokenProbabilities[textClass][NON_EXISTENT_TOKEN] =
-				1 / totalTokensInClass
+				ALPHA / (totalTokens) 
 		}
 	}
 }
