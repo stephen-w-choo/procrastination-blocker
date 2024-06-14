@@ -1,4 +1,4 @@
-import { fromUrl, parseDomain, ParseResultType } from "parse-domain"
+// import { fromUrl, parseDomain, ParseResultType } from "parse-domain"
 import { SiteData } from "../data/models/SiteData"
 import { SiteDataRepository } from "../data/SiteDataRepository"
 import { ProcrastinationScore } from "./models/ProcrastinationScore"
@@ -30,12 +30,9 @@ export class SiteClassifier {
 	}
 
 	domainTokeniser(url: string): string[] {
-		const parsedDomain = parseDomain(fromUrl(url))
-		if (parsedDomain.type === ParseResultType.Listed && parsedDomain.domain) {
-			return [parsedDomain.domain]
-		}
+		const parsedUrl = new URL(url)
 
-		return []
+		return [parsedUrl.hostname]
 	}
 
 	syncModels() {
