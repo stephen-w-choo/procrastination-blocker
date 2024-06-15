@@ -1,7 +1,8 @@
-import { Card, Heading, Spacer, Text } from "@chakra-ui/react"
+import { Card, Spacer, Text } from "@chakra-ui/react"
 import React from "react"
 import { ProcrastinationScore } from "../../../domain/models/ProcrastinationScore"
 import { TrainedOn } from "../../../domain/models/TrainedOn"
+import { Heading1, Heading3 } from "../components/Typography"
 
 type ProcrastinationScoreCardProps = {
 	procrastinationScore: ProcrastinationScore
@@ -22,13 +23,9 @@ export function ProcrastinationScoreCard({
 
 	return (
 		<Card p={3} backgroundColor="white">
-			<Heading size="sm" textAlign="center">
-				Procrastination score
-			</Heading>
+			<Heading3 textAlign="center">Procrastination score</Heading3>
 			<Spacer p={2} />
-			<Heading size="lg" textAlign="center">
-				{calculatePercentage()}
-			</Heading>
+			<Heading1 textAlign="center">{calculatePercentage()}</Heading1>
 			<Spacer p={2} />
 			<Text fontSize="small">
 				This score is based on your model, which has been trained on a total of{" "}

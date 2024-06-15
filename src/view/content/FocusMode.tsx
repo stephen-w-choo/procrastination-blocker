@@ -7,7 +7,6 @@ import {
 	Button,
 	Divider,
 	Flex,
-	Heading,
 	Spacer,
 	Text,
 	VStack,
@@ -22,6 +21,7 @@ import {
 	requestSiteClassificationUseCase,
 } from "../../messagePassing/classificationModelUseCases"
 import { ModelDataCard } from "../popup/ModelDataCard"
+import { Heading2 } from "./components/Typography"
 import { OptionsSection } from "./sections/OptionsSection"
 import { ProcrastinationScoreCard } from "./sections/SiteClassificationCard"
 
@@ -64,11 +64,11 @@ export function FocusMode({
 
 	return (
 		<>
-			<Heading size="md">
+			<Heading2>
 				{siteSeen === Category.procrastination
 					? "You've previously marked this as a non-productive site."
 					: "This looks like it could be a non-productive site."}
-			</Heading>
+			</Heading2>
 			<Divider borderColor="black" mt="10px" mb="20px" />
 			<Flex>
 				<VStack p={4} maxW="250px">
@@ -76,16 +76,21 @@ export function FocusMode({
 						procrastinationScore={siteStatus.procrastinationScore}
 						trainedOn={siteStatus.trainedOn}
 					/>
+					<Spacer p={1} />
 					<Accordion allowToggle w="100%">
 						<AccordionItem borderStyle="none" w="100%">
 							<AccordionButton p={0} w="100%">
 								<AccordionIcon />
-								<Text fontSize="small" textAlign="start">
+								<Text
+									fontSize="small"
+									textAlign="start"
+									fontWeight="bold"
+								>
 									More details about the model
 								</Text>
 							</AccordionButton>
+							<Spacer p={1} />
 							<AccordionPanel p={0}>
-								<Spacer p={2} />
 								<ModelDataCard
 									modelData={siteStatus.trainedOn}
 									showChanges
