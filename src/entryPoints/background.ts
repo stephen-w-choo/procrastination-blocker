@@ -21,9 +21,6 @@ import { setAsynchronousListener, setListener } from "../messagePassing/base/set
 import procrastinationSites from "../procrastinationSitesSeed"
 import productiveSites from "../productiveSitesSeed"
 
-const SETTINGS_STORAGE_PREFIX = "$SETTINGS"
-const FOCUS_MODE_SUFFIX = "///focusMode"
-
 class BackgroundProcess {
 	siteDataRepository: SiteDataRepository
 	classifierModels: SiteClassifier
@@ -67,7 +64,6 @@ class BackgroundProcess {
 						const currentSiteData: SiteData = JSON.parse(
 							request.serialisedSiteData
 						)
-						console.log("Current site data", currentSiteData)
 						let classification =
 							this.classifierModels.classify(currentSiteData)
 						if (classification != null) {
@@ -83,8 +79,6 @@ class BackgroundProcess {
 							})
 						}
 					} catch (error) {
-						console.log(error)
-						console.log(request)
 						sendResponse({
 							success: false,
 						})

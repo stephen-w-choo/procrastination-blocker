@@ -1,4 +1,4 @@
-import { Divider, Heading, Stack, Text } from "@chakra-ui/react"
+import { Divider, Stack } from "@chakra-ui/react"
 import React from "react"
 import { Category, SiteData, SiteSeen } from "../../../data/models/SiteData"
 import {
@@ -6,6 +6,7 @@ import {
 	reclassifySiteUseCase,
 } from "../../../messagePassing/repositoryUseCases"
 import { ContentButton } from "../components/ContentButton"
+import { Body1, Heading2 } from "../components/Typography"
 
 interface OptionsSectionProps {
 	siteData: SiteData
@@ -38,7 +39,7 @@ export function OptionsSection({ siteData, siteSeen, closeTopBar }: OptionsSecti
 							window.history.back()
 						}}
 					>
-						<Text>Send me back</Text>
+						<Body1>Send me back</Body1>
 					</ContentButton>
 					<ContentButton
 						color="teal"
@@ -47,8 +48,8 @@ export function OptionsSection({ siteData, siteSeen, closeTopBar }: OptionsSecti
 							closeTopBar()
 						}}
 					>
-						<Text>I marked it wrongly - let me through</Text>
-						<Text>(reclassify as a productive site)</Text>
+						<Body1>I marked it wrongly - let me through</Body1>
+						<Body1>(reclassify as a productive site)</Body1>
 					</ContentButton>
 					<ContentButton
 						color="yellow"
@@ -56,9 +57,9 @@ export function OptionsSection({ siteData, siteSeen, closeTopBar }: OptionsSecti
 							closeTopBar()
 						}}
 					>
-						<Text>
+						<Body1 textAlign="center">
 							😈 This is a procrastination site, but let me in anyway.
-						</Text>
+						</Body1>
 					</ContentButton>
 				</>
 			)
@@ -72,8 +73,8 @@ export function OptionsSection({ siteData, siteSeen, closeTopBar }: OptionsSecti
 							window.history.back()
 						}}
 					>
-						<Text>Send me back</Text>
-						<Text>(mark this as a procrastination site)</Text>
+						<Body1>Send me back</Body1>
+						<Body1>(mark this as a procrastination site)</Body1>
 					</ContentButton>
 					<ContentButton
 						color="teal"
@@ -82,8 +83,8 @@ export function OptionsSection({ siteData, siteSeen, closeTopBar }: OptionsSecti
 							closeTopBar()
 						}}
 					>
-						<Text>Let me continue</Text>
-						<Text>(mark this as a productive site)</Text>
+						<Body1>Let me continue</Body1>
+						<Body1>(mark this as a productive site)</Body1>
 					</ContentButton>
 					<ContentButton
 						color="yellow"
@@ -92,9 +93,9 @@ export function OptionsSection({ siteData, siteSeen, closeTopBar }: OptionsSecti
 							closeTopBar()
 						}}
 					>
-						<Text>
+						<Body1 textAlign="center">
 							😈 This is a procrastination site, but let me in anyway.
-						</Text>
+						</Body1>
 					</ContentButton>
 				</>
 			)
@@ -103,7 +104,7 @@ export function OptionsSection({ siteData, siteSeen, closeTopBar }: OptionsSecti
 
 	return (
 		<Stack maxW="350px" p={4}>
-			<Heading size="md">What would you like to do?</Heading>
+			<Heading2>What would you like to do?</Heading2>
 			<Divider borderColor="black" />
 			<Buttons />
 		</Stack>

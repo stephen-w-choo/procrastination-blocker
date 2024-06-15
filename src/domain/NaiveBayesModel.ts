@@ -78,13 +78,12 @@ export default class NaiveBayesModel {
 			// Add to probability table
 			probabilityTable[textClass] = probability
 		})
-		
+
 		this.normalise(probabilityTable, nonExistentTokenCount)
 
 		return probabilityTable
 	}
-	
-	
+
 	public defaultTokeniser(text: TextSequence): Token[] {
 		/*
         Simple tokeniser that splits the text into words and removes punctuation.
@@ -98,7 +97,7 @@ export default class NaiveBayesModel {
 			.trim()
 			.split(" ")
 	}
-	
+
 	private normalise(
 		probabilityTable: Record<string, number>,
 		unseenTokenCount: number
@@ -106,17 +105,20 @@ export default class NaiveBayesModel {
 		// Normalise probabilities, does it in place as Objects are passed by reference
 		const totalProbability = Object.values(probabilityTable).reduce(
 			(accum, curr) => accum + curr
+		)
+		const normaliser = 1 / totalProbability
+		Object.keys(probabilityTable).forEach(textClass => {
+			probabilityTable[textClass] *= normaliser
+			probabilityTable[textClass] = this.decayTowardsHalf(
+				probabilityTable[textClass],
+				unseenTokenCount
 			)
-			const normaliser = 1 / totalProbability
-			Object.keys(probabilityTable).forEach(textClass => {
-				probabilityTable[textClass] *= normaliser
-				probabilityTable[textClass] = this.decayTowardsHalf(probabilityTable[textClass], unseenTokenCount)
-			})
+		})
 	}
 
 	private decayTowardsHalf(probability: number, magnitude: number): number {
 		magnitude *= 0.2
-		
+
 		return 0.5 + (probability - 0.5) * Math.pow(DECAY_RATE, -magnitude)
 	}
 
@@ -172,7 +174,7 @@ export default class NaiveBayesModel {
 
 			for (const token in this.tokenProbabilities[textClass]) {
 				this.tokenProbabilities[textClass][token] =
-					(this.tokenProbabilities[textClass][token] + ALPHA) / 
+					(this.tokenProbabilities[textClass][token] + ALPHA) /
 					(totalTokensInClass + this.vocabulary.size)
 			}
 
@@ -181,8 +183,7 @@ export default class NaiveBayesModel {
 			// this is because we expect our corpus to rarely be even on both sides
 			// this means that with the conventional method, non-existent tokens would have
 			// a heavy skew towards the class with less tokens
-			this.tokenProbabilities[textClass][NON_EXISTENT_TOKEN] =
-				ALPHA / (totalTokens) 
+			this.tokenProbabilities[textClass][NON_EXISTENT_TOKEN] = ALPHA / totalTokens
 		}
 	}
 }

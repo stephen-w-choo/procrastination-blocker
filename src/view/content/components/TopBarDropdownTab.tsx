@@ -1,7 +1,6 @@
 import { ChevronDownIcon } from "@chakra-ui/icons"
 import { Box, Button, Heading } from "@chakra-ui/react"
 import React from "react"
-import { LuBrainCircuit } from "react-icons/lu"
 
 export type TopBarIconProps = {
 	color: string
@@ -32,15 +31,16 @@ export function TopBarDropdownTab({ color, isOpen, onToggle }: TopBarIconProps) 
 				display="flex"
 				alignItems="center"
 			>
-				<LuBrainCircuit style={{ display: "inline", marginRight: "5px" }} />
 				Training mode
 			</Heading>
 			<ChevronDownIcon
 				position="absolute"
-				top="5"
+				top="20px"
+				height="20px"
+				width="20px"
 				rotate="180deg"
 				transform={isOpen ? "rotate(180deg)" : "rotate(0deg)"}
-				transition={"transform 0.3s"}
+				transition={"transform 0.4s"}
 				boxSize={6}
 			/>
 			<Box width="100%">

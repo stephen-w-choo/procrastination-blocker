@@ -2,13 +2,10 @@ import {
 	Button,
 	Card,
 	FormLabel,
-	Heading,
 	Input,
 	Spacer,
 	Stat,
 	StatGroup,
-	StatHelpText,
-	StatNumber,
 	Text,
 } from "@chakra-ui/react"
 import React from "react"
@@ -16,6 +13,7 @@ import {
 	exportLocalStorage,
 	importLocalStorage,
 } from "../../messagePassing/chromeLocalStorageCases"
+import { Body2, Heading2, Heading3 } from "../content/components/Typography"
 
 type ModelDataCardProps = {
 	modelData: {
@@ -41,15 +39,17 @@ export function ModelDataCard({
 			return (
 				<>
 					<Text fontSize="small">
-						Data changes since last model sync:{" "}
-						{modelData?.changesSinceLastSync}
+						Changes since last sync:{" "}
+						<strong>{modelData?.changesSinceLastSync}</strong>
 					</Text>
 					<Button
 						onClick={() => {
 							resyncModel()
 						}}
+						h={8}
+						m={2}
 					>
-						Resync model
+						<Body2>Resync model</Body2>
 					</Button>
 				</>
 			)
@@ -139,18 +139,16 @@ export function ModelDataCard({
 
 	return (
 		<Card p={3} backgroundColor="white">
-			<Heading size="xs" textAlign="center">
-				Text classifier data
-			</Heading>
+			<Heading3 textAlign="center">Text classifier data</Heading3>
 			<Spacer p={2} />
-			<StatGroup textAlign={"center"}>
+			<StatGroup>
 				<Stat>
-					<StatNumber>{modelData.productive}</StatNumber>
-					<StatHelpText>productive</StatHelpText>
+					<Heading2 textAlign={"center"}>{modelData.productive}</Heading2>
+					<Body2 textAlign={"center"}>productive</Body2>
 				</Stat>
 				<Stat>
-					<StatNumber>{modelData.procrastination}</StatNumber>
-					<StatHelpText>procrastination</StatHelpText>
+					<Heading2 textAlign={"center"}>{modelData.procrastination}</Heading2>
+					<Body2 textAlign={"center"}>procrastination</Body2>
 				</Stat>
 			</StatGroup>
 			<Spacer p={2} />
