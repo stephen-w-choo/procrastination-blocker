@@ -1,6 +1,7 @@
 import { ChevronDownIcon } from "@chakra-ui/icons"
 import { Box, Button, Heading } from "@chakra-ui/react"
 import React from "react"
+import { Heading2 } from "./Typography"
 
 export type TopBarIconProps = {
 	color: string
@@ -31,10 +32,11 @@ export function TopBarDropdownTab({ color, isOpen, onToggle }: TopBarIconProps) 
 				display="flex"
 				alignItems="center"
 			>
-				Training mode
+				<Heading2>Focus Mode</Heading2>
 			</Heading>
 			<ChevronDownIcon
 				position="absolute"
+				color="#000000"
 				top="20px"
 				height="20px"
 				width="20px"

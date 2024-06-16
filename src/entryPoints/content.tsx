@@ -81,6 +81,10 @@ class ContentProcess {
 		})
 	}
 
+	/**
+	 * Observes URL changes and re-renders the top bar - specifically for handling
+	 * SPA navigation
+	 */
 	observeUrlChanges() {
 		if ("navigation" in window) {
 			//@ts-ignore - navigation API is not yet in the TypeScript lib
@@ -89,31 +93,6 @@ class ContentProcess {
 					this.setupPageData()
 					this.getFocusModeState()
 				}, 2000)
-
-				// event.intercept({
-				// 	handler: async () => {
-				// 		console.log(
-				// 			"Intercepted navigation event. Waiting for the new page to load..."
-				// 		)
-
-				// 		// // Wait for the new page to load completely
-				// 		window.addEventListener(
-				// 			"load",
-				// 			() => {
-				// 				console.log("Page loaded")
-
-				// 		// 		// Reload the page data after the new page has loaded
-				// 		// 		this.setupPageData()
-
-				// 		// 		// Reload the focus mode state if the page changes as an SPA and the page hasn't been seen before
-				// 		// 		if (!this.pagesSeen.has(this.serialisedSiteData)) {
-				// 		// 			this.getFocusModeState()
-				// 		// 		}
-				// 			},
-				// 			{ once: true }
-				// 		) // Ensure the event listener is removed after it's triggered once
-				// 	},
-				// })
 			})
 		} else {
 			console.warn("Navigation API is not supported in this browser.")
@@ -151,13 +130,14 @@ class ContentProcess {
 			// currently shows in all cases for debugging purposes
 			// TODO - turn siteData, siteSeen, and siteStatus into a provider
 
-			console.log("rerendering root")
-
 			this.root.render(
 				<CacheProvider value={this.cache}>
 					<ChakraProvider>
 						<ContentView
 							isActive={true}
+							rerenderTopBar={() => {
+								this.classifySiteAndRenderTopBar()
+							}}
 							siteData={this.currentSiteData}
 							siteSeen={siteSeen.seenBefore}
 							siteStatus={{

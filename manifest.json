@@ -29,5 +29,6 @@
         "tabs",
         "scripting",
         "activeTab"
-    ]
+    ],
+    "minimum_chrome_version": "102"
 }

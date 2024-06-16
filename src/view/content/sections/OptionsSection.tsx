@@ -39,7 +39,13 @@ export function OptionsSection({ siteData, siteSeen, closeTopBar }: OptionsSecti
 							window.history.back()
 						}}
 					>
-						<Body1>Send me back</Body1>
+						<Body1
+							color={"inherit"}
+							textAlign="center"
+							fontWeight={"semibold"}
+						>
+							Send me back
+						</Body1>
 					</ContentButton>
 					<ContentButton
 						color="teal"
@@ -48,8 +54,20 @@ export function OptionsSection({ siteData, siteSeen, closeTopBar }: OptionsSecti
 							closeTopBar()
 						}}
 					>
-						<Body1>I marked it wrongly - let me through</Body1>
-						<Body1>(reclassify as a productive site)</Body1>
+						<Body1
+							color={"inherit"}
+							textAlign="center"
+							fontWeight={"semibold"}
+						>
+							I marked it wrongly - let me through
+						</Body1>
+						<Body1
+							color={"inherit"}
+							textAlign="center"
+							fontWeight={"semibold"}
+						>
+							(reclassify as a productive site)
+						</Body1>
 					</ContentButton>
 					<ContentButton
 						color="yellow"
@@ -57,7 +75,11 @@ export function OptionsSection({ siteData, siteSeen, closeTopBar }: OptionsSecti
 							closeTopBar()
 						}}
 					>
-						<Body1 textAlign="center">
+						<Body1
+							color={"inherit"}
+							textAlign="center"
+							fontWeight={"semibold"}
+						>
 							😈 This is a procrastination site, but let me in anyway.
 						</Body1>
 					</ContentButton>
@@ -73,8 +95,20 @@ export function OptionsSection({ siteData, siteSeen, closeTopBar }: OptionsSecti
 							window.history.back()
 						}}
 					>
-						<Body1>Send me back</Body1>
-						<Body1>(mark this as a procrastination site)</Body1>
+						<Body1
+							color={"inherit"}
+							textAlign="center"
+							fontWeight={"semibold"}
+						>
+							Send me back
+						</Body1>
+						<Body1
+							color={"inherit"}
+							textAlign="center"
+							fontWeight={"semibold"}
+						>
+							(mark this as a procrastination site)
+						</Body1>
 					</ContentButton>
 					<ContentButton
 						color="teal"
@@ -83,8 +117,20 @@ export function OptionsSection({ siteData, siteSeen, closeTopBar }: OptionsSecti
 							closeTopBar()
 						}}
 					>
-						<Body1>Let me continue</Body1>
-						<Body1>(mark this as a productive site)</Body1>
+						<Body1
+							color={"inherit"}
+							textAlign="center"
+							fontWeight={"semibold"}
+						>
+							Let me continue
+						</Body1>
+						<Body1
+							color={"inherit"}
+							textAlign="center"
+							fontWeight={"semibold"}
+						>
+							(mark this as a productive site)
+						</Body1>
 					</ContentButton>
 					<ContentButton
 						color="yellow"
@@ -93,7 +139,11 @@ export function OptionsSection({ siteData, siteSeen, closeTopBar }: OptionsSecti
 							closeTopBar()
 						}}
 					>
-						<Body1 textAlign="center">
+						<Body1
+							color={"inherit"}
+							textAlign="center"
+							fontWeight={"semibold"}
+						>
 							😈 This is a procrastination site, but let me in anyway.
 						</Body1>
 					</ContentButton>
