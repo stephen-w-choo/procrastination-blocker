@@ -54,9 +54,9 @@ export function TopBar({
 					right="0px"
 					variant="ghost"
 					colorScheme="black"
-					aria-label="Done"
+					aria-label="Close top bar"
 					fontSize="12px"
-					icon={<CloseIcon />}
+					icon={<CloseIcon color="#000000" />}
 					height="15px"
 					width="15px"
 					onClick={closeTopBar}

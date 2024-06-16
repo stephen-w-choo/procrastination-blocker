@@ -26,6 +26,8 @@ type Story = StoryObj<typeof meta>
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const ContentViewStory: Story = {
 	args: {
+		isActive: true,
+		rerenderTopBar: () => {},
 		siteData: {
 			domain: "example.com",
 			title: "Example",

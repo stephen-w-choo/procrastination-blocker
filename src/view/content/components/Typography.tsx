@@ -20,47 +20,81 @@ type TextProps = {
 		| "right"
 		| "start"
 	>
+	fontWeight?: ResponsiveValue<"normal" | "bold" | "bolder" | "lighter" | "semibold">
+	color?: string
 }
 
-export function Heading1({ children, textAlign = "left" }: TextProps) {
+export function Heading1({ children, textAlign = "left", color = "#000000" }: TextProps) {
 	return (
-		<Heading fontSize="x-large" fontFamily={fontFamilies} textAlign={textAlign}>
+		<Heading
+			fontSize="x-large"
+			fontFamily={fontFamilies}
+			textAlign={textAlign}
+			color={color}
+		>
 			{children}
 		</Heading>
 	)
 }
 
-export function Heading2({ children, textAlign = "left" }: TextProps) {
+export function Heading2({ children, textAlign = "left", color = "#000000" }: TextProps) {
 	return (
-		<Heading fontSize="large" fontFamily={fontFamilies} textAlign={textAlign}>
+		<Heading
+			fontSize="large"
+			fontFamily={fontFamilies}
+			textAlign={textAlign}
+			color={color}
+		>
 			{children}
 		</Heading>
 	)
 }
 
-export function Heading3({ children, textAlign = "left" }: TextProps) {
+export function Heading3({ children, textAlign = "left", color = "#000000" }: TextProps) {
 	return (
-		<Heading fontSize="medium" fontFamily={fontFamilies} textAlign={textAlign}>
+		<Heading
+			fontSize="medium"
+			fontFamily={fontFamilies}
+			textAlign={textAlign}
+			color={color}
+		>
 			{children}
 		</Heading>
 	)
 }
 
-export function Body1({ children, textAlign = "left" }: TextProps) {
+export function Body1({
+	children,
+	textAlign = "left",
+	color = "#000000",
+	fontWeight = "normal",
+}: TextProps) {
 	return (
-		<Text fontSize="medium" fontFamily={fontFamilies} textAlign={textAlign}>
+		<Text
+			fontSize="medium"
+			fontFamily={fontFamilies}
+			textAlign={textAlign}
+			color={color}
+			fontWeight={fontWeight}
+		>
 			{children}
 		</Text>
 	)
 }
 
-export function Body2({ children, textAlign = "left" }: TextProps) {
+export function Body2({
+	children,
+	textAlign = "left",
+	color = "#000000",
+	fontWeight = "normal",
+}: TextProps) {
 	return (
 		<Text
 			fontSize="small"
 			fontFamily={fontFamilies}
 			textAlign={textAlign}
-			color="black800"
+			color={color}
+			fontWeight={fontWeight}
 		>
 			{children}
 		</Text>

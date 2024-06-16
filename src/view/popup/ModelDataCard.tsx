@@ -1,13 +1,4 @@
-import {
-	Button,
-	Card,
-	FormLabel,
-	Input,
-	Spacer,
-	Stat,
-	StatGroup,
-	Text,
-} from "@chakra-ui/react"
+import { Button, Card, FormLabel, Input, Spacer, Stat, StatGroup } from "@chakra-ui/react"
 import React from "react"
 import {
 	exportLocalStorage,
@@ -34,14 +25,14 @@ export function ModelDataCard({
 }: ModelDataCardProps) {
 	const changesSection = () => {
 		if (modelData?.changesSinceLastSync === 0) {
-			return <Text fontSize="small">Model is up to date with data</Text>
+			return <Body2>Model is up to date with data</Body2>
 		} else {
 			return (
 				<>
-					<Text fontSize="small">
+					<Body2>
 						Changes since last sync:{" "}
 						<strong>{modelData?.changesSinceLastSync}</strong>
-					</Text>
+					</Body2>
 					<Button
 						onClick={() => {
 							resyncModel()
@@ -49,7 +40,7 @@ export function ModelDataCard({
 						h={8}
 						m={2}
 					>
-						<Body2>Resync model</Body2>
+						<Body2 fontWeight="bold">Resync model</Body2>
 					</Button>
 				</>
 			)
@@ -89,6 +80,9 @@ export function ModelDataCard({
 		reader.readAsText(file)
 	}
 
+	/**
+	 * This is a hack to make the input field look like a button
+	 */
 	function HackedUploadInput(
 		action: (event: React.ChangeEvent<HTMLInputElement>) => void
 	) {

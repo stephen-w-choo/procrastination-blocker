@@ -4,28 +4,26 @@ import {
 	AccordionIcon,
 	AccordionItem,
 	AccordionPanel,
+	Box,
 	Button,
 	Divider,
 	Flex,
 	Spacer,
-	Text,
 	VStack,
 } from "@chakra-ui/react"
-import React, { useState } from "react"
+import React from "react"
 import { Category, SiteData, SiteSeen } from "../../data/models/SiteData"
 import { ProcrastinationScore } from "../../domain/models/ProcrastinationScore"
 import { TrainedOn } from "../../domain/models/TrainedOn"
 import { toggleFocusModeUseCase } from "../../messagePassing/backgroundToggleUseCases"
-import {
-	requestModelSyncUseCase,
-	requestSiteClassificationUseCase,
-} from "../../messagePassing/classificationModelUseCases"
+import { requestModelSyncUseCase } from "../../messagePassing/classificationModelUseCases"
 import { ModelDataCard } from "../popup/ModelDataCard"
-import { Heading2 } from "./components/Typography"
+import { Body1, Body2, Heading2 } from "./components/Typography"
 import { OptionsSection } from "./sections/OptionsSection"
 import { ProcrastinationScoreCard } from "./sections/SiteClassificationCard"
 
 export type FocusModeProps = {
+	rerenderTopBar: () => void
 	siteData: SiteData
 	siteSeen: Category | SiteSeen
 	siteStatus: {
@@ -36,29 +34,17 @@ export type FocusModeProps = {
 }
 
 export function FocusMode({
+	rerenderTopBar,
 	siteData,
 	siteSeen,
 	siteStatus,
 	closeTopBar,
 }: FocusModeProps) {
-	const [siteStatusState, setSiteStatusState] = useState(siteStatus)
-
 	function resyncAndRefreshSiteStatus() {
 		requestModelSyncUseCase().then(modelSyncResponse => {
 			if (modelSyncResponse.success) {
-				refreshSiteStatus()
+				rerenderTopBar()
 			}
-		})
-	}
-
-	function refreshSiteStatus() {
-		requestSiteClassificationUseCase(siteData).then(siteClassificationResponse => {
-			setSiteStatusState({
-				// asserting non-null is not ideal, but the user should not be able
-				// to enter this mode without a non-null procrastination score in the first place
-				procrastinationScore: siteClassificationResponse.procrastinationScore!!,
-				trainedOn: siteClassificationResponse.trainedOn!!,
-			})
 		})
 	}
 
@@ -76,18 +62,14 @@ export function FocusMode({
 						procrastinationScore={siteStatus.procrastinationScore}
 						trainedOn={siteStatus.trainedOn}
 					/>
-					<Spacer p={1} />
+					<Box h={1} />
 					<Accordion allowToggle w="100%">
 						<AccordionItem borderStyle="none" w="100%">
 							<AccordionButton p={0} w="100%">
 								<AccordionIcon />
-								<Text
-									fontSize="small"
-									textAlign="start"
-									fontWeight="bold"
-								>
+								<Body2 fontWeight="semibold">
 									More details about the model
-								</Text>
+								</Body2>
 							</AccordionButton>
 							<Spacer p={1} />
 							<AccordionPanel p={0}>
@@ -115,7 +97,9 @@ export function FocusMode({
 					colorScheme="blue"
 					m="20px"
 				>
-					<Text>Turn off focus mode</Text>
+					<Body1 color="inherit" fontWeight="semibold">
+						Turn off focus mode
+					</Body1>
 				</Button>
 			</Flex>
 		</>

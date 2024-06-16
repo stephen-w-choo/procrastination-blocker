@@ -9,6 +9,7 @@ import { TopBar } from "./components/TopBar"
 
 type ContentViewProps = {
 	isActive: boolean
+	rerenderTopBar: () => void
 	siteData: SiteData
 	siteSeen: Category | SiteSeen
 	siteStatus: {
@@ -19,6 +20,7 @@ type ContentViewProps = {
 
 export function ContentView({
 	isActive,
+	rerenderTopBar,
 	siteData,
 	siteSeen,
 	siteStatus,
@@ -46,6 +48,7 @@ export function ContentView({
 			closeTopBar={closeTopBar}
 		>
 			<FocusMode
+				rerenderTopBar={rerenderTopBar}
 				siteData={siteData}
 				siteSeen={siteSeen}
 				siteStatus={siteStatus}
