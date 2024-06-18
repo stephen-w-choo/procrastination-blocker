@@ -1,7 +1,7 @@
 
 # Procrastination blocker
 
-## Summary
+## About
 This is a personal project. I wanted a Chrome extension that would block non-productive websites for me.
 
 Similar extensions already exist, where you can blacklist URLS (eg Reddit, or YouTube), but I wanted something a bit more sophisticated. I wanted something that could tell the difference between a productive YouTube video/Reddit post (eg a YouTube video for a programming tutorial) vs a non-productive one (eg most YouTube videos - I tend to go down a rabbit hole of watching a whole bunch of cooking videos.
@@ -10,10 +10,19 @@ This extension works by having you mark non-productive/productive websites as yo
 
 It's a really fun project. The algorithm isn't particularly sophisticated, but it is lightweight, and it's just a fun experience to work with a model as you see it grow with the data you feed it.
 
-## Building and running locally
+## Installing/building the extension
+I've submitted it to the Chrome extension store - still waiting on approval :(
+
 You can run `bun install` , then `bun run build` - I chose to use Bun as a package manager just because I love how fast it is. `npm install` and `npm run build` SHOULD also work, although I haven't tested it.
 
 Once built, you can open up the Chrome extensions folder and test it by pointing it to the `/build` directory.
+
+## How to use
+![0](https://github.com/stephen-w-choo/procrastination-blocker/assets/96100043/cf21a723-647f-4e90-b4c1-fa14e5ee7bf2)
+![1](https://github.com/stephen-w-choo/procrastination-blocker/assets/96100043/bf2db914-d73e-423e-993f-09cdb0bf36f8)
+![2](https://github.com/stephen-w-choo/procrastination-blocker/assets/96100043/4ec719ab-bcb9-41d5-a8f9-542e534d9e83)
+
+
 
 ## Challenges I faced
 
