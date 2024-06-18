@@ -1,7 +1,7 @@
 import { useDisclosure } from "@chakra-ui/react"
 import React, { useEffect, useState } from "react"
 import { Category, SiteData, SiteSeen } from "../../data/models/SiteData"
-import { ProcrastinationScore } from "../../domain/models/ProcrastinationScore"
+import { ProcrastinationScores } from "../../domain/models/ProcrastinationScore"
 import { TrainedOn } from "../../domain/models/TrainedOn"
 import { COLORS } from "../colours"
 import { FocusMode } from "./FocusMode"
@@ -13,7 +13,7 @@ type ContentViewProps = {
 	siteData: SiteData
 	siteSeen: Category | SiteSeen
 	siteStatus: {
-		procrastinationScore: ProcrastinationScore
+		procrastinationScore: ProcrastinationScores
 		trainedOn: TrainedOn
 	}
 }
@@ -25,7 +25,7 @@ export function ContentView({
 	siteSeen,
 	siteStatus,
 }: ContentViewProps) {
-	const { isOpen, onToggle } = useDisclosure()
+	const { isOpen, onToggle, onOpen, onClose } = useDisclosure()
 	const [disabled, disableTopBar] = useState(false)
 
 	function closeTopBar() {
@@ -35,9 +35,11 @@ export function ContentView({
 	useEffect(() => {
 		if (isActive) {
 			// 0.5 second delay
-			setTimeout(() => onToggle(), 500)
+			setTimeout(() => onOpen(), 500)
+		} else {
+			setTimeout(() => onClose(), 500)
 		}
-	}, [])
+	}, [isActive])
 
 	return (
 		<TopBar

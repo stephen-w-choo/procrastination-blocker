@@ -5,7 +5,7 @@ import createCache, { EmotionCache } from "@emotion/cache"
 import { CacheProvider } from "@emotion/react"
 import React from "react"
 import { createRoot, Root } from "react-dom/client"
-import { SiteData } from "../data/models/SiteData"
+import { Category, SiteData } from "../data/models/SiteData"
 import { checkFocusModeUseCase } from "../messagePassing/backgroundToggleUseCases"
 import {
 	CheckSiteSeenResponse,
@@ -17,14 +17,16 @@ import { setListener } from "../messagePassing/base/setListener"
 import { requestSiteClassificationUseCase } from "../messagePassing/classificationModelUseCases"
 import { checkSiteSeenUseCase } from "../messagePassing/repositoryUseCases"
 import { ContentView } from "../view/content/ContentView"
+import { calculateOverallScore } from "../domain/models/ProcrastinationScore"
 
 class ContentProcess {
 	currentSiteData: SiteData
 	serialisedSiteData: string
-	THRESHOLD = 0.7
+	THRESHOLD = 0.6
 	root: Root
 	cache: EmotionCache
 	pagesSeen: Set<string> = new Set()
+	topBarRendered = false
 
 	constructor() {
 		// Setup data
@@ -83,7 +85,7 @@ class ContentProcess {
 
 	/**
 	 * Observes URL changes and re-renders the top bar - specifically for handling
-	 * SPA navigation
+	 * SPA navigation, where the URL can change without a full page reload
 	 */
 	observeUrlChanges() {
 		if ("navigation" in window) {
@@ -92,7 +94,7 @@ class ContentProcess {
 				setTimeout(() => {
 					this.setupPageData()
 					this.getFocusModeState()
-				}, 2000)
+				}, 1000)
 			})
 		} else {
 			console.warn("Navigation API is not supported in this browser.")
@@ -121,13 +123,39 @@ class ContentProcess {
 		return [root, cache]
 	}
 
+	renderTopBarConditional(
+		siteStatus: SiteClassificationResponse,
+		siteSeen: CheckSiteSeenResponse
+	): boolean {
+		// If the top bar has already been rendered once (due to SPA behaviour), 
+		// and we're asked to render it again, we will rerender it to update the content, regardless of the score
+		if (this.topBarRendered) return true
+
+		// If the site has been seen before and marked as productive, don't render the top bar
+		if (siteSeen.seenBefore === Category.productive) return false
+
+		// If site classification is successful
+		if (siteStatus.procrastinationScore && siteStatus.trainedOn) {
+
+			// If the site has been seen before and marked as procrastination, render the top bar
+			if (siteSeen.seenBefore === Category.procrastination) {
+				return true
+			}
+
+			// If the site is uncategorised, and the procrastination score is above the threshold, render the top bar
+			if (calculateOverallScore(siteStatus.procrastinationScore) > this.THRESHOLD) {
+				return true
+			} 
+		}
+
+		return false
+	}
+
 	renderTopBar(
 		siteStatus: SiteClassificationResponse,
 		siteSeen: CheckSiteSeenResponse
 	) {
-		if (siteStatus.procrastinationScore && siteStatus.trainedOn) {
-			// TODO: add a conditional on whether or not to show
-			// currently shows in all cases for debugging purposes
+		if (this.renderTopBarConditional(siteStatus, siteSeen)) {
 			// TODO - turn siteData, siteSeen, and siteStatus into a provider
 
 			this.root.render(
@@ -140,9 +168,9 @@ class ContentProcess {
 							}}
 							siteData={this.currentSiteData}
 							siteSeen={siteSeen.seenBefore}
-							siteStatus={{
-								procrastinationScore: siteStatus.procrastinationScore,
-								trainedOn: siteStatus.trainedOn,
+							siteStatus={{ // This is already checked in the conditional
+								procrastinationScore: siteStatus.procrastinationScore!!,
+								trainedOn: siteStatus.trainedOn!!,
 							}}
 						/>
 					</ChakraProvider>

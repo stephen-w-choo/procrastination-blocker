@@ -1,7 +1,7 @@
 // import { fromUrl, parseDomain, ParseResultType } from "parse-domain"
 import { SiteData } from "../data/models/SiteData"
 import { SiteDataRepository } from "../data/SiteDataRepository"
-import { ProcrastinationScore } from "./models/ProcrastinationScore"
+import { ProcrastinationScores } from "./models/ProcrastinationScore"
 import { TextData } from "./models/TextData"
 import { TrainedOn } from "./models/TrainedOn"
 import NaiveBayesModel from "./NaiveBayesModel"
@@ -30,9 +30,13 @@ export class SiteClassifier {
 	}
 
 	domainTokeniser(url: string): string[] {
-		const parsedUrl = new URL(url)
-
-		return [parsedUrl.hostname]
+		try {
+			const parsedUrl = new URL(url)
+			return [parsedUrl.hostname]
+		} catch {
+			console.log("Failed to parse the following url", url)
+			return []
+		}
 	}
 
 	syncModels() {
@@ -85,7 +89,7 @@ export class SiteClassifier {
 	}
 
 	classify(site: SiteData): {
-		procrastinationScore: ProcrastinationScore
+		procrastinationScore: ProcrastinationScores
 		trainedOn: TrainedOn
 	} | null {
 		if (this.modelsInvalid === true) {

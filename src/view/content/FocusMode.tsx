@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react"
 import React from "react"
 import { Category, SiteData, SiteSeen } from "../../data/models/SiteData"
-import { ProcrastinationScore } from "../../domain/models/ProcrastinationScore"
+import { ProcrastinationScores } from "../../domain/models/ProcrastinationScore"
 import { TrainedOn } from "../../domain/models/TrainedOn"
 import { toggleFocusModeUseCase } from "../../messagePassing/backgroundToggleUseCases"
 import { requestModelSyncUseCase } from "../../messagePassing/classificationModelUseCases"
@@ -27,7 +27,7 @@ export type FocusModeProps = {
 	siteData: SiteData
 	siteSeen: Category | SiteSeen
 	siteStatus: {
-		procrastinationScore: ProcrastinationScore
+		procrastinationScore: ProcrastinationScores
 		trainedOn: TrainedOn
 	}
 	closeTopBar: () => void
