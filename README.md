@@ -4,7 +4,7 @@
 ## About
 This is a personal project. I wanted a Chrome extension that would block non-productive websites for me.
 
-Similar extensions already exist, where you can blacklist URLS (eg Reddit, or YouTube), but I wanted something a bit more sophisticated. I wanted something that could tell the difference between a productive YouTube video/Reddit post (eg a YouTube video for a programming tutorial) vs a non-productive one (eg most YouTube videos - I tend to go down a rabbit hole of watching a whole bunch of cooking videos.
+Similar extensions already exist, where you can blacklist URLS (eg Reddit, or YouTube), but I wanted something a bit more sophisticated. I wanted something that could tell the difference between a productive YouTube video/Reddit post (eg a YouTube video for a programming tutorial) vs a non-productive one (eg most YouTube videos - I tend to go down a rabbit hole of watching a whole bunch of cooking videos).
 
 This extension works by having you mark non-productive/productive websites as you browse. Over time, the algorithm learns to classify certain websites as productive, or non-productive.
 
