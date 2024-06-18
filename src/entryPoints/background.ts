@@ -18,11 +18,6 @@ import {
 	ToggleFocusModeRequest,
 } from "../messagePassing/base/MessageTypes"
 import { setAsynchronousListener, setListener } from "../messagePassing/base/setListener"
-import procrastinationSites from "../procrastinationSitesSeed"
-import productiveSites from "../productiveSitesSeed"
-
-const SETTINGS_STORAGE_PREFIX = "$SETTINGS"
-const FOCUS_MODE_SUFFIX = "///focusMode"
 
 class BackgroundProcess {
 	siteDataRepository: SiteDataRepository
@@ -51,12 +46,13 @@ class BackgroundProcess {
 	}
 
 	seedRepository() {
-		for (const procrastinationSite of procrastinationSites) {
-			this.siteDataRepository.addSite(procrastinationSite, Category.procrastination)
-		}
-		for (const productiveSite of productiveSites) {
-			this.siteDataRepository.addSite(productiveSite, Category.productive)
-		}
+		// uncomment for seeding
+		// for (const procrastinationSite of procrastinationSites) {
+		// 	this.siteDataRepository.addSite(procrastinationSite, Category.procrastination)
+		// }
+		// for (const productiveSite of productiveSites) {
+		// 	this.siteDataRepository.addSite(productiveSite, Category.productive)
+		// }
 	}
 
 	setSiteClassificationListener() {
@@ -67,7 +63,6 @@ class BackgroundProcess {
 						const currentSiteData: SiteData = JSON.parse(
 							request.serialisedSiteData
 						)
-						console.log("Current site data", currentSiteData)
 						let classification =
 							this.classifierModels.classify(currentSiteData)
 						if (classification != null) {
@@ -83,8 +78,6 @@ class BackgroundProcess {
 							})
 						}
 					} catch (error) {
-						console.log(error)
-						console.log(request)
 						sendResponse({
 							success: false,
 						})
@@ -126,7 +119,8 @@ class BackgroundProcess {
 						sendResponse({ toggleStatus: value, success: true })
 					})
 				}
-			} catch {
+			} catch (e) {
+				console.error(e)
 				sendResponse({ success: false })
 			}
 		})

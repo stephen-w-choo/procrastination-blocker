@@ -21,6 +21,8 @@ export function ContentButton({ color, children, onClick }: ContentButtonProps) 
 			whiteSpace="normal"
 			height="auto"
 			p="2"
+			m="2px"
+			fontWeight={600}
 		>
 			{children}
 		</Button>

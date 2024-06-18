@@ -7,6 +7,9 @@ describe("Site Classifier", () => {
 	let siteDataRepository: jest.Mocked<SiteDataRepository>
 	let classifierModels: SiteClassifier
 
+	// Note - this is a deliberately controlled dataset, with equal numbers of word tokens in both
+	// In reality, if there is a skew one way or the other in the dataset, the model will be biased
+	// towards the less common class
 	const productiveSiteData: SiteData[] = [
 		{
 			title: "list of text classification models - Google Search",
@@ -28,11 +31,11 @@ describe("Site Classifier", () => {
 			domain: "https://www.amazon.com.au/prime",
 		},
 		{
-			title: "Amazon.com.au Shopping Cart",
+			title: "Amazon com au Shopping Cart",
 			domain: "https://www.amazon.com.au/gp/cart/view.html?ref_=nav_cart",
 		},
 		{
-			title: "Amazon.com.au : ear tips",
+			title: "Amazon com au : ear tips",
 			domain: "https://www.amazon.com.au/s?k=ear+tips&crid=3Q9KODGRRQGZ7&sprefix=ear+tip%2Caps%2C323&ref=nb_sb_noss_1",
 		},
 	]
@@ -70,7 +73,7 @@ describe("Site Classifier", () => {
 		)
 
 		// Then
-		expect(domain).toEqual(["amazon"])
+		expect(domain).toEqual(["www.amazon.com.au"])
 	})
 
 	test("Should appropriately classify a given SiteData entry", () => {
@@ -79,12 +82,81 @@ describe("Site Classifier", () => {
 			title: "Shopping Cart - purchasing non-productive item",
 			domain: "https://www.amazon.com.au/gp/cart/view.html?ref_=nav_cart",
 		}
+		const productiveSite = {
+			title: "a b c models",
+			domain: "https://huggingface.co/classification-models",
+		}
 
 		// When
 		const isProcrastinationSite = classifierModels.classify(procrastinationSite)
+		const isProductiveSite = classifierModels.classify(productiveSite)
 
 		// expect a high procrastination score above 0.5
 		expect(isProcrastinationSite?.procrastinationScore.title).toBeGreaterThan(0.5)
 		expect(isProcrastinationSite?.procrastinationScore.domain).toBeGreaterThan(0.5)
+		expect(isProductiveSite?.procrastinationScore.title).toBeLessThan(0.5)
+		expect(isProductiveSite?.procrastinationScore.domain).toBeLessThan(0.5)
+	})
+
+	test("Unseen words and domains should return close to 0.5 if there an equal number of documents", () => {
+		// Given
+		const unseenSite = {
+			title: "q w e r t y",
+			domain: "https://www.unseendomain.com",
+		}
+
+		// When
+		const unseenSiteClassification = classifierModels.classify(unseenSite)
+
+		// Then
+		expect(unseenSiteClassification?.procrastinationScore.title).toBe(0.5)
+		expect(unseenSiteClassification?.procrastinationScore.domain).toBe(0.5)
+	})
+
+	test("Unseen words should cause a score to decay towards the midpoint - 0.5", () => {
+		// Given
+		const seenProcrastinationSite = {
+			title: "Shopping",
+			domain: "https://www.amazon.com.au/gp/cart/view.html?ref_=nav_cart",
+		}
+		const seenProcrastinationSiteWithUnknownWords = {
+			title: "Shopping a b c",
+			domain: "https://www.amazon.com.au/gp/cart/view.html?ref_=nav_cart",
+		}
+
+		const seenProductiveSite = {
+			title: "models",
+			domain: "https://www.anysite.com/classification-models",
+		}
+		const seenProductiveSiteWithUnknownWords = {
+			title: "models a b c",
+			domain: "https://www.anysite.com/classification-models",
+		}
+
+		// When
+		const procrastinationSiteScore = classifierModels.classify(
+			seenProcrastinationSite
+		)
+		const procrastinationSiteScoreWithUnknownWords = classifierModels.classify(
+			seenProcrastinationSiteWithUnknownWords
+		)
+		const productiveSiteScore = classifierModels.classify(seenProductiveSite)
+		const productiveSiteScoreWithUnknownWords = classifierModels.classify(
+			seenProductiveSiteWithUnknownWords
+		)
+
+		// Then
+		expect(
+			procrastinationSiteScoreWithUnknownWords?.procrastinationScore.title!
+		).toBeGreaterThan(0.5)
+		expect(
+			procrastinationSiteScoreWithUnknownWords?.procrastinationScore.title!
+		).toBeLessThan(procrastinationSiteScore?.procrastinationScore.title!)
+		expect(
+			productiveSiteScoreWithUnknownWords?.procrastinationScore.title!
+		).toBeLessThan(0.5)
+		expect(
+			productiveSiteScoreWithUnknownWords?.procrastinationScore.title!
+		).toBeGreaterThan(productiveSiteScore?.procrastinationScore.title!)
 	})
 })

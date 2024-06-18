@@ -5,7 +5,7 @@ import createCache, { EmotionCache } from "@emotion/cache"
 import { CacheProvider } from "@emotion/react"
 import React from "react"
 import { createRoot, Root } from "react-dom/client"
-import { SiteData } from "../data/models/SiteData"
+import { Category, SiteData } from "../data/models/SiteData"
 import { checkFocusModeUseCase } from "../messagePassing/backgroundToggleUseCases"
 import {
 	CheckSiteSeenResponse,
@@ -17,24 +17,48 @@ import { setListener } from "../messagePassing/base/setListener"
 import { requestSiteClassificationUseCase } from "../messagePassing/classificationModelUseCases"
 import { checkSiteSeenUseCase } from "../messagePassing/repositoryUseCases"
 import { ContentView } from "../view/content/ContentView"
+import { calculateOverallScore } from "../domain/models/ProcrastinationScore"
 
 class ContentProcess {
 	currentSiteData: SiteData
 	serialisedSiteData: string
-	THRESHOLD = 0.7
+	THRESHOLD = 0.6
+	root: Root
+	cache: EmotionCache
+	pagesSeen: Set<string> = new Set()
+	topBarRendered = false
 
 	constructor() {
+		// Setup data
 		this.currentSiteData = {
 			title: document.title,
 			domain: window.location.href,
 		}
 		this.serialisedSiteData = JSON.stringify(this.currentSiteData)
+		this.pagesSeen.add(this.serialisedSiteData)
+
+		// Setup shadow DOM
+		const [root, cache] = this.createShadowDom()
+		this.root = root
+		this.cache = cache
+
+		// Get the initial state
 		this.getFocusModeState()
 	}
 
+	// TypeScript is funny - I can't call this method in the constructor without a type error
+	setupPageData() {
+		this.currentSiteData = {
+			title: document.title,
+			domain: window.location.href,
+		}
+		this.serialisedSiteData = JSON.stringify(this.currentSiteData)
+		this.pagesSeen.add(this.serialisedSiteData)
+	}
+
 	setSiteDataRequestListener() {
-		const serialisedSiteData = this.serialisedSiteData
 		setListener<SiteDataRequest, SiteDataResponse>((request, _, sendResponse) => {
+			const serialisedSiteData = this.serialisedSiteData
 			if (request.command === "siteDataRequest") {
 				sendResponse({ serialisedSiteData })
 			}
@@ -59,6 +83,24 @@ class ContentProcess {
 		})
 	}
 
+	/**
+	 * Observes URL changes and re-renders the top bar - specifically for handling
+	 * SPA navigation, where the URL can change without a full page reload
+	 */
+	observeUrlChanges() {
+		if ("navigation" in window) {
+			//@ts-ignore - navigation API is not yet in the TypeScript lib
+			navigation.addEventListener("navigate", event => {
+				setTimeout(() => {
+					this.setupPageData()
+					this.getFocusModeState()
+				}, 1000)
+			})
+		} else {
+			console.warn("Navigation API is not supported in this browser.")
+		}
+	}
+
 	createShadowDom(): [Root, EmotionCache] {
 		const shadowHost = document.createElement("div")
 		document.body.appendChild(shadowHost)
@@ -81,35 +123,54 @@ class ContentProcess {
 		return [root, cache]
 	}
 
-	createNormalDom(): Root {
-		const normalHost = document.createElement("div")
-		document.body.insertBefore(normalHost, document.body.firstChild)
-		const normalRoot = createRoot(normalHost)
+	renderTopBarConditional(
+		siteStatus: SiteClassificationResponse,
+		siteSeen: CheckSiteSeenResponse
+	): boolean {
+		// If the top bar has already been rendered once (due to SPA behaviour), 
+		// and we're asked to render it again, we will rerender it to update the content, regardless of the score
+		if (this.topBarRendered) return true
 
-		return normalRoot
+		// If the site has been seen before and marked as productive, don't render the top bar
+		if (siteSeen.seenBefore === Category.productive) return false
+
+		// If site classification is successful
+		if (siteStatus.procrastinationScore && siteStatus.trainedOn) {
+
+			// If the site has been seen before and marked as procrastination, render the top bar
+			if (siteSeen.seenBefore === Category.procrastination) {
+				return true
+			}
+
+			// If the site is uncategorised, and the procrastination score is above the threshold, render the top bar
+			if (calculateOverallScore(siteStatus.procrastinationScore) > this.THRESHOLD) {
+				return true
+			} 
+		}
+
+		return false
 	}
 
 	renderTopBar(
 		siteStatus: SiteClassificationResponse,
 		siteSeen: CheckSiteSeenResponse
 	) {
-		const [root, cache] = this.createShadowDom()
-		if (siteStatus.procrastinationScore && siteStatus.trainedOn) {
-			// const root = this.createNormalDom()
-			// TODO: add a conditional on whether or not to show
-			// currently shows in all cases for debugging purposes
+		if (this.renderTopBarConditional(siteStatus, siteSeen)) {
 			// TODO - turn siteData, siteSeen, and siteStatus into a provider
 
-			root.render(
-				<CacheProvider value={cache}>
+			this.root.render(
+				<CacheProvider value={this.cache}>
 					<ChakraProvider>
 						<ContentView
 							isActive={true}
+							rerenderTopBar={() => {
+								this.classifySiteAndRenderTopBar()
+							}}
 							siteData={this.currentSiteData}
 							siteSeen={siteSeen.seenBefore}
-							siteStatus={{
-								procrastinationScore: siteStatus.procrastinationScore,
-								trainedOn: siteStatus.trainedOn,
+							siteStatus={{ // This is already checked in the conditional
+								procrastinationScore: siteStatus.procrastinationScore!!,
+								trainedOn: siteStatus.trainedOn!!,
 							}}
 						/>
 					</ChakraProvider>
@@ -121,3 +182,4 @@ class ContentProcess {
 
 const contentProcess = new ContentProcess()
 contentProcess.setSiteDataRequestListener()
+contentProcess.observeUrlChanges()
