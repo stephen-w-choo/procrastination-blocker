@@ -134,7 +134,9 @@ describe("Site Classifier", () => {
 		}
 
 		// When
-		const procrastinationSiteScore = classifierModels.classify(seenProcrastinationSite)
+		const procrastinationSiteScore = classifierModels.classify(
+			seenProcrastinationSite
+		)
 		const procrastinationSiteScoreWithUnknownWords = classifierModels.classify(
 			seenProcrastinationSiteWithUnknownWords
 		)
@@ -144,13 +146,17 @@ describe("Site Classifier", () => {
 		)
 
 		// Then
-		expect(procrastinationSiteScoreWithUnknownWords?.procrastinationScore.title!).toBeGreaterThan(0.5)
-		expect(procrastinationSiteScoreWithUnknownWords?.procrastinationScore.title!).toBeLessThan(
-			procrastinationSiteScore?.procrastinationScore.title!
-		)
-		expect(productiveSiteScoreWithUnknownWords?.procrastinationScore.title!).toBeLessThan(0.5)
-		expect(productiveSiteScoreWithUnknownWords?.procrastinationScore.title!).toBeGreaterThan(
-			productiveSiteScore?.procrastinationScore.title!
-		)
+		expect(
+			procrastinationSiteScoreWithUnknownWords?.procrastinationScore.title!
+		).toBeGreaterThan(0.5)
+		expect(
+			procrastinationSiteScoreWithUnknownWords?.procrastinationScore.title!
+		).toBeLessThan(procrastinationSiteScore?.procrastinationScore.title!)
+		expect(
+			productiveSiteScoreWithUnknownWords?.procrastinationScore.title!
+		).toBeLessThan(0.5)
+		expect(
+			productiveSiteScoreWithUnknownWords?.procrastinationScore.title!
+		).toBeGreaterThan(productiveSiteScore?.procrastinationScore.title!)
 	})
 })

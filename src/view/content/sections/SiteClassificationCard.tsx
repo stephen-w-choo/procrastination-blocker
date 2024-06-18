@@ -1,11 +1,11 @@
 import { Card, Spacer } from "@chakra-ui/react"
 import React from "react"
-import { ProcrastinationScore } from "../../../domain/models/ProcrastinationScore"
+import { ProcrastinationScores } from "../../../domain/models/ProcrastinationScore"
 import { TrainedOn } from "../../../domain/models/TrainedOn"
 import { Body2, Heading1, Heading3 } from "../components/Typography"
 
 type ProcrastinationScoreCardProps = {
-	procrastinationScore: ProcrastinationScore
+	procrastinationScore: ProcrastinationScores
 	trainedOn: TrainedOn
 }
 

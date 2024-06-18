@@ -6,7 +6,7 @@ import { IoIosLink } from "react-icons/io"
 import { Category, SiteData, SiteSeen } from "../../data/models/SiteData"
 
 type SiteDataBoxProps = {
-	siteDataState: SiteData
+	siteDataState: SiteData | null
 	siteCategory: Category | SiteSeen | null
 }
 
@@ -31,7 +31,8 @@ export function SiteDataBox({ siteDataState, siteCategory }: SiteDataBoxProps) {
 				overflow="hidden"
 				textOverflow="ellipsis"
 			>
-				<Icon as={CiGlobe} m={2} /> {siteDataState.title}
+				<Icon as={CiGlobe} m={2} /> 
+				{ siteDataState ? siteDataState.title: "Unable to get page title" }
 			</Flex>
 			<Flex
 				alignItems="center"
@@ -41,7 +42,7 @@ export function SiteDataBox({ siteDataState, siteCategory }: SiteDataBoxProps) {
 				textOverflow="ellipsis"
 			>
 				<Icon as={IoIosLink} m={2} />
-				{siteDataState.domain}
+				{ siteDataState ? siteDataState.domain : "Unable to get page domain" }
 			</Flex>
 			<Flex alignItems="center">
 				<Icon as={GoStack} m={2} />

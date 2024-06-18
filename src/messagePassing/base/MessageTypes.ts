@@ -1,5 +1,5 @@
 import { Category, SiteSeen } from "../../data/models/SiteData"
-import { ProcrastinationScore } from "../../domain/models/ProcrastinationScore"
+import { ProcrastinationScores } from "../../domain/models/ProcrastinationScore"
 import { TrainedOn } from "../../domain/models/TrainedOn"
 
 // TODO - experiment and see if we can use enums for the commands?
@@ -12,7 +12,7 @@ export type SiteClassificationRequest = {
 }
 
 export type SiteClassificationResponse = {
-	procrastinationScore?: ProcrastinationScore
+	procrastinationScore?: ProcrastinationScores
 	trainedOn?: TrainedOn
 	success: boolean
 	modelUntrained?: boolean
