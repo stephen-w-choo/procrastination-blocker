@@ -156,20 +156,29 @@ export default function PopUpView({
 
 	return (
 		<Box maxW="400px" minW="300px" backgroundColor={COLORS.lightGrey} padding={4}>
-			{siteDataState && modelMetrics ? (
+			{modelMetrics ? (
 				<>
 					<SiteDataBox
 						siteDataState={siteDataState}
 						siteCategory={siteCategory}
 					/>
 					<Spacer p={3} />
-					<RepositoryClassificationBox
-						siteSeenBefore={siteCategory}
-						addProductiveSite={() => addSite(Category.productive)}
-						addProcrastinationSite={() => addSite(Category.procrastination)}
-						removeSite={removeSite}
-						reclassifySite={reclassifySite}
-					/>
+					{ siteDataState ? (
+						<RepositoryClassificationBox
+							siteSeenBefore={siteCategory}
+							addProductiveSite={() => addSite(Category.productive)}
+							addProcrastinationSite={() => addSite(Category.procrastination)}
+							removeSite={removeSite}
+							reclassifySite={reclassifySite}
+						/>
+					) : (
+						<ErrorBox
+							errorHeader="Content script not responding"
+							errorText="You might need to refresh the page, or this 
+							might not be a page that we can access data about 
+							(eg a Chrome settings page)."
+						/>
+					)}
 					<Spacer p={3} />
 					<Flex alignItems="center" justifyContent="center">
 						<Switch
