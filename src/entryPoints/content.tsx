@@ -19,6 +19,8 @@ import { checkSiteSeenUseCase } from "../messagePassing/repositoryUseCases"
 import { ContentView } from "../view/content/ContentView"
 import { calculateOverallScore } from "../domain/models/ProcrastinationScore"
 
+const INVALID_CONTEXT = ["chrome://", "chrome-extension://", "about:"]
+
 class ContentProcess {
 	currentSiteData: SiteData
 	serialisedSiteData: string
@@ -44,6 +46,16 @@ class ContentProcess {
 
 		// Get the initial state
 		this.getFocusModeState()
+	}
+
+	static isValidContext(): boolean {
+		const url = window.location.href
+	
+		// return false if the URL is undefined or empty
+		if (url === "undefined" || "") return false
+	
+		// return false if the URL starts with any of the invalid contexts
+		return !INVALID_CONTEXT.some(context => url.startsWith(context))
 	}
 
 	// TypeScript is funny - I can't call this method in the constructor without a type error
@@ -94,7 +106,7 @@ class ContentProcess {
 				setTimeout(() => {
 					this.setupPageData()
 					this.getFocusModeState()
-				}, 1000)
+				}, 500)
 			})
 		} else {
 			console.warn("Navigation API is not supported in this browser.")
@@ -180,6 +192,8 @@ class ContentProcess {
 	}
 }
 
-const contentProcess = new ContentProcess()
-contentProcess.setSiteDataRequestListener()
-contentProcess.observeUrlChanges()
+if (ContentProcess.isValidContext()) {
+	const contentProcess = new ContentProcess()
+	contentProcess.setSiteDataRequestListener()
+	contentProcess.observeUrlChanges()
+}

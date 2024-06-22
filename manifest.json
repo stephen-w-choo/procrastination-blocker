@@ -25,9 +25,7 @@
         "type": "module"
     },
     "permissions": [
-        "storage",
-        "scripting",
-        "activeTab"
+        "storage"
     ],
     "minimum_chrome_version": "102"
 }

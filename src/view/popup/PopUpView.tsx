@@ -68,6 +68,8 @@ export default function PopUpView({
 			const siteData: SiteData = JSON.parse(response.serialisedSiteData)
 			setSiteDataState(siteData)
 			updateSiteCategoryState(siteData)
+		}).catch(() => {
+			setSiteDataState(null)
 		})
 	}
 
