@@ -18,6 +18,7 @@ import { requestSiteClassificationUseCase } from "../messagePassing/classificati
 import { checkSiteSeenUseCase } from "../messagePassing/repositoryUseCases"
 import { ContentView } from "../view/content/ContentView"
 import { calculateOverallScore } from "../domain/models/ProcrastinationScore"
+import { ContentViewModelProvider } from "../view/content/ContentContext"
 
 const INVALID_CONTEXT = ["chrome://", "chrome-extension://", "about:"]
 
@@ -168,12 +169,10 @@ class ContentProcess {
 		siteSeen: CheckSiteSeenResponse
 	) {
 		if (this.renderTopBarConditional(siteStatus, siteSeen)) {
-			// TODO - turn siteData, siteSeen, and siteStatus into a provider
-
 			this.root.render(
 				<CacheProvider value={this.cache}>
 					<ChakraProvider>
-						<ContentView
+						<ContentViewModelProvider
 							isActive={true}
 							rerenderTopBar={() => {
 								this.classifySiteAndRenderTopBar()
@@ -184,7 +183,9 @@ class ContentProcess {
 								procrastinationScore: siteStatus.procrastinationScore!!,
 								trainedOn: siteStatus.trainedOn!!,
 							}}
-						/>
+						>
+							<ContentView/>
+						</ContentViewModelProvider>
 					</ChakraProvider>
 				</CacheProvider>
 			)
