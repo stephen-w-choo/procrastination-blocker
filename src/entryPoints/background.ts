@@ -99,7 +99,17 @@ class BackgroundProcess {
 					if (request.toggle === true) {
 						// sync models if toggling on
 						this.classifierModels.syncModels()
+
+						// if the models are invalid, don't allow focus mode to be turned on
+						// this is already checked in the view layer, but we also want to make sure
+						// the background process doesn't allow it
+						if (this.classifierModels.modelsInvalid) {
+							SettingsRepository.setFocusModeSetting(false)
+							sendResponse({ toggleStatus: false, success: false })
+							return
+						}
 					}
+
 					SettingsRepository.setFocusModeSetting(request.toggle).then(value => {
 						sendResponse({ toggleStatus: value, success: true })
 					})
