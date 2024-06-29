@@ -12,41 +12,24 @@ import {
 	VStack,
 } from "@chakra-ui/react"
 import React from "react"
-import { Category, SiteData, SiteSeen } from "../../data/models/SiteData"
-import { ProcrastinationScores } from "../../domain/models/ProcrastinationScore"
-import { TrainedOn } from "../../domain/models/TrainedOn"
-import { toggleFocusModeUseCase } from "../../messagePassing/backgroundToggleUseCases"
-import { requestModelSyncUseCase } from "../../messagePassing/classificationModelUseCases"
-import { ModelDataCard } from "../popup/ModelDataCard"
-import { Body1, Body2, Heading2 } from "./components/Typography"
-import { OptionsSection } from "./sections/OptionsSection"
-import { ProcrastinationScoreCard } from "./sections/SiteClassificationCard"
+import { toggleFocusModeUseCase } from "../../../messagePassing/backgroundToggleUseCases"
+import { ModelDataCard } from "../../popup/ModelDataCard"
+import { Body1, Body2, Heading2 } from "../components/Typography"
+import { useContentViewModel } from "../ContentContext"
+import { OptionsSection } from "./OptionsSection"
+import { ProcrastinationScoreCard } from "./SiteClassificationCard"
+import { Category } from "../../../data/models/Category"
 
-export type FocusModeProps = {
-	rerenderTopBar: () => void
-	siteData: SiteData
-	siteSeen: Category | SiteSeen
-	siteStatus: {
-		procrastinationScore: ProcrastinationScores
-		trainedOn: TrainedOn
-	}
-	closeTopBar: () => void
-}
+export function FocusMode() {
+	const {        
+		siteData,
+        siteSeen,
+        siteStatus,
+        resyncAndRerenderTopBar,
+		setIsTopBarDisabled,
+	} = useContentViewModel()
 
-export function FocusMode({
-	rerenderTopBar,
-	siteData,
-	siteSeen,
-	siteStatus,
-	closeTopBar,
-}: FocusModeProps) {
-	function resyncAndRefreshSiteStatus() {
-		requestModelSyncUseCase().then(modelSyncResponse => {
-			if (modelSyncResponse.success) {
-				rerenderTopBar()
-			}
-		})
-	}
+	const closeTopBar = () => { setIsTopBarDisabled(true) }
 
 	return (
 		<>
@@ -76,7 +59,7 @@ export function FocusMode({
 								<ModelDataCard
 									modelData={siteStatus.trainedOn}
 									showChanges
-									resyncModel={resyncAndRefreshSiteStatus}
+									resyncModel={() => { resyncAndRerenderTopBar() }}
 								/>
 							</AccordionPanel>
 						</AccordionItem>

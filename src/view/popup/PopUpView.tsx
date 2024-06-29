@@ -1,6 +1,7 @@
-import { Alert, AlertIcon, Box, Flex, Spacer, Switch, Text } from "@chakra-ui/react"
+import { Box, Flex, Spacer, Switch } from "@chakra-ui/react"
 import React, { useEffect, useState } from "react"
-import { Category, SiteData, SiteSeen } from "../../data/models/SiteData"
+import { Category, SiteSeen } from "../../data/models/Category"
+import { SiteData } from "../../data/models/SiteData"
 import {
 	checkFocusModeUseCase,
 	toggleFocusModeUseCase,

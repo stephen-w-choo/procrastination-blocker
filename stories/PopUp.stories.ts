@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import { Category } from "../src/data/models/SiteData"
+import { Category } from "../src/data/models/Category"
 import PopUpView from "../src/view/popup/PopUpView"
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export

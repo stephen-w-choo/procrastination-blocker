@@ -5,7 +5,8 @@ import createCache, { EmotionCache } from "@emotion/cache"
 import { CacheProvider } from "@emotion/react"
 import React from "react"
 import { createRoot, Root } from "react-dom/client"
-import { Category, SiteData } from "../data/models/SiteData"
+import { SiteData } from "../data/models/SiteData"
+import { Category } from "../data/models/Category"
 import { checkFocusModeUseCase } from "../messagePassing/backgroundToggleUseCases"
 import {
 	CheckSiteSeenResponse,
@@ -18,6 +19,7 @@ import { requestSiteClassificationUseCase } from "../messagePassing/classificati
 import { checkSiteSeenUseCase } from "../messagePassing/repositoryUseCases"
 import { ContentView } from "../view/content/ContentView"
 import { calculateOverallScore } from "../domain/models/ProcrastinationScore"
+import { ContentViewModelProvider } from "../view/content/ContentContext"
 
 const INVALID_CONTEXT = ["chrome://", "chrome-extension://", "about:"]
 
@@ -105,8 +107,11 @@ class ContentProcess {
 			navigation.addEventListener("navigate", event => {
 				setTimeout(() => {
 					this.setupPageData()
-					this.getFocusModeState()
-				}, 500)
+					setTimeout(() => {
+						this.getFocusModeState()
+					}, 500)
+				}, 1000)
+				
 			})
 		} else {
 			console.warn("Navigation API is not supported in this browser.")
@@ -168,12 +173,10 @@ class ContentProcess {
 		siteSeen: CheckSiteSeenResponse
 	) {
 		if (this.renderTopBarConditional(siteStatus, siteSeen)) {
-			// TODO - turn siteData, siteSeen, and siteStatus into a provider
-
 			this.root.render(
 				<CacheProvider value={this.cache}>
 					<ChakraProvider>
-						<ContentView
+						<ContentViewModelProvider
 							isActive={true}
 							rerenderTopBar={() => {
 								this.classifySiteAndRenderTopBar()
@@ -184,7 +187,9 @@ class ContentProcess {
 								procrastinationScore: siteStatus.procrastinationScore!!,
 								trainedOn: siteStatus.trainedOn!!,
 							}}
-						/>
+						>
+							<ContentView/>
+						</ContentViewModelProvider>
 					</ChakraProvider>
 				</CacheProvider>
 			)

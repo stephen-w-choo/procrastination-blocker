@@ -1,6 +1,6 @@
 import { SettingsRepository } from "../data/SettingsRepository"
 import { SiteDataRepository } from "../data/SiteDataRepository"
-import { Category, SiteData } from "../data/models/SiteData"
+import { SiteData } from "../data/models/SiteData"
 import { SiteClassifier } from "../domain/SiteClassifier"
 import {
 	CheckFocusModeRequest,
@@ -26,7 +26,6 @@ class BackgroundProcess {
 
 	constructor() {
 		this.siteDataRepository = new SiteDataRepository()
-		// this.seedRepository()
 		this.classifierModels = new SiteClassifier(this.siteDataRepository)
 
 		SettingsRepository.getFocusModeSetting().then(value => {
@@ -43,16 +42,6 @@ class BackgroundProcess {
 		this.setModelSyncRequestListener()
 		this.setCheckSiteSeenListener()
 		this.setToggleFocusModeListener()
-	}
-
-	seedRepository() {
-		// uncomment for seeding
-		// for (const procrastinationSite of procrastinationSites) {
-		// 	this.siteDataRepository.addSite(procrastinationSite, Category.procrastination)
-		// }
-		// for (const productiveSite of productiveSites) {
-		// 	this.siteDataRepository.addSite(productiveSite, Category.productive)
-		// }
 	}
 
 	setSiteClassificationListener() {

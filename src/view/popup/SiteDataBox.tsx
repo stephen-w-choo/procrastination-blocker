@@ -3,7 +3,8 @@ import React from "react"
 import { CiGlobe } from "react-icons/ci"
 import { GoStack } from "react-icons/go"
 import { IoIosLink } from "react-icons/io"
-import { Category, SiteData, SiteSeen } from "../../data/models/SiteData"
+import { SiteData, } from "../../data/models/SiteData"
+import { Category, SiteSeen } from "../../data/models/Category"
 
 type SiteDataBoxProps = {
 	siteDataState: SiteData | null
