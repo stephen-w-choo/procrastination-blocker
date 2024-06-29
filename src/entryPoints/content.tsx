@@ -5,7 +5,8 @@ import createCache, { EmotionCache } from "@emotion/cache"
 import { CacheProvider } from "@emotion/react"
 import React from "react"
 import { createRoot, Root } from "react-dom/client"
-import { Category, SiteData } from "../data/models/SiteData"
+import { SiteData } from "../data/models/SiteData"
+import { Category } from "../data/models/Category"
 import { checkFocusModeUseCase } from "../messagePassing/backgroundToggleUseCases"
 import {
 	CheckSiteSeenResponse,
@@ -106,8 +107,11 @@ class ContentProcess {
 			navigation.addEventListener("navigate", event => {
 				setTimeout(() => {
 					this.setupPageData()
-					this.getFocusModeState()
-				}, 500)
+					setTimeout(() => {
+						this.getFocusModeState()
+					}, 500)
+				}, 1000)
+				
 			})
 		} else {
 			console.warn("Navigation API is not supported in this browser.")
