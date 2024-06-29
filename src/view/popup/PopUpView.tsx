@@ -1,4 +1,4 @@
-import { Box, Flex, Spacer, Switch } from "@chakra-ui/react"
+import { Box, Flex, Spacer, Switch, Tooltip } from "@chakra-ui/react"
 import React, { useEffect, useState } from "react"
 import { Category, SiteSeen } from "../../data/models/Category"
 import { SiteData } from "../../data/models/SiteData"
@@ -157,6 +157,14 @@ export default function PopUpView({
 		updateSiteCategoryState(siteDataState!!) // this feels bad
 	}
 
+	const isDataInsufficient = (): boolean => {
+		// if there is not enough data to train the model
+		if (modelMetrics?.procrastination === 0 || modelMetrics?.productive === 0) {
+			return true
+		}
+		return false
+	}
+
 	return (
 		<Box maxW="400px" minW="300px" backgroundColor={COLORS.lightGrey} padding={4}>
 			{modelMetrics ? (
@@ -184,12 +192,20 @@ export default function PopUpView({
 					)}
 					<Spacer p={3} />
 					<Flex alignItems="center" justifyContent="center">
-						<Switch
-							isChecked={focusModeState === true}
-							isDisabled={focusModeState === "loading"}
-							onChange={toggleFocusMode}
-							m={2}
-						/>
+						<Tooltip 
+							hasArrow 
+							label="You need to have at least 1 site in each category"
+							isDisabled={!isDataInsufficient()}
+						>
+							<Switch
+								isChecked={focusModeState === true}
+								isDisabled={
+									(focusModeState === "loading" || isDataInsufficient())
+								}
+								onChange={toggleFocusMode}
+								m={2}
+							/>
+						</Tooltip>
 						Focus mode
 					</Flex>
 					<Spacer p={3} />
