@@ -1,4 +1,4 @@
-import { Category, SiteSeen } from "../../data/models/SiteData"
+import { Category, SiteSeen } from "../../data/models/Category"
 import { ProcrastinationScores } from "../../domain/models/ProcrastinationScore"
 import { TrainedOn } from "../../domain/models/TrainedOn"
 

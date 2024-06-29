@@ -1,4 +1,5 @@
-import { Category, SerialisedSiteData } from "../data/models/SiteData"
+import { SerialisedSiteData } from "../data/models/SiteData"
+import { Category } from "../data/models/Category"
 import {
 	CheckSiteSeenRequest,
 	CheckSiteSeenResponse,

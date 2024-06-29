@@ -1,5 +1,10 @@
 const SETTINGS_STORAGE_PREFIX = "$SETTINGS"
+
+// boolean flag to enable/disable focus mode
 const FOCUS_MODE_SUFFIX = "///focusMode"
+
+// boolean flag to determine if the extension has been seeded with data
+const SEEDED_SUFFIX = "///seeded"
 
 export class SettingsRepository {
 	static getFocusModeSetting(): Promise<boolean> {

@@ -1,4 +1,5 @@
-import { Category, SerialisedSiteData, SiteData, SiteSeen } from "./models/SiteData"
+import { SerialisedSiteData, SiteData } from "./models/SiteData"
+import { Category, SiteSeen } from "./models/Category"
 
 const SITE_STORAGE_PREFIX = "$SITEDATA"
 

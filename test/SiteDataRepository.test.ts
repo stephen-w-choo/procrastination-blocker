@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, test } from "@jest/globals"
 import { SiteDataRepository, serialiseListData } from "../src/data/SiteDataRepository"
-import { Category, SiteData } from "../src/data/models/SiteData"
+import { SiteData } from "../src/data/models/SiteData"
+import { Category } from "../src/data/models/Category"
 
 describe("Bayes Classifier", () => {
 	let siteDataRepository: SiteDataRepository

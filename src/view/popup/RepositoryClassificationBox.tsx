@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, Flex } from "@chakra-ui/react"
 import React from "react"
-import { Category, SiteSeen } from "../../data/models/SiteData"
+import { Category, SiteSeen } from "../../data/models/Category"
 
 type RepositoryClassificationBoxProps = {
 	siteSeenBefore: Category | SiteSeen | null

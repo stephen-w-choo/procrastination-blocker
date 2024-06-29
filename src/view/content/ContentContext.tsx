@@ -1,11 +1,12 @@
+import { useDisclosure } from "@chakra-ui/react"
 import React, { createContext, useContext, useEffect, useState } from "react"
-import { Category, SiteData, SiteSeen } from "../../data/models/SiteData"
+import { Category, SiteSeen } from "../../data/models/Category"
+import { SiteData } from "../../data/models/SiteData"
 import { ProcrastinationScores } from "../../domain/models/ProcrastinationScore"
 import { TrainedOn } from "../../domain/models/TrainedOn"
-import { useDisclosure } from "@chakra-ui/react"
 import { requestModelSyncUseCase } from "../../messagePassing/classificationModelUseCases"
 
-interface ContentViewModelInitialValues {
+export interface ContentViewModelInitialValues {
     isActive: boolean
     rerenderTopBar: () => void
     siteData: SiteData

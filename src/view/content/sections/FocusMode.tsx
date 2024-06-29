@@ -12,13 +12,13 @@ import {
 	VStack,
 } from "@chakra-ui/react"
 import React from "react"
-import { Category } from "../../../data/models/SiteData"
 import { toggleFocusModeUseCase } from "../../../messagePassing/backgroundToggleUseCases"
 import { ModelDataCard } from "../../popup/ModelDataCard"
 import { Body1, Body2, Heading2 } from "../components/Typography"
 import { useContentViewModel } from "../ContentContext"
 import { OptionsSection } from "./OptionsSection"
 import { ProcrastinationScoreCard } from "./SiteClassificationCard"
+import { Category } from "../../../data/models/Category"
 
 export function FocusMode() {
 	const {        
