@@ -3,7 +3,7 @@ import React from "react"
 import { CiGlobe } from "react-icons/ci"
 import { GoStack } from "react-icons/go"
 import { IoIosLink } from "react-icons/io"
-import { SiteData, } from "../../data/models/SiteData"
+import { SiteData } from "../../data/models/SiteData"
 import { Category, SiteSeen } from "../../data/models/Category"
 
 type SiteDataBoxProps = {
@@ -32,8 +32,8 @@ export function SiteDataBox({ siteDataState, siteCategory }: SiteDataBoxProps) {
 				overflow="hidden"
 				textOverflow="ellipsis"
 			>
-				<Icon as={CiGlobe} m={2} /> 
-				{ siteDataState ? siteDataState.title: "Unable to get page title" }
+				<Icon as={CiGlobe} m={2} />
+				{siteDataState ? siteDataState.title : "Unable to get page title"}
 			</Flex>
 			<Flex
 				alignItems="center"
@@ -43,7 +43,7 @@ export function SiteDataBox({ siteDataState, siteCategory }: SiteDataBoxProps) {
 				textOverflow="ellipsis"
 			>
 				<Icon as={IoIosLink} m={2} />
-				{ siteDataState ? siteDataState.domain : "Unable to get page domain" }
+				{siteDataState ? siteDataState.domain : "Unable to get page domain"}
 			</Flex>
 			<Flex alignItems="center">
 				<Icon as={GoStack} m={2} />

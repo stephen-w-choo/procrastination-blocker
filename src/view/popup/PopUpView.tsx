@@ -5,7 +5,7 @@ import { SiteData } from "../../data/models/SiteData"
 import {
 	checkFocusModeUseCase,
 	toggleFocusModeUseCase,
-} from "../../messagePassing/backgroundToggleUseCases"
+} from "../../messagePassing/settingsUseCases"
 import {
 	GenericResponse,
 	ModelMetricsResponse,
@@ -65,13 +65,15 @@ export default function PopUpView({
 	}
 
 	const updateSiteDataAndCategoryState = () => {
-		requestSiteDataUseCase().then(response => {
-			const siteData: SiteData = JSON.parse(response.serialisedSiteData)
-			setSiteDataState(siteData)
-			updateSiteCategoryState(siteData)
-		}).catch(() => {
-			setSiteDataState(null)
-		})
+		requestSiteDataUseCase()
+			.then(response => {
+				const siteData: SiteData = JSON.parse(response.serialisedSiteData)
+				setSiteDataState(siteData)
+				updateSiteCategoryState(siteData)
+			})
+			.catch(() => {
+				setSiteDataState(null)
+			})
 	}
 
 	const updateModelMetrics = () => {
@@ -174,11 +176,13 @@ export default function PopUpView({
 						siteCategory={siteCategory}
 					/>
 					<Spacer p={3} />
-					{ siteDataState ? (
+					{siteDataState ? (
 						<RepositoryClassificationBox
 							siteSeenBefore={siteCategory}
 							addProductiveSite={() => addSite(Category.productive)}
-							addProcrastinationSite={() => addSite(Category.procrastination)}
+							addProcrastinationSite={() =>
+								addSite(Category.procrastination)
+							}
 							removeSite={removeSite}
 							reclassifySite={reclassifySite}
 						/>
@@ -192,15 +196,15 @@ export default function PopUpView({
 					)}
 					<Spacer p={3} />
 					<Flex alignItems="center" justifyContent="center">
-						<Tooltip 
-							hasArrow 
+						<Tooltip
+							hasArrow
 							label="You need to have at least 1 site in each category"
 							isDisabled={!isDataInsufficient()}
 						>
 							<Switch
 								isChecked={focusModeState === true}
 								isDisabled={
-									(focusModeState === "loading" || isDataInsufficient())
+									focusModeState === "loading" || isDataInsufficient()
 								}
 								onChange={toggleFocusMode}
 								m={2}
