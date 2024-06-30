@@ -1,5 +1,6 @@
 // import { fromUrl, parseDomain, ParseResultType } from "parse-domain"
 import { SiteData } from "../data/models/SiteData"
+import { SettingsRepository } from "../data/SettingsRepository"
 import { SiteDataRepository } from "../data/SiteDataRepository"
 import { ProcrastinationScores } from "./models/ProcrastinationScore"
 import { TextData } from "./models/TextData"
@@ -8,6 +9,7 @@ import NaiveBayesModel from "./NaiveBayesModel"
 
 export class SiteClassifier {
 	private siteDataRepository: SiteDataRepository
+	private settingsRepository: SettingsRepository
 	titleModel: NaiveBayesModel
 	domainModel: NaiveBayesModel
 	modelsInvalid: boolean = false
@@ -22,11 +24,14 @@ export class SiteClassifier {
 	// How likely a site has to be for procrastination before we block it
 	threshold: number = 0.6
 
-	constructor(siteDataRepository: SiteDataRepository) {
+	constructor(
+		siteDataRepository: SiteDataRepository,
+		settingsRepository: SettingsRepository
+	) {
 		this.siteDataRepository = siteDataRepository
+		this.settingsRepository = settingsRepository
 		this.titleModel = new NaiveBayesModel() // title model will use the default tokeniser
 		this.domainModel = new NaiveBayesModel(this.domainTokeniser)
-		this.syncModels()
 	}
 
 	domainTokeniser(url: string): string[] {
@@ -39,7 +44,7 @@ export class SiteClassifier {
 		}
 	}
 
-	syncModels() {
+	async syncModels() {
 		/*
         Initialises/resyncs the model with the site data
         Computationally intensive, avoid calling unless necessary
@@ -52,6 +57,7 @@ export class SiteClassifier {
 		let trainingDataSiteTitles: TextData[] = []
 		let trainingDataSiteDomains: TextData[] = []
 
+		// add repository data
 		this.siteDataRepository.procrastinationSiteList.forEach(site => {
 			trainingDataSiteTitles.push({
 				text: site.title,
@@ -73,6 +79,28 @@ export class SiteClassifier {
 				class: "productive",
 			})
 		})
+		console.log("pushed site data")
+		// add keyword data
+		const settings = await this.settingsRepository.getSettings()
+
+		settings.keywordData.procrastination.forEach(keyword => {
+			for (let i = 0; i < keyword.weight; i++) {
+				trainingDataSiteTitles.push({
+					text: keyword.text,
+					class: "procrastination",
+				})
+			}
+		})
+
+		settings.keywordData.productive.forEach(keyword => {
+			for (let i = 0; i < keyword.weight; i++) {
+				trainingDataSiteTitles.push({
+					text: keyword.text,
+					class: "productive",
+				})
+			}
+		})
+		console.log("pushed keyword data")
 
 		this.titleModel.train(trainingDataSiteTitles)
 		this.domainModel.train(trainingDataSiteDomains)

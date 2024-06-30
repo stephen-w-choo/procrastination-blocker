@@ -2,8 +2,10 @@ import { beforeEach, describe, expect, test } from "@jest/globals"
 import { SiteDataRepository } from "../src/data/SiteDataRepository"
 import { SiteData } from "../src/data/models/SiteData"
 import { SiteClassifier } from "../src/domain/SiteClassifier"
+import { SettingsRepository } from "../src/data/SettingsRepository"
 
 describe("Site Classifier", () => {
+	let settingsRepository: jest.Mocked<SettingsRepository>
 	let siteDataRepository: jest.Mocked<SiteDataRepository>
 	let classifierModels: SiteClassifier
 
@@ -53,7 +55,9 @@ describe("Site Classifier", () => {
 			},
 		} as jest.Mocked<SiteDataRepository>
 
-		classifierModels = new SiteClassifier(siteDataRepository)
+		settingsRepository = {} as jest.Mocked<SettingsRepository>
+
+		classifierModels = new SiteClassifier(siteDataRepository, settingsRepository)
 	})
 
 	test("On initialisation, should create two separate Naive Bayes models with different tokenisers", () => {

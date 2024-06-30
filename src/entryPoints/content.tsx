@@ -7,7 +7,7 @@ import React from "react"
 import { createRoot, Root } from "react-dom/client"
 import { SiteData } from "../data/models/SiteData"
 import { Category } from "../data/models/Category"
-import { checkFocusModeUseCase } from "../messagePassing/backgroundToggleUseCases"
+import { checkFocusModeUseCase } from "../messagePassing/settingsUseCases"
 import {
 	CheckSiteSeenResponse,
 	SiteClassificationResponse,
@@ -52,10 +52,10 @@ class ContentProcess {
 
 	static isValidContext(): boolean {
 		const url = window.location.href
-	
+
 		// return false if the URL is undefined or empty
 		if (url === "undefined" || "") return false
-	
+
 		// return false if the URL starts with any of the invalid contexts
 		return !INVALID_CONTEXT.some(context => url.startsWith(context))
 	}
@@ -83,6 +83,7 @@ class ContentProcess {
 		checkFocusModeUseCase().then(response => {
 			if (response.toggleStatus === undefined) return
 			if (response.toggleStatus === true) {
+				this.THRESHOLD = response.threshold
 				this.classifySiteAndRenderTopBar()
 			}
 		})
@@ -111,7 +112,6 @@ class ContentProcess {
 						this.getFocusModeState()
 					}, 500)
 				}, 1000)
-				
 			})
 		} else {
 			console.warn("Navigation API is not supported in this browser.")
@@ -144,7 +144,7 @@ class ContentProcess {
 		siteStatus: SiteClassificationResponse,
 		siteSeen: CheckSiteSeenResponse
 	): boolean {
-		// If the top bar has already been rendered once (due to SPA behaviour), 
+		// If the top bar has already been rendered once (due to SPA behaviour),
 		// and we're asked to render it again, we will rerender it to update the content, regardless of the score
 		if (this.topBarRendered) return true
 
@@ -153,7 +153,6 @@ class ContentProcess {
 
 		// If site classification is successful
 		if (siteStatus.procrastinationScore && siteStatus.trainedOn) {
-
 			// If the site has been seen before and marked as procrastination, render the top bar
 			if (siteSeen.seenBefore === Category.procrastination) {
 				return true
@@ -162,7 +161,7 @@ class ContentProcess {
 			// If the site is uncategorised, and the procrastination score is above the threshold, render the top bar
 			if (calculateOverallScore(siteStatus.procrastinationScore) > this.THRESHOLD) {
 				return true
-			} 
+			}
 		}
 
 		return false
@@ -183,12 +182,13 @@ class ContentProcess {
 							}}
 							siteData={this.currentSiteData}
 							siteSeen={siteSeen.seenBefore}
-							siteStatus={{ // This is already checked in the conditional
+							siteStatus={{
+								// This is already checked in the conditional
 								procrastinationScore: siteStatus.procrastinationScore!!,
 								trainedOn: siteStatus.trainedOn!!,
 							}}
 						>
-							<ContentView/>
+							<ContentView />
 						</ContentViewModelProvider>
 					</ChakraProvider>
 				</CacheProvider>

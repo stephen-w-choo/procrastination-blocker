@@ -2,7 +2,10 @@ import { Box, Button, Stack } from "@chakra-ui/react"
 import React, { useEffect, useRef, useState } from "react"
 import { GroupedKeywordData, KeywordData } from "../../data/models/Settings"
 import { SettingsResponse } from "../../messagePassing/base/MessageTypes"
-import { getSettingsUseCase, setSettingsUseCase } from "../../messagePassing/settingsUseCases"
+import {
+	getSettingsUseCase,
+	setSettingsUseCase,
+} from "../../messagePassing/settingsUseCases"
 import { Heading1, Heading2 } from "../content/components/Typography"
 import { KeywordsEditor } from "./KeywordsEditor"
 import { OptionsKeywordData } from "./OptionsModels"
@@ -44,7 +47,9 @@ export default function OptionsView({
 		setProcrastinationKeywords(
 			addIdToKeywordData(response.settings.keywordData.procrastination)
 		)
-		setProductiveKeywords(addIdToKeywordData(response.settings.keywordData.productive))
+		setProductiveKeywords(
+			addIdToKeywordData(response.settings.keywordData.productive)
+		)
 	}
 
 	function saveSettings() {
@@ -59,8 +64,10 @@ export default function OptionsView({
 				productive: productiveKeywords,
 			},
 		}
-		setSettingsUseCase(settings)
-			.then(response => parseSettingsResponse(response))
+		setSettingsUseCase(settings).then(response => {
+			console.log("settings response", response)
+			parseSettingsResponse(response)
+		})
 	}
 
 	function addIdToKeywordData(

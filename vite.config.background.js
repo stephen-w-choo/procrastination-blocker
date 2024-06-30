@@ -9,6 +9,8 @@ export default defineConfig({
                 background: "./src/entryPoints/background.ts",
                 popup: "./src/entryPoints/pop-up.html",
                 popupRoot: "./src/entryPoints/popUpRoot.tsx",
+                options: "./src/entryPoints/options.html",
+                optionsRoot: "./src/entryPoints/optionsRoot.tsx",
             },
             output: {
                 // Remove the hash from the file names
