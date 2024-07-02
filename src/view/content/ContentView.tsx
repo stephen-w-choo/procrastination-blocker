@@ -4,14 +4,13 @@ import { TopBar } from "./components/TopBar"
 import { useContentViewModel } from "./ContentContext"
 import { FocusMode } from "./sections/FocusMode"
 
-
 export function ContentView() {
 	const {
-        isTopBarDisabled,
-        isTopBarExpanded,
-        toggleTopBarCollapse,
-        setIsTopBarDisabled
-    } = useContentViewModel()
+		isTopBarDisabled,
+		isTopBarExpanded,
+		toggleTopBarCollapse,
+		setIsTopBarDisabled,
+	} = useContentViewModel()
 
 	return (
 		<TopBar

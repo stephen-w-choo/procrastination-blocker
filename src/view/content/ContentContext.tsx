@@ -7,61 +7,66 @@ import { TrainedOn } from "../../domain/models/TrainedOn"
 import { requestModelSyncUseCase } from "../../messagePassing/classificationModelUseCases"
 
 export interface ContentViewModelInitialValues {
-    isActive: boolean
-    rerenderTopBar: () => void
-    siteData: SiteData
-    siteSeen: Category | SiteSeen
-    siteStatus: {
-        procrastinationScore: ProcrastinationScores
-        trainedOn: TrainedOn
-    }
+	isActive: boolean
+	rerenderTopBar: () => void
+	siteData: SiteData
+	siteSeen: Category | SiteSeen
+	siteStatus: {
+		procrastinationScore: ProcrastinationScores
+		trainedOn: TrainedOn
+	}
 }
 
 interface ContentViewModelProviderProps extends ContentViewModelInitialValues {
-    children: React.ReactNode
+	children: React.ReactNode
 }
 
 interface ContentViewModelExportedValues {
-    isTopBarDisabled: boolean
-    isTopBarExpanded: boolean
-    siteData: SiteData
-    siteSeen: Category | SiteSeen
-    siteStatus: {
-        procrastinationScore: ProcrastinationScores
-        trainedOn: TrainedOn
-    }
-    resyncAndRerenderTopBar: () => void
-    toggleTopBarCollapse: () => void
-    expandTopBar: () => void
-    collapseTopBar: () => void
-    setIsTopBarDisabled: (value: boolean) => void
+	isTopBarDisabled: boolean
+	isTopBarExpanded: boolean
+	siteData: SiteData
+	siteSeen: Category | SiteSeen
+	siteStatus: {
+		procrastinationScore: ProcrastinationScores
+		trainedOn: TrainedOn
+	}
+	resyncAndRerenderTopBar: () => void
+	toggleTopBarCollapse: () => void
+	expandTopBar: () => void
+	collapseTopBar: () => void
+	setIsTopBarDisabled: (value: boolean) => void
 }
 
 const ContentViewModelContext = createContext({} as ContentViewModelExportedValues)
 
-export function ContentViewModelProvider(
-    { isActive, rerenderTopBar, siteData, siteSeen, siteStatus, children }: ContentViewModelProviderProps
-) {
-    // This hook is used to control the visibility of the top bar
-    const { 
-        isOpen: isTopBarExpanded, 
-        onToggle: toggleTopBarCollapse, 
-        onOpen: expandTopBar, 
-        onClose: collapseTopBar 
-    } = useDisclosure()
+export function ContentViewModelProvider({
+	isActive,
+	rerenderTopBar,
+	siteData,
+	siteSeen,
+	siteStatus,
+	children,
+}: ContentViewModelProviderProps) {
+	// This hook is used to control the visibility of the top bar
+	const {
+		isOpen: isTopBarExpanded,
+		onToggle: toggleTopBarCollapse,
+		onOpen: expandTopBar,
+		onClose: collapseTopBar,
+	} = useDisclosure()
 
 	const [isTopBarDisabled, setIsTopBarDisabled] = useState(false)
 
-    useEffect(() => {
-        if (isActive) {
-            // 0.5 second delay
-            setTimeout(() => expandTopBar(), 500)
-        } else {
-            setTimeout(() => collapseTopBar(), 500)
-        }
-    }, [isActive])
+	useEffect(() => {
+		if (isActive) {
+			// 0.5 second delay
+			setTimeout(() => expandTopBar(), 500)
+		} else {
+			setTimeout(() => collapseTopBar(), 500)
+		}
+	}, [isActive])
 
-    function resyncAndRerenderTopBar() {
+	function resyncAndRerenderTopBar() {
 		requestModelSyncUseCase().then(modelSyncResponse => {
 			if (modelSyncResponse.success) {
 				rerenderTopBar()
@@ -69,29 +74,27 @@ export function ContentViewModelProvider(
 		})
 	}
 
-    // Exposed values and functions
-    const exported: ContentViewModelExportedValues = {
-        isTopBarDisabled,
-        isTopBarExpanded,
-        siteData,
-        siteSeen,
-        siteStatus,
-        resyncAndRerenderTopBar,
-        toggleTopBarCollapse,
-        expandTopBar,
-        collapseTopBar,
-        setIsTopBarDisabled
-    }
+	// Exposed values and functions
+	const exported: ContentViewModelExportedValues = {
+		isTopBarDisabled,
+		isTopBarExpanded,
+		siteData,
+		siteSeen,
+		siteStatus,
+		resyncAndRerenderTopBar,
+		toggleTopBarCollapse,
+		expandTopBar,
+		collapseTopBar,
+		setIsTopBarDisabled,
+	}
 
-    return (
-        <ContentViewModelContext.Provider 
-            value={{...exported}}
-        >
-            {children}
-        </ContentViewModelContext.Provider>
-    )
+	return (
+		<ContentViewModelContext.Provider value={{ ...exported }}>
+			{children}
+		</ContentViewModelContext.Provider>
+	)
 }
 
 export function useContentViewModel(): ContentViewModelExportedValues {
-    return useContext(ContentViewModelContext)
+	return useContext(ContentViewModelContext)
 }

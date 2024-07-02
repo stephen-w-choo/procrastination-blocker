@@ -1,11 +1,17 @@
-import { Box, Flex, Spacer, Switch, Tooltip } from "@chakra-ui/react"
+import {
+	Box,
+	Flex,
+	Icon,
+	IconButton,
+	Spacer,
+	Switch,
+	Text,
+	Tooltip,
+} from "@chakra-ui/react"
 import React, { useEffect, useState } from "react"
+import { FaCog } from "react-icons/fa"
 import { Category, SiteSeen } from "../../data/models/Category"
 import { SiteData } from "../../data/models/SiteData"
-import {
-	checkFocusModeUseCase,
-	toggleFocusModeUseCase,
-} from "../../messagePassing/backgroundToggleUseCases"
 import {
 	GenericResponse,
 	ModelMetricsResponse,
@@ -22,6 +28,10 @@ import {
 	removeSiteUseCase,
 } from "../../messagePassing/repositoryUseCases"
 import { requestSiteDataUseCase } from "../../messagePassing/requestSiteDataUseCases"
+import {
+	checkFocusModeUseCase,
+	toggleFocusModeUseCase,
+} from "../../messagePassing/settingsUseCases"
 import { COLORS } from "../colours"
 import { ErrorBox } from "./ErrorBox"
 import { ModelDataCard } from "./ModelDataCard"
@@ -65,13 +75,15 @@ export default function PopUpView({
 	}
 
 	const updateSiteDataAndCategoryState = () => {
-		requestSiteDataUseCase().then(response => {
-			const siteData: SiteData = JSON.parse(response.serialisedSiteData)
-			setSiteDataState(siteData)
-			updateSiteCategoryState(siteData)
-		}).catch(() => {
-			setSiteDataState(null)
-		})
+		requestSiteDataUseCase()
+			.then(response => {
+				const siteData: SiteData = JSON.parse(response.serialisedSiteData)
+				setSiteDataState(siteData)
+				updateSiteCategoryState(siteData)
+			})
+			.catch(() => {
+				setSiteDataState(null)
+			})
 	}
 
 	const updateModelMetrics = () => {
@@ -167,6 +179,15 @@ export default function PopUpView({
 
 	return (
 		<Box maxW="400px" minW="300px" backgroundColor={COLORS.lightGrey} padding={4}>
+			<Flex justifyContent="flex-end">
+				<IconButton
+					isRound
+					aria-label="Link to settings"
+					onClick={() => chrome.runtime.openOptionsPage()}
+					icon={<Icon as={FaCog} />}
+					colorScheme="blackAlpha"
+				/>
+			</Flex>
 			{modelMetrics ? (
 				<>
 					<SiteDataBox
@@ -174,11 +195,13 @@ export default function PopUpView({
 						siteCategory={siteCategory}
 					/>
 					<Spacer p={3} />
-					{ siteDataState ? (
+					{siteDataState ? (
 						<RepositoryClassificationBox
 							siteSeenBefore={siteCategory}
 							addProductiveSite={() => addSite(Category.productive)}
-							addProcrastinationSite={() => addSite(Category.procrastination)}
+							addProcrastinationSite={() =>
+								addSite(Category.procrastination)
+							}
 							removeSite={removeSite}
 							reclassifySite={reclassifySite}
 						/>
@@ -192,15 +215,21 @@ export default function PopUpView({
 					)}
 					<Spacer p={3} />
 					<Flex alignItems="center" justifyContent="center">
-						<Tooltip 
-							hasArrow 
-							label="You need to have at least 1 site in each category"
+						<Tooltip
+							hasArrow
+							label={
+								<Text textAlign="center">
+									You need to have at least <br />1 site in each
+									category
+								</Text>
+							}
 							isDisabled={!isDataInsufficient()}
+							placement="auto-end"
 						>
 							<Switch
 								isChecked={focusModeState === true}
 								isDisabled={
-									(focusModeState === "loading" || isDataInsufficient())
+									focusModeState === "loading" || isDataInsufficient()
 								}
 								onChange={toggleFocusMode}
 								m={2}

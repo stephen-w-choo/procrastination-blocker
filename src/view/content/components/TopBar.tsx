@@ -20,7 +20,6 @@ export function TopBar({
 	closeTopBar,
 	onToggle,
 }: TopBarProps) {
-	
 	if (disabled === true) {
 		return null
 	}

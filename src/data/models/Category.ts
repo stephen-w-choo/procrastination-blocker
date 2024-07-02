@@ -1,17 +1,17 @@
 export enum Category {
 	productive = "productive",
-	procrastination = "procrastination"
+	procrastination = "procrastination",
 }
 
 export enum SiteSeen {
-	notSeen = "notSeen"
+	notSeen = "notSeen",
 }
 
 export function opposite(category: Category) {
 	switch (category) {
 		case Category.productive:
-			return Category.procrastination;
+			return Category.procrastination
 		case Category.procrastination:
-			return Category.productive;
+			return Category.productive
 	}
 }

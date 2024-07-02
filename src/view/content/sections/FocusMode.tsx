@@ -12,7 +12,10 @@ import {
 	VStack,
 } from "@chakra-ui/react"
 import React from "react"
-import { toggleFocusModeUseCase } from "../../../messagePassing/backgroundToggleUseCases"
+import {
+	openSettingsUseCase,
+	toggleFocusModeUseCase,
+} from "../../../messagePassing/settingsUseCases"
 import { ModelDataCard } from "../../popup/ModelDataCard"
 import { Body1, Body2, Heading2 } from "../components/Typography"
 import { useContentViewModel } from "../ContentContext"
@@ -21,15 +24,17 @@ import { ProcrastinationScoreCard } from "./SiteClassificationCard"
 import { Category } from "../../../data/models/Category"
 
 export function FocusMode() {
-	const {        
+	const {
 		siteData,
-        siteSeen,
-        siteStatus,
-        resyncAndRerenderTopBar,
+		siteSeen,
+		siteStatus,
+		resyncAndRerenderTopBar,
 		setIsTopBarDisabled,
 	} = useContentViewModel()
 
-	const closeTopBar = () => { setIsTopBarDisabled(true) }
+	const closeTopBar = () => {
+		setIsTopBarDisabled(true)
+	}
 
 	return (
 		<>
@@ -59,7 +64,9 @@ export function FocusMode() {
 								<ModelDataCard
 									modelData={siteStatus.trainedOn}
 									showChanges
-									resyncModel={() => { resyncAndRerenderTopBar() }}
+									resyncModel={() => {
+										resyncAndRerenderTopBar()
+									}}
 								/>
 							</AccordionPanel>
 						</AccordionItem>
@@ -82,6 +89,16 @@ export function FocusMode() {
 				>
 					<Body1 color="inherit" fontWeight="semibold">
 						Turn off focus mode
+					</Body1>
+				</Button>
+				<Button
+					onClick={() => { openSettingsUseCase() }}
+					colorScheme="blue"
+					variant="outline"
+					m="20px"
+				>
+					<Body1 color="inherit" fontWeight="semibold">
+						Focus mode settings
 					</Body1>
 				</Button>
 			</Flex>

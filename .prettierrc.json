@@ -8,5 +8,5 @@
   "bracketSpacing": true,
   "arrowParens": "avoid",
   "endOfLine": "auto",
-  "plugins": ["prettier-plugin-organize-imports"]
+  "plugins": []
 }

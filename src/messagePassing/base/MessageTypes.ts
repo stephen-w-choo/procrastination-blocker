@@ -1,9 +1,25 @@
 import { Category, SiteSeen } from "../../data/models/Category"
+import { GroupedKeywordData, Settings } from "../../data/models/Settings"
 import { ProcrastinationScores } from "../../domain/models/ProcrastinationScore"
 import { TrainedOn } from "../../domain/models/TrainedOn"
 
-// TODO - experiment and see if we can use enums for the commands?
-// Not sure if it will get propelry serialised into a unique string when parsed
+/**
+ * These types are a mess and I apologise.
+ * This is my first really large TypeScript project where I'm leaning heavily
+ * into the structural typing system to enforce type safety.
+ *
+ * If I was to redo this, I would merge the base requests into a single type,
+ * and I would have a separate error type, removing the need for the success field.
+ *
+ * I also didn't realise TypeScript enums could contain strings - if I redid this,
+ * I would replace all of the command strings with enums instead. This would be
+ * a much less verbose way of enforcing type safety of the strings that the chrome
+ * runtime uses as commands.
+ *
+ * The listeners can then be typed to a Union of the response and error types.
+ *
+ * May or may not refactor this in the future, but it will be an arduous task.
+ */
 
 // Content/popup to background script
 export type SiteClassificationRequest = {
@@ -59,19 +75,44 @@ export type SiteDataResponse = {
 	serialisedSiteData: string
 }
 
+export type CheckFocusModeRequest = {
+	command: "checkFocusMode"
+}
+
 export type ToggleFocusModeRequest = {
 	command: "toggleFocusMode"
 	toggle: boolean
 }
 
-export type FocusModeResponse = {
+export type CheckFocusModeResponse = {
 	success: boolean
 	toggleStatus?: boolean
+	threshold: number
 }
 
-export type CheckFocusModeRequest = {
-	command: "checkFocusMode"
+export type ToggleFocusModeResponse = {
+	success: boolean
+	toggleStatus: boolean
 }
+
+export type GetSettingsRequest = {
+	command: "getSettings"
+}
+
+export type SetSettingsRequest = {
+	command: "setSettings"
+	settings: Settings
+}
+
+export type SettingsResponse = {
+	settings: Settings
+}
+
+export type OpenSettingsRequest = {
+	command: "openSettings"
+}
+
+export type OpenSettingsResponse = GenericResponse
 
 export type GenericResponse = {
 	success: boolean
@@ -80,4 +121,9 @@ export type GenericResponse = {
 
 export type GenericRequest = {
 	command: string
+}
+
+export type ErrorResponse = {
+	success: false
+	error: string
 }

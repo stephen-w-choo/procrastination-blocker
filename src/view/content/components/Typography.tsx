@@ -31,6 +31,7 @@ export function Heading1({ children, textAlign = "left", color = "#000000" }: Te
 			fontFamily={fontFamilies}
 			textAlign={textAlign}
 			color={color}
+			verticalAlign="middle"
 		>
 			{children}
 		</Heading>
@@ -44,6 +45,7 @@ export function Heading2({ children, textAlign = "left", color = "#000000" }: Te
 			fontFamily={fontFamilies}
 			textAlign={textAlign}
 			color={color}
+			verticalAlign="bottom"
 		>
 			{children}
 		</Heading>
@@ -57,6 +59,7 @@ export function Heading3({ children, textAlign = "left", color = "#000000" }: Te
 			fontFamily={fontFamilies}
 			textAlign={textAlign}
 			color={color}
+			verticalAlign="middle"
 		>
 			{children}
 		</Heading>
@@ -76,6 +79,7 @@ export function Body1({
 			textAlign={textAlign}
 			color={color}
 			fontWeight={fontWeight}
+			verticalAlign="middle"
 		>
 			{children}
 		</Text>
@@ -95,6 +99,7 @@ export function Body2({
 			textAlign={textAlign}
 			color={color}
 			fontWeight={fontWeight}
+			verticalAlign="middle"
 		>
 			{children}
 		</Text>

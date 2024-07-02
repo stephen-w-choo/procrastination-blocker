@@ -1,7 +1,7 @@
 import { Divider, Stack } from "@chakra-ui/react"
 import React from "react"
 import { Category, SiteSeen } from "../../../data/models/Category"
-import { SiteData, } from "../../../data/models/SiteData"
+import { SiteData } from "../../../data/models/SiteData"
 import {
 	addSiteUseCase,
 	reclassifySiteUseCase,
