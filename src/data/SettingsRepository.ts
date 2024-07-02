@@ -1,13 +1,13 @@
 import { DefaultSettings, Settings } from "./models/Settings"
 
 const SETTINGS_PREFIX = "$SETTINGS"
-const BASE_KEYWORDS_SUFFIX = "///baseKeywords"
-const THRESHOLD_SUFFIX = "///threshold"
 
-// boolean flag to enable/disable focus mode
-const FOCUS_MODE_SUFFIX = "///focusMode"
-// boolean flag to determine if the extension has been seeded with data
-const SEEDED_SUFFIX = "///seeded"
+const SETTINGS_KEYS = {
+	baseKeywords: `${SETTINGS_PREFIX}///baseKeywords`,
+	threshold: `${SETTINGS_PREFIX}///threshold`,
+	focusMode: `${SETTINGS_PREFIX}///focusMode`,
+	seeded: `${SETTINGS_PREFIX}///seeded`,
+}
 
 export class SettingsRepository {
 	private constructor() {}
@@ -19,50 +19,20 @@ export class SettingsRepository {
 	}
 
 	async initialiseSettings(): Promise<void> {
-		// check if the extension has been seeded with data
-		const result = await this.getChromeStorage(`${SETTINGS_PREFIX}${SEEDED_SUFFIX}`)
-		console.log("Seeded flag", result)
-		// if not previously seeded, seed the base keywords
-		// if (!result[`${SETTINGS_PREFIX}${SEEDED_SUFFIX}`]) {
-			await this.seedDefaultSettings()
-		// }
-	}
+		const result = await this.getSettings()
 
-	private getChromeStorage(key: string): Promise<{ [key: string]: any }> {
-		return new Promise((resolve, reject) => {
-			chrome.storage.local.get(key, result => {
-				if (chrome.runtime.lastError) {
-					reject(chrome.runtime.lastError)
-				} else {
-					resolve(result)
-				}
-			})
-		})
+		// If the settings have not been set, seed them
+		if (result.keywordData == undefined || result.threshold == undefined) {
+			await this.seedDefaultSettings()
+		}
 	}
 
 	async seedDefaultSettings(): Promise<void> {
 		try {
-			const keywords = await this.getSettings()
-			// make sure no keywords are already set
-			console.log("Seeding settings", DefaultSettings)
-			const result = await this.setSettings(DefaultSettings)
-			if (result) {
-				await this.setSeeded(true)
-			}
+			await this.setSettings(DefaultSettings)
 		} catch (error) {
 			console.error("Error seeding default settings", error)
 		}
-	}
-
-	setSeeded(value: boolean): Promise<boolean> {
-		return new Promise(resolve => {
-			chrome.storage.local.set(
-				{ [`${SETTINGS_PREFIX}${SEEDED_SUFFIX}`]: value },
-				() => {
-					resolve(value)
-				}
-			)
-		})
 	}
 
 	// Note - unlike the site data, we store the entire base keywords data as a single object
@@ -73,9 +43,8 @@ export class SettingsRepository {
 			try {
 				chrome.storage.local.set(
 					{
-						[`${SETTINGS_PREFIX}${THRESHOLD_SUFFIX}`]: settingsData.threshold,
-						[`${SETTINGS_PREFIX}${BASE_KEYWORDS_SUFFIX}`]:
-							settingsData.keywordData,
+						[SETTINGS_KEYS.threshold]: settingsData.threshold,
+						[SETTINGS_KEYS.baseKeywords]: settingsData.keywordData,
 					},
 					() => {
 						resolve(settingsData)
@@ -90,33 +59,26 @@ export class SettingsRepository {
 	getSettings(): Promise<Settings> {
 		return new Promise((resolve, reject) => {
 			chrome.storage.local.get(
-				[
-					`${SETTINGS_PREFIX}${BASE_KEYWORDS_SUFFIX}`,
-					`${SETTINGS_PREFIX}${THRESHOLD_SUFFIX}`,
-				],
+				[SETTINGS_KEYS.threshold, SETTINGS_KEYS.baseKeywords],
 				result => {
-					console.log(result)
-					console.log(result.threshold)
 					resolve({
-						threshold: result[`${SETTINGS_PREFIX}${THRESHOLD_SUFFIX}`],
-						keywordData: result[`${SETTINGS_PREFIX}${BASE_KEYWORDS_SUFFIX}`],
+						threshold: result[SETTINGS_KEYS.threshold],
+						keywordData: result[SETTINGS_KEYS.baseKeywords],
 					} as Settings)
 				}
 			)
 		})
 	}
 
+	// This will also return the threshold, since it's required for focus mode
 	getFocusModeSetting(): Promise<{ threshold: number; focusModeStatus: boolean }> {
 		return new Promise(resolve => {
 			chrome.storage.local.get(
-				[
-					`${SETTINGS_PREFIX}${FOCUS_MODE_SUFFIX}`,
-					`${SETTINGS_PREFIX}${THRESHOLD_SUFFIX}`,
-				],
+				[SETTINGS_KEYS.focusMode, SETTINGS_KEYS.threshold],
 				result => {
 					resolve({
-						threshold: result[`${SETTINGS_PREFIX}${THRESHOLD_SUFFIX}`],
-						focusModeStatus: result[`${SETTINGS_PREFIX}${FOCUS_MODE_SUFFIX}`],
+						threshold: result[SETTINGS_KEYS.threshold],
+						focusModeStatus: result[SETTINGS_KEYS.focusMode],
 					})
 				}
 			)
@@ -125,12 +87,9 @@ export class SettingsRepository {
 
 	setFocusModeSetting(value: boolean): Promise<boolean> {
 		return new Promise(resolve => {
-			chrome.storage.local.set(
-				{ [`${SETTINGS_PREFIX}${FOCUS_MODE_SUFFIX}`]: value },
-				() => {
-					resolve(value)
-				}
-			)
+			chrome.storage.local.set({ [SETTINGS_KEYS.focusMode]: value }, () => {
+				resolve(value)
+			})
 		})
 	}
 }

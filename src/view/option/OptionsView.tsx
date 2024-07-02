@@ -1,4 +1,4 @@
-import { Box, Button, Stack } from "@chakra-ui/react"
+import { Box, Button, Divider, Stack, Text, Tooltip, useToast } from "@chakra-ui/react"
 import React, { useEffect, useRef, useState } from "react"
 import { GroupedKeywordData, KeywordData } from "../../data/models/Settings"
 import { SettingsResponse } from "../../messagePassing/base/MessageTypes"
@@ -10,6 +10,9 @@ import { Heading1, Heading2 } from "../content/components/Typography"
 import { KeywordsEditor } from "./KeywordsEditor"
 import { OptionsKeywordData } from "./OptionsModels"
 import { ThresholdSlider } from "./ThresholdSlider"
+import { InfoIcon, QuestionOutlineIcon } from "@chakra-ui/icons"
+import { COLORS } from "../colours"
+import { requestModelSyncUseCase } from "../../messagePassing/classificationModelUseCases"
 
 type OptionsViewProps = {
 	initialKeywords?: GroupedKeywordData | null
@@ -21,6 +24,8 @@ export default function OptionsView({
 	initialThreshold = null,
 }: OptionsViewProps) {
 	const idCounter = useRef(0)
+	const toast = useToast()
+
 	const generateId = () => idCounter.current++
 
 	const thresholdToPercentage = (threshold: number) => Math.round(threshold * 100)
@@ -57,6 +62,7 @@ export default function OptionsView({
 			// error state
 			return
 		}
+		
 		const settings = {
 			threshold: percentageToThreshold(percentageThreshold),
 			keywordData: {
@@ -64,9 +70,35 @@ export default function OptionsView({
 				productive: productiveKeywords,
 			},
 		}
-		setSettingsUseCase(settings).then(response => {
-			console.log("settings response", response)
-			parseSettingsResponse(response)
+
+
+		const settingsSavePromise = setSettingsUseCase(settings)
+			.then(response => parseSettingsResponse(response))
+			.then(() => requestModelSyncUseCase())
+			.then(value => {
+				if (value.success) {
+					console.log("Model synced")
+				} else {
+					throw new Error("Error syncing models")
+				}
+			})
+
+		toast.promise(settingsSavePromise, {
+			success: {
+				title: "Settings saved",
+				description: "Your settings have been saved.",
+				isClosable: true,
+			},
+			error: {
+				title: "Error",
+				description: "An error occurred while saving your settings.",
+				isClosable: true,
+			},
+			loading: {
+				title: "Saving...",
+				description: "Saving your settings...",
+				isClosable: false,
+			},
 		})
 	}
 
@@ -87,15 +119,63 @@ export default function OptionsView({
 
 	if (percentageThreshold && procrastinationKeywords && productiveKeywords) {
 		return (
-			<Stack>
+			<Stack m="0 auto" maxW="200ch">
 				<Heading1>Options</Heading1>
-				<Heading2 textAlign="center">Threshold</Heading2>
+				<Heading2 textAlign="center">
+					Threshold
+					<Tooltip
+						label={
+							<>
+								<Text>
+									The procrastination score required before the site is
+									considered non-productive.
+								</Text>
+								<br />
+								<Text>
+									This determines how sensitive the extension is to a
+									procrastination score. Higher thresholds will increase
+									the chances of a reminder prompt appearing when
+									visiting a site.
+								</Text>
+							</>
+						}
+					>
+						<QuestionOutlineIcon mb={1} ml={4} color={COLORS.blue} />
+					</Tooltip>
+				</Heading2>
+				<Divider m={3} />
 				<ThresholdSlider
 					threshold={percentageThreshold}
 					setThreshold={setPercentageThreshold}
 				/>
-				<Box h={8} />
-				<Heading2 textAlign="center">Keywords</Heading2>
+				<Box h={16} />
+				<Heading2 textAlign="center">
+					Keywords
+					<Tooltip
+						label={
+							<>
+								<Text>
+									These keywords help classify sites as productive or
+									non-productive, enhancing the trained model's
+									decisions.
+								</Text>
+								<br />
+								<Text>
+									More heavily weighted keywords have a stronger
+									influence on the classification.
+								</Text>
+								<br />
+								<Text>
+									You can manage these keywords by adding, editing, or
+									deleting them.
+								</Text>
+							</>
+						}
+					>
+						<QuestionOutlineIcon mb={1} ml={4} color={COLORS.blue} />
+					</Tooltip>
+				</Heading2>
+				<Divider m={3} />
 				<KeywordsEditor
 					procrastinationKeywords={procrastinationKeywords}
 					productiveKeywords={productiveKeywords}
@@ -104,7 +184,14 @@ export default function OptionsView({
 					generateId={generateId}
 				/>
 				<Box h={8} />
-				<Button onClick={saveSettings}>Save your settings</Button>
+				<Button
+					m="0 auto"
+					colorScheme="blue"
+					fontSize="xl"
+					onClick={saveSettings}
+				>
+					Save your settings
+				</Button>
 			</Stack>
 		)
 	} else {

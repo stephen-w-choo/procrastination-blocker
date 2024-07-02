@@ -93,7 +93,7 @@ export function KeywordsEditor({
 
 	return (
 		// Make two columns
-		<Flex>
+		<Flex justifyContent="center">
 			<Card borderTopEndRadius="0px" borderBottomEndRadius="0px" p={2}>
 				<Heading2 textAlign="center">Procrastination</Heading2>
 				<TableContainer mt={8}>

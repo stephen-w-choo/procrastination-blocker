@@ -3,6 +3,8 @@ import {
 	CheckFocusModeRequest,
 	CheckFocusModeResponse,
 	GetSettingsRequest,
+	OpenSettingsRequest,
+	OpenSettingsResponse,
 	SetSettingsRequest,
 	SettingsResponse,
 	ToggleFocusModeRequest,
@@ -33,5 +35,11 @@ export function setSettingsUseCase(settings: Settings): Promise<SettingsResponse
 	return sendMessage<SetSettingsRequest, SettingsResponse>({
 		command: "setSettings",
 		settings,
+	})
+}
+
+export function openSettingsUseCase(): Promise<OpenSettingsResponse> {
+	return sendMessage<OpenSettingsRequest, OpenSettingsResponse>({
+		command: "openSettings",
 	})
 }

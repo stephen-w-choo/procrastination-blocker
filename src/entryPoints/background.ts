@@ -14,6 +14,8 @@ import {
 	ModelMetricsResponse,
 	ModelSyncRequest,
 	ModelSyncResponse,
+	OpenSettingsRequest,
+	OpenSettingsResponse,
 	RepositoryRequest,
 	SetSettingsRequest,
 	SettingsResponse,
@@ -77,6 +79,7 @@ class BackgroundProcess {
 		this.setCheckSiteSeenListener()
 		this.setToggleFocusModeListener()
 		this.setSettingsListener()
+		this.setOpenSettingsListener()
 	}
 
 	setSiteClassificationListener() {
@@ -179,12 +182,12 @@ class BackgroundProcess {
 			SettingsResponse | ErrorResponse
 		>((request, _, sendResponse) => {
 			try {
-				if (request.command == "getSettings") {
+				if (request.command === "getSettings") {
 					this.settingsRepository.getSettings().then(settings => {
 						sendResponse({ settings })
 					})
 				}
-				if (request.command == "setSettings") {
+				if (request.command === "setSettings") {
 					this.settingsRepository
 						.setSettings(request.settings)
 						.then(settings => {
@@ -195,6 +198,21 @@ class BackgroundProcess {
 				sendResponse({ success: false, error: e.toString() })
 			}
 		})
+	}
+
+	setOpenSettingsListener() {
+		setListener<OpenSettingsRequest, OpenSettingsResponse>(
+			(request, _, sendResponse) => {
+				try {
+					if ((request.command === "openSettings")) {
+						chrome.runtime.openOptionsPage()
+						sendResponse({ success: true })
+					}
+				} catch {
+					sendResponse({ success: false })
+				}
+			}
+		)
 	}
 
 	setModelMetricsListener() {

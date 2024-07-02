@@ -5,10 +5,16 @@ import { TrainedOn } from "../../domain/models/TrainedOn"
 
 /**
  * These types are a mess and I apologise.
- * This is my first really large TypeScript project where I'm
- * leaning heavily into the structural typing system.
+ * This is my first really large TypeScript project where I'm leaning heavily
+ * into the structural typing system to enforce type safety.
+ *
  * If I was to redo this, I would merge the base requests into a single type,
  * and I would have a separate error type, removing the need for the success field.
+ *
+ * I also didn't realise TypeScript enums could contain strings - if I redid this,
+ * I would replace all of the command strings with enums instead. This would be
+ * a much less verbose way of enforcing type safety of the strings that the chrome
+ * runtime uses as commands.
  *
  * The listeners can then be typed to a Union of the response and error types.
  *
@@ -101,6 +107,12 @@ export type SetSettingsRequest = {
 export type SettingsResponse = {
 	settings: Settings
 }
+
+export type OpenSettingsRequest = {
+	command: "openSettings"
+}
+
+export type OpenSettingsResponse = GenericResponse
 
 export type GenericResponse = {
 	success: boolean

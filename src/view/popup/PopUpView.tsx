@@ -1,11 +1,17 @@
-import { Box, Flex, Spacer, Switch, Tooltip } from "@chakra-ui/react"
+import {
+	Box,
+	Flex,
+	Icon,
+	IconButton,
+	Spacer,
+	Switch,
+	Text,
+	Tooltip,
+} from "@chakra-ui/react"
 import React, { useEffect, useState } from "react"
+import { FaCog } from "react-icons/fa"
 import { Category, SiteSeen } from "../../data/models/Category"
 import { SiteData } from "../../data/models/SiteData"
-import {
-	checkFocusModeUseCase,
-	toggleFocusModeUseCase,
-} from "../../messagePassing/settingsUseCases"
 import {
 	GenericResponse,
 	ModelMetricsResponse,
@@ -22,6 +28,10 @@ import {
 	removeSiteUseCase,
 } from "../../messagePassing/repositoryUseCases"
 import { requestSiteDataUseCase } from "../../messagePassing/requestSiteDataUseCases"
+import {
+	checkFocusModeUseCase,
+	toggleFocusModeUseCase,
+} from "../../messagePassing/settingsUseCases"
 import { COLORS } from "../colours"
 import { ErrorBox } from "./ErrorBox"
 import { ModelDataCard } from "./ModelDataCard"
@@ -169,6 +179,15 @@ export default function PopUpView({
 
 	return (
 		<Box maxW="400px" minW="300px" backgroundColor={COLORS.lightGrey} padding={4}>
+			<Flex justifyContent="flex-end">
+				<IconButton
+					isRound
+					aria-label="Link to settings"
+					onClick={() => chrome.runtime.openOptionsPage()}
+					icon={<Icon as={FaCog} />}
+					colorScheme="blackAlpha"
+				/>
+			</Flex>
 			{modelMetrics ? (
 				<>
 					<SiteDataBox
@@ -198,8 +217,14 @@ export default function PopUpView({
 					<Flex alignItems="center" justifyContent="center">
 						<Tooltip
 							hasArrow
-							label="You need to have at least 1 site in each category"
+							label={
+								<Text textAlign="center">
+									You need to have at least <br />1 site in each
+									category
+								</Text>
+							}
 							isDisabled={!isDataInsufficient()}
+							placement="auto-end"
 						>
 							<Switch
 								isChecked={focusModeState === true}

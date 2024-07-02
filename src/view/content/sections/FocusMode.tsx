@@ -12,7 +12,10 @@ import {
 	VStack,
 } from "@chakra-ui/react"
 import React from "react"
-import { toggleFocusModeUseCase } from "../../../messagePassing/settingsUseCases"
+import {
+	openSettingsUseCase,
+	toggleFocusModeUseCase,
+} from "../../../messagePassing/settingsUseCases"
 import { ModelDataCard } from "../../popup/ModelDataCard"
 import { Body1, Body2, Heading2 } from "../components/Typography"
 import { useContentViewModel } from "../ContentContext"
@@ -86,6 +89,16 @@ export function FocusMode() {
 				>
 					<Body1 color="inherit" fontWeight="semibold">
 						Turn off focus mode
+					</Body1>
+				</Button>
+				<Button
+					onClick={() => { openSettingsUseCase() }}
+					colorScheme="blue"
+					variant="outline"
+					m="20px"
+				>
+					<Body1 color="inherit" fontWeight="semibold">
+						Focus mode settings
 					</Body1>
 				</Button>
 			</Flex>
